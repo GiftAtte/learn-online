@@ -8,7 +8,7 @@ import { generatePath } from 'react-router-dom';
  *   admin pages    /admin/...     (administrators only)
  */
 export const PATHS = {
-  /** The bare address; it redirects to the catalog. */
+  /** The landing page: what LearnOnline is, with sign-up and catalog links. */
   home: '/',
   signIn: '/sign-in',
   signUp: '/sign-up',

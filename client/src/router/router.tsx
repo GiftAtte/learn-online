@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ComponentType } from 'react';
-import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
+import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { PageLoader } from '@/components/feedback/page-loader';
 import { RootLayout } from '@/components/layout/root-layout';
 import { GuestOnly } from '@/router/guards/guest-only';
@@ -8,6 +8,7 @@ import { RequireAuth } from '@/router/guards/require-auth';
 import { PATHS } from './paths';
 
 // Each page is loaded when it is first opened, so the first visit only downloads what it needs.
+const LandingPage = lazy(() => import('@/pages/landing-page'));
 const CatalogPage = lazy(() => import('@/pages/learner/catalog-page'));
 const CoursePage = lazy(() => import('@/pages/learner/course-page'));
 const LessonPage = lazy(() => import('@/pages/learner/lesson-page'));
@@ -44,6 +45,9 @@ interface PageRoute {
 
 /** The sitemap: one line per page. */
 const PAGES: PageRoute[] = [
+  // The first page a visitor sees
+  { path: PATHS.home, page: LandingPage, who: 'everyone' },
+
   // Learner pages
   { path: PATHS.learner.catalog, page: CatalogPage, who: 'everyone' },
   { path: PATHS.learner.course, page: CoursePage, who: 'everyone' },
@@ -85,7 +89,6 @@ export const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
-      { path: PATHS.home, element: <Navigate to={PATHS.learner.catalog} replace /> },
       ...pagesFor('everyone'),
 
       // Signed-in people only. Admin pages need that too, plus the administrator role.
