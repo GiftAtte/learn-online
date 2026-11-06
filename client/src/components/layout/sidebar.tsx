@@ -22,7 +22,7 @@ export function Sidebar({ nav, user, onSignOut }: SidebarProps) {
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col bg-spruce-900 text-white lg:flex">
       <Link
-        to={PATHS.learner.catalog}
+        to={nav[0]?.to ?? PATHS.learner.catalog}
         aria-label="LearnOnline home"
         className="m-3 mt-4 w-fit rounded-control p-2"
       >

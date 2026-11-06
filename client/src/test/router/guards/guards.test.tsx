@@ -60,6 +60,12 @@ describe('route guards', () => {
     expect(screen.getByText('admin area')).toBeInTheDocument();
   });
 
+  it('sends an administrator who is already signed in to the admin dashboard', () => {
+    session.current = { status: 'authenticated', isAdmin: true };
+    renderAt('/sign-in');
+    expect(screen.getByText('admin area')).toBeInTheDocument();
+  });
+
   it('sends signed-in people away from the sign-in page', () => {
     session.current = { status: 'authenticated', isAdmin: false };
     renderAt('/sign-in');

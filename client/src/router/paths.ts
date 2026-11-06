@@ -45,3 +45,7 @@ export const PATHS = {
  * Addresses without a `:name` (like `PATHS.signIn`) are used as they are.
  */
 export const link = generatePath;
+
+/** Where a signed-in person starts: administrators on their dashboard, learners on the catalog. */
+export const homeFor = (isAdmin: boolean) =>
+  isAdmin ? PATHS.admin.overview : PATHS.learner.catalog;

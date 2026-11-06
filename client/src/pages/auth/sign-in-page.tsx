@@ -11,7 +11,7 @@ import { ApiError } from '@/core/api/error';
 import { handleSubmitError } from '@/core/lib/forms';
 import { MESSAGES } from '@/core/lib/messages';
 import { AuthLayout } from './auth-layout';
-import { PATHS } from '@/router/paths';
+import { homeFor, PATHS } from '@/router/paths';
 
 export default function SignInPage() {
   const navigate = useNavigate();
@@ -28,8 +28,11 @@ export default function SignInPage() {
   const onSubmit = form.handleSubmit(async (values) => {
     setFormError(null);
     try {
-      await signIn.mutateAsync(values);
-      navigate(from ? `${from.pathname}${from.search}` : PATHS.learner.catalog, { replace: true });
+      const user = await signIn.mutateAsync(values);
+      // Back to the page they were sent from, otherwise to their own home (admins: the dashboard).
+      navigate(from ? `${from.pathname}${from.search}` : homeFor(user.role === 'ADMIN'), {
+        replace: true,
+      });
     } catch (error) {
       // Wrong credentials are explained in the form; anything else becomes a toast.
       if (error instanceof ApiError && error.isUnauthorized)
