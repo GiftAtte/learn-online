@@ -10,7 +10,7 @@ npm install
 cp .env.example .env          # then set JWT_SECRET (32+ chars)
 docker compose -f ../docker-compose.yml up -d db   # PostgreSQL on :5432 (or point DATABASE_URL at your own)
 npx prisma migrate dev        # creates tables
-npm run db:seed               # demo data: 2 accounts, 6 courses, 18 lessons (wipes the tables first; SEED_ADMIN_PASSWORD / SEED_LEARNER_PASSWORD override the demo passwords)
+npm run db:seed               # demo data: 2 accounts, 13 courses, 38 lessons (wipes the tables first; SEED_ADMIN_PASSWORD / SEED_LEARNER_PASSWORD override the demo passwords)
 npm run dev                   # http://localhost:4000
 ```
 
