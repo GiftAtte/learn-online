@@ -32,7 +32,7 @@ export default function LandingPage() {
         {/* Hero: the promise on the left, the product at work on the right */}
         <section className="lp-hero-bg relative overflow-hidden text-white">
           <div aria-hidden className="lp-dots absolute inset-0" />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pt-16 pb-24 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-24 lg:pb-32">
+          <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pt-16 pb-24 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:px-8 lg:pt-24 lg:pb-32">
             <div className="flex flex-col items-start gap-6">
               <h1
                 className="lp-rise font-display text-5xl leading-[1.02] font-bold tracking-tight text-balance sm:text-6xl lg:text-7xl"
@@ -98,7 +98,7 @@ export default function LandingPage() {
         <section
           id="how-it-works"
           aria-labelledby="how-title"
-          className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28"
+          className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8"
         >
           <h2 id="how-title" className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
             From first visit to finished course in four steps
@@ -112,7 +112,7 @@ export default function LandingPage() {
         <section
           id="features"
           aria-labelledby="features-title"
-          className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 sm:pb-28"
+          className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8"
         >
           <h2
             id="features-title"
@@ -126,7 +126,7 @@ export default function LandingPage() {
         </section>
 
         {/* Closing call to action */}
-        <section className="px-4 pb-20 sm:px-6 sm:pb-28">
+        <section className="px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8">
           <div className="lp-hero-bg relative mx-auto flex max-w-6xl flex-col items-start gap-6 overflow-hidden rounded-[1.75rem] p-8 text-white sm:p-14">
             <div aria-hidden className="lp-dots absolute inset-0" />
             <h2 className="relative max-w-2xl text-3xl font-bold tracking-tight sm:text-5xl">

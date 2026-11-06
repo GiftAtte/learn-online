@@ -73,30 +73,32 @@ export default function CatalogPage() {
       )}
 
       {/* Search, filter and sort: the same toolbar the admin tables use */}
-      <TableToolbar
-        search={{ value: search, onChange: setSearch, label: 'Search courses' }}
-        filters={
-          <>
-            <ToolbarSelect
-              label="Filter by category"
-              value={params.categoryId}
-              onChange={(categoryId) => setParams({ categoryId, page: '1' })}
-              allLabel="All categories"
-              options={(categories.data ?? []).map((c) => ({ value: c.id, label: c.name }))}
-            />
-            <ToolbarSelect
-              label="Sort by"
-              value={`${params.sortBy}:${params.sortDir}`}
-              onChange={(value) =>
-                setParams({ ...parseSortOption(value, DEFAULT_SORT), page: '1' })
-              }
-              options={SORT_OPTIONS}
-            />
-          </>
-        }
-        summary={courses.data && pluralize(courses.data.meta.total, 'course')}
-        onClear={hasFilters ? clearFilters : undefined}
-      />
+      <div className="rounded-card border border-line bg-surface p-3 shadow-card sm:p-4">
+        <TableToolbar
+          search={{ value: search, onChange: setSearch, label: 'Search courses' }}
+          filters={
+            <>
+              <ToolbarSelect
+                label="Filter by category"
+                value={params.categoryId}
+                onChange={(categoryId) => setParams({ categoryId, page: '1' })}
+                allLabel="All categories"
+                options={(categories.data ?? []).map((c) => ({ value: c.id, label: c.name }))}
+              />
+              <ToolbarSelect
+                label="Sort by"
+                value={`${params.sortBy}:${params.sortDir}`}
+                onChange={(value) =>
+                  setParams({ ...parseSortOption(value, DEFAULT_SORT), page: '1' })
+                }
+                options={SORT_OPTIONS}
+              />
+            </>
+          }
+          summary={courses.data && pluralize(courses.data.meta.total, 'course')}
+          onClear={hasFilters ? clearFilters : undefined}
+        />
+      </div>
 
       {/* Results */}
       <QueryBoundary
