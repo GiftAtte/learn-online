@@ -1,5 +1,7 @@
 import { Badge, Card } from '@/components/ui';
 import { VideoPlayer } from '@/components/media/video-player';
+import { YouTubePlayer } from '@/components/media/youtube-player';
+import { youTubeIdOf } from '@/core/lib/youtube';
 import { formatDuration } from '@/core/lib/format';
 import type { LessonDetail } from '@/core/types/lesson.types';
 import { useUpdateLessonProgress } from '@/core/hooks/queries/use-progress';
@@ -18,25 +20,42 @@ interface LessonPlayerCardProps {
 export function LessonPlayerCard({ detail, trackProgress }: LessonPlayerCardProps) {
   const { lesson, course } = detail;
   const save = useUpdateLessonProgress(lesson.id);
+  const youTubeId = youTubeIdOf(lesson.videoUrl);
+
+  // Resume where they stopped, unless they already finished (then start over).
+  const startAt =
+    lesson.completed || lesson.lastPositionSeconds >= lesson.durationSeconds - 3
+      ? 0
+      : lesson.lastPositionSeconds;
+  const onProgress = trackProgress
+    ? (positionSeconds: number) => save.mutate({ positionSeconds })
+    : undefined;
+  const onEnded = trackProgress
+    ? () => save.mutate({ positionSeconds: lesson.durationSeconds, completed: true })
+    : undefined;
 
   return (
     <Card padding="none" className="rounded-stage p-2 sm:p-3">
-      <VideoPlayer
-        // A new key restarts the player when the learner moves to another lesson.
-        key={lesson.id}
-        src={lesson.videoUrl}
-        title={lesson.title}
-        // Resume where they stopped, unless they already finished (then start over).
-        startAt={lesson.completed ? 0 : lesson.lastPositionSeconds}
-        onProgress={
-          trackProgress ? (positionSeconds) => save.mutate({ positionSeconds }) : undefined
-        }
-        onEnded={
-          trackProgress
-            ? () => save.mutate({ positionSeconds: lesson.durationSeconds, completed: true })
-            : undefined
-        }
-      />
+      {youTubeId ? (
+        <YouTubePlayer
+          // A new key restarts the player when the learner moves to another lesson.
+          key={lesson.id}
+          videoId={youTubeId}
+          title={lesson.title}
+          startAt={startAt}
+          onProgress={onProgress}
+          onEnded={onEnded}
+        />
+      ) : (
+        <VideoPlayer
+          key={lesson.id}
+          src={lesson.videoUrl}
+          title={lesson.title}
+          startAt={startAt}
+          onProgress={onProgress}
+          onEnded={onEnded}
+        />
+      )}
       <div className="flex flex-col gap-3 p-3 sm:p-5">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone="brand">{course.category.name}</Badge>
