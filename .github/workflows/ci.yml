@@ -1,6 +1,6 @@
-name: CI
+name: CI/CD
 
-# Every push is tested. Deployment is not done here: a webhook on the server deploys pushes to dev (see DEPLOY.md).
+# Every push is tested. A push to dev also builds the images in GitHub and deploys them (see DEPLOY.md).
 on:
   push:
   pull_request:
@@ -59,3 +59,78 @@ jobs:
       - run: npm run format:check
       - run: npm test -- --run
       - run: npm run build
+
+  # Build the Docker images here, so the server never has to compile anything: it only downloads them.
+  images:
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      REGISTRY: ghcr.io/giftatte/learn-online
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push the API image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./api
+          push: true
+          tags: ${{ env.REGISTRY }}/api:${{ github.sha }}
+      - name: Build and push the web image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          push: true
+          tags: ${{ env.REGISTRY }}/web:${{ github.sha }}
+          # The API address is part of the client build.
+          build-args: VITE_API_URL=https://learnonline-api.royaliqtech.com/api/v1
+
+  # Tell the server to download the new images and restart. It builds nothing.
+  deploy:
+    needs: images
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency: deploy-production # never run two deployments at once
+    env:
+      APP_DIR: ${{ secrets.DEPLOY_PATH }}
+      TAG: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Load the deploy key and trust the server
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          {
+            echo "Host server"
+            echo "  HostName ${{ secrets.DEPLOY_HOST }}"
+            echo "  User ${{ secrets.DEPLOY_USER }}"
+            echo "  IdentityFile ~/.ssh/id_deploy"
+            echo "  IdentitiesOnly yes"
+          } > ~/.ssh/config
+
+      # The only file the server needs from the repo. Its .env (secrets) is never touched.
+      - name: Send the compose file
+        run: scp docker-compose.yml "server:$APP_DIR/docker-compose.yml"
+
+      # A short-lived token lets the server download the images, then it is removed again.
+      - name: Download the images and restart
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | ssh server "docker login ghcr.io -u ${{ github.actor }} --password-stdin"
+          ssh server "cd $APP_DIR && export IMAGE_TAG=$TAG && docker compose pull api web && docker compose up -d --no-build --remove-orphans && docker image prune -f && docker logout ghcr.io"
+
+      # Fail the run if the site is not answering after the restart.
+      - name: Check that the site is up
+        run: |
+          ssh server 'for i in $(seq 1 30); do
+            curl -fsS -o /dev/null http://127.0.0.1:8085/ && curl -fsS -o /dev/null http://127.0.0.1:4000/health && echo "site is up" && exit 0
+            sleep 2
+          done; echo "site did not come up" >&2; exit 1'
