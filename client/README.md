@@ -41,7 +41,7 @@ src/
     layout/                  RootLayout picks the frame: PublicLayout (header + footer shared with the landing page) for signed-out visitors,
                              AppShell (sidebar, top bar, mobile tab bar) for signed-in people; PageHeader, Container, Logo
     data-display/            DataTable (cards on phones), Pagination, SearchInput, FilterChips, StatTile
-    media/                   VideoPlayer, MediaUploadButton (upload a video or image to Cloudinary from a form)
+    media/                   VideoPlayer, MediaField (upload a video or image to Cloudinary from a form)
     courses/ lessons/ dashboard/ categories/ admin/
                              building blocks for one domain (CourseCard, LessonPlayerCard, ContinueCard...)
   router/                    paths.ts (every URL, written once), router.tsx (the sitemap: page + who may open it), guards/ -
@@ -162,11 +162,24 @@ Browser tests live in `../e2e` (Playwright).
 Administrators can upload a lesson video, a lesson thumbnail or a course cover image instead of pasting a link.
 The pieces, from the bottom up:
 
-| File                                       | Job                                                                                                                                                                                                      |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `core/lib/media.ts`                        | the rules (file types, sizes), `validateMediaFile`, and `videoPosterUrl` (a picture taken from an uploaded video)                                                                                        |
-| `core/services/media.service.ts`           | **the media upload function**: `uploadMedia(file, kind, { onProgress, signal })` asks our API for a signature, then sends the file straight to Cloudinary and returns its address (and a video's length) |
-| `core/hooks/queries/use-media.ts`          | `useUploadMedia(kind)`: checks the file, tracks progress, supports cancel                                                                                                                                |
-| `components/media/media-upload-button.tsx` | the "Upload a video" button with progress bar, Cancel and error text; used by the lesson and course forms                                                                                                |
+| File                               | Job                                                                                                                                                                                                                           |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core/lib/media.ts`                | the rules (file types, sizes), `validateMediaFile`, and `videoPosterUrl` (a picture taken from an uploaded video)                                                                                                             |
+| `core/services/media.service.ts`   | **the media upload function**: `uploadMedia(file, kind, { onProgress, signal })` asks our API for a signature, then sends the file straight to Cloudinary and returns its address (and a video's length)                      |
+| `core/hooks/queries/use-media.ts`  | `useUploadMedia(kind)`: checks the file, tracks progress, supports cancel                                                                                                                                                     |
+| `components/ui/dropzone.tsx`       | a generic "drop a file here, or browse" area (mouse, drag and drop, keyboard); it only collects one file and knows nothing about uploading                                                                                    |
+| `components/media/media-field.tsx` | **the reusable upload input** for a form: empty (drop area or paste a link), uploading (name, progress, Cancel), filled (preview, Replace, Edit link, Remove). Takes `kind`, `value`, `onChange` and an optional `onUploaded` |
 
-Forms never talk to Cloudinary themselves; they only call `MediaUploadButton` and fill their address field from the result.
+Forms never talk to Cloudinary themselves. They put a `MediaField` inside a `FormField` (through react-hook-form's `Controller`) and only see the address it produces:
+
+```tsx
+<FormField label="Cover image" error={errors.thumbnailUrl?.message}>
+  <Controller
+    control={form.control}
+    name="thumbnailUrl"
+    render={({ field }) => (
+      <MediaField kind="image" value={field.value ?? ''} onChange={field.onChange} />
+    )}
+  />
+</FormField>
+```

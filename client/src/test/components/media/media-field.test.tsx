@@ -44,7 +44,7 @@ const renderField = (
 };
 
 const drop = (file: File) =>
-  fireEvent.drop(screen.getByRole('button', { name: /drop a/i }), {
+  fireEvent.drop(screen.getByRole('button', { name: /drop an? /i }), {
     dataTransfer: { files: [file] },
   });
 
@@ -82,7 +82,7 @@ describe('MediaField', () => {
 
   it('explains a wrong file at once and uploads nothing', () => {
     const onChange = renderField({ kind: 'image' });
-    fireEvent.drop(screen.getByRole('button', { name: /drop an?/i }), {
+    fireEvent.drop(screen.getByRole('button', { name: /drop an? /i }), {
       dataTransfer: { files: [new File(['x'], 'notes.pdf')] },
     });
 
@@ -126,7 +126,7 @@ describe('MediaField', () => {
 
     expect(screen.getByText('cover one.png')).toBeInTheDocument();
     expect(screen.getByText('Uploaded image')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /drop an?/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /drop an? /i })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
     expect(onChange).toHaveBeenCalledWith('');
