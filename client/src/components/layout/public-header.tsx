@@ -22,25 +22,27 @@ export function PublicHeader({ showSections }: PublicHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-spruce-950">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Link to={PATHS.home} aria-label="LearnOnline home">
-          <Logo inverted />
-        </Link>
-
-        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-          {showSections && (
-            <>
-              <a href="#how-it-works" className={LINK_STYLE}>
-                How it works
-              </a>
-              <a href="#features" className={LINK_STYLE}>
-                What you get
-              </a>
-            </>
-          )}
-          <Link to={PATHS.learner.catalog} className={LINK_STYLE}>
-            Courses
+        <div className="flex items-center gap-6 lg:gap-10">
+          <Link to={PATHS.home} aria-label="LearnOnline home">
+            <Logo inverted />
           </Link>
-        </nav>
+
+          <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+            {showSections && (
+              <>
+                <a href="#how-it-works" className={LINK_STYLE}>
+                  How it works
+                </a>
+                <a href="#features" className={LINK_STYLE}>
+                  What you get
+                </a>
+              </>
+            )}
+            <Link to={PATHS.learner.catalog} className={LINK_STYLE}>
+              Courses
+            </Link>
+          </nav>
+        </div>
 
         <div className="flex items-center gap-2">
           {user ? (
