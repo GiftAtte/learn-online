@@ -1,7 +1,7 @@
 # Deploying to the server
 
 One workflow, `.github/workflows/ci.yml`, for the whole monorepo (api, client, e2e). Every push is tested.
-A push to `main` that passes is deployed: the code is copied to the server with rsync and
+A push to `dev` that passes is deployed: the code is copied to the server with rsync and
 `docker compose up -d --build` rebuilds the containers. Secrets stay on the server in `.env`, never in git.
 
 ```
