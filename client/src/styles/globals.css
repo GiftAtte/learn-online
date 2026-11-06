@@ -1,0 +1,239 @@
+@import 'tailwindcss';
+
+/* ==========================================================================================
+   Design tokens — "chalkboard & pencil"
+   Spruce (chalkboard green) is the brand. Pencil yellow is reserved for progress and
+   "you are here". Everything else stays quiet so those two signals carry meaning.
+   ========================================================================================== */
+@theme {
+  /* Typography */
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand scale */
+  --color-spruce-50: #eef4f2;
+  --color-spruce-100: #dce9e5;
+  --color-spruce-200: #b9d3cb;
+  --color-spruce-300: #8fb5aa;
+  --color-spruce-400: #5f9082;
+  --color-spruce-500: #3a6d5f;
+  --color-spruce-600: #2a5b4e;
+  --color-spruce-700: #1f4d43;
+  --color-spruce-800: #173d35;
+  --color-spruce-900: #10302a;
+  --color-spruce-950: #0a211d;
+
+  /* Progress / attention scale */
+  --color-pencil-50: #fef6df;
+  --color-pencil-100: #fcebb9;
+  --color-pencil-300: #f7d27a;
+  --color-pencil-400: #f5c75a;
+  --color-pencil-500: #f2b93b;
+  --color-pencil-600: #d99a17;
+  --color-pencil-700: #a87310;
+
+  /* Semantic surfaces and text */
+  --color-canvas: #f5f7f6;
+  --color-surface: #ffffff;
+  --color-sunken: #e8edea;
+  --color-ink: #1d2b27;
+  --color-ink-soft: #4a5a55;
+  --color-ink-faint: #6b7a75;
+  --color-line: #dce3e0;
+  --color-line-strong: #c3cdc9;
+
+  /* Semantic roles */
+  --color-brand: var(--color-spruce-700);
+  --color-brand-hover: var(--color-spruce-800);
+  --color-on-brand: #ffffff;
+
+  /* Status colours (each has a soft background for badges and alerts) */
+  --color-success: #2b7a58;
+  --color-success-soft: #e3f2ea;
+  --color-warning: #8a5d0c;
+  --color-warning-soft: #fdf1d3;
+  --color-danger: #b5483a;
+  --color-danger-hover: #9a3a2e;
+  --color-danger-soft: #fbecea;
+  --color-info: #3e5c8a;
+  --color-info-soft: #e7edf7;
+
+  /* Radius follows hierarchy: controls < cards < media stage */
+  --radius-control: 0.5rem;
+  --radius-card: 1.25rem;
+  --radius-stage: 1.375rem;
+
+  /* Shadows are tinted with the brand colour, never neutral grey */
+  --shadow-card: 0 0 34px -24px rgb(16 48 42 / 0.65);
+  --shadow-lift: 0 2px 4px rgb(16 48 42 / 0.06), 0 20px 36px -16px rgb(16 48 42 / 0.3);
+  --shadow-overlay: 0 4px 10px rgb(16 48 42 / 0.1), 0 28px 60px -12px rgb(16 48 42 / 0.4);
+
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+  --animate-fade-in: fade-in 160ms ease-out;
+  --animate-rise: rise 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-sheet: sheet 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+@keyframes sheet {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* ==========================================================================================
+   Base
+   ========================================================================================== */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-pencil-300);
+    color: var(--color-spruce-950);
+  }
+
+  /* One visible, consistent keyboard focus style for everything interactive */
+  :focus-visible {
+    outline: 2px solid var(--color-spruce-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  button,
+  [role='button'],
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ==========================================================================================
+   Utilities
+   ========================================================================================== */
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Hides the scrollbar but keeps scrolling (used for horizontal chip rows) */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ==========================================================================================
+   Video seek bar — a pencil-yellow stroke over a muted track.
+   `--seek` (0–100) is set inline by the player.
+   ========================================================================================== */
+.seek {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 1.5rem;
+  background: transparent;
+  cursor: pointer;
+}
+.seek::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--color-pencil-500) calc(var(--seek, 0) * 1%),
+    rgb(255 255 255 / 0.28) calc(var(--seek, 0) * 1%)
+  );
+}
+.seek::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.28);
+}
+.seek::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-pencil-500);
+}
+.seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 999px;
+  background: var(--color-pencil-500);
+  border: 2px solid var(--color-spruce-950);
+  transition: transform 120ms ease;
+}
+.seek::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-pencil-500);
+  border: 2px solid var(--color-spruce-950);
+}
+.seek:hover::-webkit-slider-thumb,
+.seek:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.25);
+}
+.seek:focus-visible {
+  outline: 2px solid var(--color-pencil-400);
+  outline-offset: 2px;
+}

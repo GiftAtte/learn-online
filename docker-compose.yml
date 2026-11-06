@@ -1,0 +1,56 @@
+# The only compose file. Two ways to use it:
+#   Everything in Docker:  docker compose up --build   then open http://localhost:8080
+#                          (seed demo data once: docker compose exec api npm run db:seed)
+#   Just the database, for local development:  docker compose up -d db   (npm run db:up)
+name: learnonline
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: learn
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-learn}
+      POSTGRES_DB: learnonline
+    # Published on localhost only, so `npm run dev` in api/ can reach it. Set DB_PORT if 5432 is taken.
+    ports:
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U learn -d learnonline"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    # Published on this machine only. On the server the reverse proxy for the API domain points here.
+    ports:
+      - "${API_BIND:-127.0.0.1:4001}:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://learn:${DB_PASSWORD:-learn}@db:5432/learnonline?schema=public
+      # The defaults below are for local use only. On a server, set DB_PASSWORD, JWT_SECRET and
+      # CLIENT_ORIGIN in the .env file next to this one (see DEPLOY.md).
+      JWT_SECRET: ${JWT_SECRET:-local-demo-secret-change-me-0123456789abcdef}
+      JWT_EXPIRES_IN: 1h
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:8080}
+      TRUST_PROXY: "1"
+
+  web:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api/v1}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      # WEB_BIND is "8080" locally; on the server it is "127.0.0.1:8085" so only the reverse proxy can reach it.
+      - "${WEB_BIND:-8080}:80"
+
+volumes:
+  pgdata:

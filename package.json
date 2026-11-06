@@ -1,0 +1,17 @@
+{
+  "name": "learnonline",
+  "private": true,
+  "description": "Online learning platform: React client, Express API, PostgreSQL. Scripts delegate to each package.",
+  "scripts": {
+    "setup": "npm --prefix api install && npm --prefix client install && npm --prefix e2e install",
+    "db:up": "docker compose up -d db",
+    "db:migrate": "npm --prefix api run db:deploy",
+    "db:seed": "npm --prefix api run db:seed",
+    "dev:api": "npm --prefix api run dev",
+    "dev:client": "npm --prefix client run dev",
+    "typecheck": "npm --prefix api run typecheck && npm --prefix client run typecheck",
+    "test": "npm --prefix api test && npm --prefix client test -- --run",
+    "test:e2e": "npm --prefix e2e test",
+    "build": "npm --prefix api run build && npm --prefix client run build"
+  }
+}
