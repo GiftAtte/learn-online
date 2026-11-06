@@ -38,7 +38,8 @@ src/
   components/                everything reusable on screen
     ui/                      primitives: Button, Input, Select, Badge, Card, Modal, FormModal, Tabs, ProgressBar...
     feedback/                Toaster, Alert, EmptyState, ErrorState, ConfirmDialog (useConfirm), PageLoader
-    layout/                  RootLayout, AppShell (top bar + mobile tab bar), PageHeader, Container, Logo
+    layout/                  RootLayout picks the frame: PublicLayout (header + footer shared with the landing page) for signed-out visitors,
+                             AppShell (sidebar, top bar, mobile tab bar) for signed-in people; PageHeader, Container, Logo
     data-display/            DataTable (cards on phones), Pagination, SearchInput, FilterChips, StatTile
     media/                   VideoPlayer
     courses/ lessons/ dashboard/ categories/ admin/
@@ -125,7 +126,7 @@ Corner radius follows hierarchy (controls 8px, cards 14px, video stage 22px), sh
 Navigation follows the screen and the person: signed-in learners and administrators get a left **sidebar** on desktop
 (the pencil bar marks the current page; administrators get their management links plus "View catalog"), a slim top bar
 with an account menu on tablets, and a **bottom tab bar** on phones. Signed-out visitors get a simple top bar with
-Sign in / Sign up. All of it lives in `components/layout/app-shell.tsx` and `sidebar.tsx`; the links per role are in `app/root-layout.tsx`.
+Sign in / Sign up. Signed-out visitors see `public-header.tsx` and `public-footer.tsx` (the same as the landing page); signed-in people see `app-shell.tsx` and `sidebar.tsx`. The links per role are in `components/layout/root-layout.tsx`.
 
 Open `/styleguide` (development only) to see every component and state.
 

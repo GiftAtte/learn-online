@@ -1,8 +1,7 @@
-import { BookOpen, FolderTree, GraduationCap, LayoutDashboard, Library, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { FolderTree, GraduationCap, LayoutDashboard, Library, Users, BookOpen } from 'lucide-react';
 import { AppShell } from '@/components/layout/app-shell';
+import { PublicLayout } from '@/components/layout/public-layout';
 import type { NavItem } from '@/core/types/ui.types';
-import { Button } from '@/components/ui/button';
 import { useSession, useSignOut } from '@/core/hooks/queries/use-auth';
 import { PATHS } from '@/router/paths';
 
@@ -13,8 +12,7 @@ const catalog: NavItem = {
   end: true,
 };
 
-const NAV: Record<'guest' | 'learner' | 'admin', NavItem[]> = {
-  guest: [catalog],
+const NAV: Record<'learner' | 'admin', NavItem[]> = {
   learner: [
     catalog,
     { to: PATHS.learner.myLearning, label: 'My learning', icon: GraduationCap },
@@ -30,30 +28,26 @@ const NAV: Record<'guest' | 'learner' | 'admin', NavItem[]> = {
   ],
 };
 
-/** The app frame, with navigation that depends on who is signed in. */
+/**
+ * The frame around every page that is not the landing page:
+ *  - signed out: the public frame (same header and footer as the landing page)
+ *  - signed in: the app frame (sidebar and account menu), with navigation that depends on the role
+ */
 export function RootLayout() {
   const { user, isAdmin } = useSession();
   const signOut = useSignOut();
 
+  if (!user) return <PublicLayout />;
+
   return (
     <AppShell
-      nav={NAV[!user ? 'guest' : isAdmin ? 'admin' : 'learner']}
-      user={
-        user
-          ? { name: user.name, email: user.email, roleLabel: isAdmin ? 'Administrator' : 'Learner' }
-          : null
-      }
+      nav={NAV[isAdmin ? 'admin' : 'learner']}
+      user={{
+        name: user.name,
+        email: user.email,
+        roleLabel: isAdmin ? 'Administrator' : 'Learner',
+      }}
       onSignOut={signOut}
-      guestActions={
-        <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm">
-            <Link to={PATHS.signIn}>Sign in</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link to={PATHS.signUp}>Sign up</Link>
-          </Button>
-        </div>
-      }
     />
   );
 }

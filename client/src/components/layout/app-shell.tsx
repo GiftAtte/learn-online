@@ -1,8 +1,6 @@
 import { LogOut } from 'lucide-react';
-import type { ReactNode } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { Avatar } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,19 +18,16 @@ import { PATHS } from '@/router/paths';
 
 interface AppShellProps {
   nav: NavItem[];
-  user: ShellUser | null;
+  user: ShellUser;
   onSignOut?: () => void;
-  /** Rendered in the top bar when no one is signed in (sign-in / sign-up buttons). */
-  guestActions?: ReactNode;
 }
 
 /**
- * The frame around every page.
- *  - Signed in, desktop (lg+): a sidebar with navigation and the account.
- *  - Signed in, tablet and phone: a slim top bar with the account menu, plus a bottom tab bar.
- *  - Signed out: a simple top bar with the catalog link and sign-in / sign-up buttons.
+ * The frame around every page for signed-in people (signed-out visitors get PublicLayout).
+ *  - Desktop (lg+): a sidebar with navigation and the account.
+ *  - Tablet and phone: a slim top bar with the account menu, plus a bottom tab bar.
  */
-export function AppShell({ nav, user, onSignOut, guestActions }: AppShellProps) {
+export function AppShell({ nav, user, onSignOut }: AppShellProps) {
   return (
     <div className="flex min-h-dvh">
       <a
@@ -42,77 +37,33 @@ export function AppShell({ nav, user, onSignOut, guestActions }: AppShellProps) 
         Skip to content
       </a>
 
-      {user && <Sidebar nav={nav} user={user} onSignOut={onSignOut} />}
+      <Sidebar nav={nav} user={user} onSignOut={onSignOut} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar
-          nav={nav}
-          user={user}
-          onSignOut={onSignOut}
-          guestActions={guestActions}
-          // With a sidebar, the top bar is only needed below `lg`.
-          className={user ? 'lg:hidden' : undefined}
-        />
+        <TopBar user={user} onSignOut={onSignOut} />
 
-        <main id="main" className={cn('flex-1 py-6 sm:py-10', user && 'pb-28 lg:pb-14')}>
-          {/* Signed-in pages fill the width next to the sidebar, with small margins on both sides. */}
-          <Container fluid={!!user}>
+        <main id="main" className="flex-1 py-6 pb-28 sm:py-10 lg:pb-14">
+          {/* Pages fill the width next to the sidebar, with small margins on both sides. */}
+          <Container fluid>
             <Outlet />
           </Container>
         </main>
 
-        {user && <BottomTabs nav={nav} />}
+        <BottomTabs nav={nav} />
       </div>
     </div>
   );
 }
 
-interface TopBarProps extends AppShellProps {
-  className?: string;
-}
-
-/** Sticky header: logo, inline links (signed-out only) and the account menu or sign-in buttons. */
-function TopBar({ nav, user, onSignOut, guestActions, className }: TopBarProps) {
+/** Sticky header below `lg` (where there is no sidebar): the logo and the account menu. */
+function TopBar({ user, onSignOut }: { user: ShellUser; onSignOut?: () => void }) {
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur-md',
-        className,
-      )}
-    >
+    <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur-md lg:hidden">
       <Container className="flex h-16 items-center justify-between gap-3 sm:gap-6">
         <Link to={PATHS.learner.catalog} aria-label="LearnOnline home" className="rounded-control">
           <Logo />
         </Link>
-
-        {!user && (
-          <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-            {nav.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  cn(
-                    'relative rounded-control px-3.5 py-2 text-[0.95rem] font-medium transition-colors',
-                    isActive ? 'text-ink' : 'text-ink-soft hover:text-ink',
-                    // The pencil underline marks where you are.
-                    isActive &&
-                      'after:absolute after:inset-x-3.5 after:-bottom-[1.1rem] after:h-[3px] after:rounded-full after:bg-pencil-500',
-                  )
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-        )}
-
-        {user ? (
-          <AccountMenu user={user} onSignOut={onSignOut} />
-        ) : (
-          (guestActions ?? <Button size="sm">Sign in</Button>)
-        )}
+        <AccountMenu user={user} onSignOut={onSignOut} />
       </Container>
     </header>
   );
@@ -144,7 +95,7 @@ function AccountMenu({ user, onSignOut }: { user: ShellUser; onSignOut?: () => v
   );
 }
 
-/** Phone and tablet navigation for signed-in people: the main destinations, one thumb away. */
+/** Phone and tablet navigation: the main destinations, one thumb away. */
 function BottomTabs({ nav }: { nav: NavItem[] }) {
   return (
     <nav
