@@ -87,7 +87,13 @@ straight to Cloudinary, so big videos never pass through our server.
    CLOUDINARY_API_KEY=...
    CLOUDINARY_API_SECRET=...
    ```
-3. Restart the API so it reads them: `cd /opt/learnonline && docker compose up -d api`.
+3. Restart the API so it reads them. The server has pre-built images and no source code, so tell compose which image tag is
+   running and not to build:
+   ```
+   cd /opt/learnonline
+   IMAGE_TAG=$(docker inspect learnonline-api-1 --format '{{.Config.Image}}' | cut -d: -f2) docker compose up -d --no-build api
+   ```
+   (A plain `docker compose up -d api` fails with "path /opt/learnonline/api not found", because it tries to build.)
 
 Until they are set, the upload buttons answer "File uploads are not set up yet" and links keep working.
 The API secret stays on the server and is never sent to the browser.
