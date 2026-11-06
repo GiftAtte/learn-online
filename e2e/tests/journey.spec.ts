@@ -7,12 +7,12 @@ const learner = {
   password: 'Passw0rd123',
 };
 
-const signIn = async (page: Page, email: string, password: string) => {
+const signIn = async (page: Page, email: string, password: string, home = '/learner/catalog') => {
   await page.goto('/sign-in');
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL('/learner/catalog');
+  await expect(page).toHaveURL(home);
 };
 
 test.describe.serial('learner journey', () => {
@@ -49,7 +49,8 @@ test.describe.serial('learner journey', () => {
   test('an administrator finds the new learner and sees their lesson progress', async ({
     page,
   }) => {
-    await signIn(page, 'admin@learnonline.dev', 'Admin123!');
+    // Administrators land on their dashboard, not on the learner catalog.
+    await signIn(page, 'admin@learnonline.dev', 'Admin123!', '/admin');
     await page.goto('/admin/learners');
     await page
       .getByRole('searchbox')

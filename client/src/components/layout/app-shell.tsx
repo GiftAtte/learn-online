@@ -40,7 +40,7 @@ export function AppShell({ nav, user, onSignOut }: AppShellProps) {
       <Sidebar nav={nav} user={user} onSignOut={onSignOut} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar user={user} onSignOut={onSignOut} />
+        <TopBar user={user} home={nav[0]?.to ?? PATHS.learner.catalog} onSignOut={onSignOut} />
 
         <main id="main" className="flex-1 py-6 pb-28 sm:py-10 lg:pb-14">
           {/* Pages fill the width next to the sidebar, with small margins on both sides. */}
@@ -56,11 +56,20 @@ export function AppShell({ nav, user, onSignOut }: AppShellProps) {
 }
 
 /** Sticky header below `lg` (where there is no sidebar): the logo and the account menu. */
-function TopBar({ user, onSignOut }: { user: ShellUser; onSignOut?: () => void }) {
+function TopBar({
+  user,
+  home,
+  onSignOut,
+}: {
+  user: ShellUser;
+  /** Where the logo leads: the person's own home. */
+  home: string;
+  onSignOut?: () => void;
+}) {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur-md lg:hidden">
       <Container className="flex h-16 items-center justify-between gap-3 sm:gap-6">
-        <Link to={PATHS.learner.catalog} aria-label="LearnOnline home" className="rounded-control">
+        <Link to={home} aria-label="LearnOnline home" className="rounded-control">
           <Logo />
         </Link>
         <AccountMenu user={user} onSignOut={onSignOut} />

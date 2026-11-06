@@ -9,7 +9,7 @@ import { PublicFooter } from '@/components/layout/public-footer';
 import { PublicHeader } from '@/components/layout/public-header';
 import { Button } from '@/components/ui/button';
 import { useSession } from '@/core/hooks/queries/use-auth';
-import { PATHS } from '@/router/paths';
+import { homeFor, PATHS } from '@/router/paths';
 
 /** Short promises under the main buttons. */
 const PROMISES = ['Free to join', 'No card needed', 'Works on phone and computer'];
@@ -23,7 +23,7 @@ const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
  * People who are already signed in get links into the app instead of the sign-up buttons.
  */
 export default function LandingPage() {
-  const { user } = useSession();
+  const { user, isAdmin } = useSession();
   const { hash } = useLocation();
 
   // The header's "How it works" and "What you get" links point to #sections of this page. The router
@@ -56,7 +56,9 @@ export default function LandingPage() {
                 {user ? (
                   <>
                     <Button asChild size="lg" variant="accent">
-                      <Link to={PATHS.learner.catalog}>Go to the catalog</Link>
+                      <Link to={homeFor(isAdmin)}>
+                        {isAdmin ? 'Open the dashboard' : 'Go to the catalog'}
+                      </Link>
                     </Button>
                     <Button
                       asChild
@@ -64,7 +66,9 @@ export default function LandingPage() {
                       variant="ghost"
                       className="text-white hover:bg-white/10 hover:text-white"
                     >
-                      <Link to={PATHS.learner.myLearning}>My learning</Link>
+                      <Link to={isAdmin ? PATHS.learner.catalog : PATHS.learner.myLearning}>
+                        {isAdmin ? 'View the catalog' : 'My learning'}
+                      </Link>
                     </Button>
                   </>
                 ) : (
@@ -136,17 +140,25 @@ export default function LandingPage() {
         <section className="px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8">
           <div className="lp-hero-bg relative mx-auto flex max-w-6xl flex-col items-start gap-6 overflow-hidden rounded-stage p-8 text-white sm:p-14">
             <h2 className="relative max-w-2xl text-3xl font-bold tracking-tight sm:text-5xl">
-              {user ? 'Pick up your next lesson' : 'Pick a course and start today'}
+              {!user
+                ? 'Pick a course and start today'
+                : isAdmin
+                  ? 'Back to your dashboard'
+                  : 'Pick up your next lesson'}
             </h2>
             <p className="relative max-w-xl text-spruce-100">
               {user
-                ? 'Your progress is saved. Open the catalog to continue or start something new.'
+                ? isAdmin
+                  ? 'Manage courses, lessons and learners from your dashboard.'
+                  : 'Your progress is saved. Open the catalog to continue or start something new.'
                 : 'Create an account in under a minute. The first lesson is one click away.'}
             </p>
             <div className="relative flex flex-wrap gap-3">
               {user ? (
                 <Button asChild size="lg" variant="accent">
-                  <Link to={PATHS.learner.catalog}>Go to the catalog</Link>
+                  <Link to={homeFor(isAdmin)}>
+                    {isAdmin ? 'Open the dashboard' : 'Go to the catalog'}
+                  </Link>
                 </Button>
               ) : (
                 <>

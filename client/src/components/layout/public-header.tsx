@@ -4,7 +4,7 @@ import { Logo } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
 import { useSession } from '@/core/hooks/queries/use-auth';
 import { cn } from '@/core/lib/cn';
-import { PATHS } from '@/router/paths';
+import { homeFor, PATHS } from '@/router/paths';
 
 interface MenuItem {
   label: string;
@@ -51,7 +51,7 @@ function useMenuItems(signedIn: boolean): MenuItem[] {
  * The menu is shown from tablet width up; on phones the header keeps only the logo and the buttons.
  */
 export function PublicHeader() {
-  const { user } = useSession();
+  const { user, isAdmin } = useSession();
   const items = useMenuItems(!!user);
 
   return (
@@ -85,7 +85,7 @@ export function PublicHeader() {
         <div className="flex items-center gap-2">
           {user ? (
             <Button asChild variant="accent" size="sm">
-              <Link to={PATHS.learner.catalog}>Open the app</Link>
+              <Link to={homeFor(isAdmin)}>{isAdmin ? 'Open the dashboard' : 'Open the app'}</Link>
             </Button>
           ) : (
             <>
