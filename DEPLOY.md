@@ -72,5 +72,4 @@ registry).
 
 After the first deploy, create the demo data (2 accounts, 6 courses, 18 lessons with free sample videos):
 `cd /opt/learnonline && docker compose exec api npm run db:seed`. It deletes all existing data first, so run it only on a fresh database.
-Set `SEED_ADMIN_PASSWORD` and `SEED_LEARNER_PASSWORD` (`docker compose exec -e ... api npm run db:seed`) to avoid the public demo passwords.
-(the demo accounts have public passwords, so skip this on a real site).
+Set `SEED_ADMIN_PASSWORD` and `SEED_LEARNER_PASSWORD` (`docker compose exec -e ... api npm run db:seed`) to avoid the public demo passwords. The demo passwords are public, so on a real site always set your own.
