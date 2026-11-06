@@ -1,14 +1,10 @@
 import { cn } from '@/core/lib/cn';
 import { initialsOf } from '@/core/lib/format';
 
-const TINTS = [
-  'bg-spruce-100 text-spruce-800',
-  'bg-pencil-100 text-pencil-700',
-  'bg-info-soft text-info',
-  'bg-success-soft text-success',
-];
-
-/** Initials avatar. The tint is derived from the name so a person always looks the same. */
+/**
+ * Initials avatar. It uses the app's one soft-green tile colour (the same as the category icons and the
+ * stat tiles), so every person looks consistent instead of a different colour for each name.
+ */
 export function Avatar({
   name,
   size = 'md',
@@ -18,7 +14,6 @@ export function Avatar({
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }) {
-  const tint = TINTS[[...name].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % TINTS.length];
   return (
     <span
       aria-hidden
@@ -27,7 +22,7 @@ export function Avatar({
         size === 'sm' && 'size-8 text-xs',
         size === 'md' && 'size-10 text-sm',
         size === 'lg' && 'size-14 text-lg',
-        tint,
+        'bg-spruce-50 text-spruce-600',
         className,
       )}
     >

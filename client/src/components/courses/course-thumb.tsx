@@ -8,7 +8,7 @@ import { useState } from 'react';
 export function CourseThumb({ src }: { src?: string | null }) {
   const [failed, setFailed] = useState(false);
   return (
-    <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-[0.7rem] bg-spruce-100 text-spruce-400">
+    <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-[0.7rem] bg-spruce-50 text-spruce-600">
       {src && !failed ? (
         <img
           src={src}
