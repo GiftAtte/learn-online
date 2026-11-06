@@ -24,6 +24,7 @@ export function LessonFormModal({ courseId, existing, onClose }: Props) {
       title: existing?.title ?? '',
       description: existing?.description ?? '',
       videoUrl: existing?.videoUrl ?? '',
+      thumbnailUrl: existing?.thumbnailUrl ?? '',
       durationSeconds: existing?.durationSeconds ?? (undefined as unknown as number),
     },
   });
@@ -66,6 +67,18 @@ export function LessonFormModal({ courseId, existing, onClose }: Props) {
           inputMode="url"
           placeholder="https://…/lesson.mp4"
           {...form.register('videoUrl')}
+        />
+      </FormField>
+      <FormField
+        label="Thumbnail address"
+        hint="Optional. A link to an image shown for this lesson on the course page."
+        error={errors.thumbnailUrl?.message}
+      >
+        <Input
+          type="url"
+          inputMode="url"
+          placeholder="https://…/thumbnail.jpg"
+          {...form.register('thumbnailUrl')}
         />
       </FormField>
       <FormField

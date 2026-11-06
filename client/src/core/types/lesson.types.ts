@@ -7,6 +7,8 @@ export interface LessonSummary {
   title: string;
   order: number;
   durationSeconds: number;
+  /** Picture for the lesson card; shown to everyone, unlike the video address. */
+  thumbnailUrl?: string | null;
   completed: boolean;
   lastPositionSeconds: number;
   progressPercent: number;
@@ -34,5 +36,7 @@ export interface LessonInput {
   description: string;
   /** Must be an http(s) link. */
   videoUrl: string;
+  /** Optional picture for the lesson card (an http(s) link); empty removes it. */
+  thumbnailUrl?: string;
   durationSeconds: number;
 }

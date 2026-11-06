@@ -2,8 +2,9 @@ import { Check, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ProgressBar } from '@/components/ui/progress';
 import { cn } from '@/core/lib/cn';
-import { formatDuration } from '@/core/lib/format';
 import type { LessonSummary } from '@/core/types/lesson.types';
+import { formatDuration } from '@/core/lib/format';
+import { LessonThumb } from './lesson-thumb';
 
 interface LessonCardProps {
   lesson: LessonSummary;
@@ -26,16 +27,26 @@ export function LessonCard({ lesson, to, current, locked, last }: LessonCardProp
 
   const body = (
     <>
+      <LessonThumb
+        src={lesson.thumbnailUrl}
+        durationSeconds={lesson.durationSeconds}
+        completed={lesson.completed}
+        locked={locked}
+      />
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <p className={cn('leading-snug font-medium', current && 'text-ink')}>{lesson.title}</p>
-        <p className="flex flex-wrap items-center gap-x-3 text-sm text-ink-faint tnum">
-          <span>{formatDuration(lesson.durationSeconds)}</span>
-          {lesson.completed && <span className="font-medium text-success">Completed</span>}
-          {started && (
-            <span className="font-medium text-pencil-700">{lesson.progressPercent}% watched</span>
-          )}
-          {locked && <span>Enroll to unlock</span>}
+        <p className={cn('leading-snug font-medium', current && 'text-ink')}>
+          {lesson.title}
+          <span className="sr-only">, {formatDuration(lesson.durationSeconds)}</span>
         </p>
+        {(lesson.completed || started || locked) && (
+          <p className="flex flex-wrap items-center gap-x-3 text-sm text-ink-faint tnum">
+            {lesson.completed && <span className="font-medium text-success">Completed</span>}
+            {started && (
+              <span className="font-medium text-pencil-700">{lesson.progressPercent}% watched</span>
+            )}
+            {locked && <span>Enroll to unlock</span>}
+          </p>
+        )}
         {started && (
           <ProgressBar
             value={lesson.progressPercent}

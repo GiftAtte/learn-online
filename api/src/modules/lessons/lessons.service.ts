@@ -39,7 +39,7 @@ export const getLessonDetail = async (lessonId: string, viewer: Viewer) => {
     prisma.lesson.findMany({
       where: { courseId: lesson.courseId },
       orderBy: { order: 'asc' },
-      select: { id: true, title: true, order: true, durationSeconds: true },
+      select: { id: true, title: true, order: true, durationSeconds: true, thumbnailUrl: true },
     }),
     prisma.lessonProgress.findMany({ where: { userId: viewer.id, lesson: { courseId: lesson.courseId } } }),
   ]);

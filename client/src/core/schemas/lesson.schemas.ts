@@ -13,6 +13,9 @@ export const lessonSchema = z.object({
     .min(1, 'Add a short description')
     .max(2000, 'Use 2,000 characters or fewer'),
   videoUrl: z.url('Enter a full web address, starting with https://'),
+  thumbnailUrl: z
+    .union([z.literal(''), z.url('Enter a full web address, starting with https://')])
+    .optional(),
   durationSeconds: z
     .number({ error: 'Enter the video length in seconds' })
     .int('Use whole seconds')

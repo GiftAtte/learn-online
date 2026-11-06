@@ -9,6 +9,11 @@ export const createLessonSchema = z.object({
   title: z.string().trim().min(3).max(120),
   description: z.string().trim().min(1).max(2000),
   videoUrl,
+  /** Optional picture for the lesson card; null removes it. */
+  thumbnailUrl: z
+    .url({ protocol: /^https?$/ })
+    .max(2048)
+    .nullish(),
   durationSeconds: z
     .number()
     .int()

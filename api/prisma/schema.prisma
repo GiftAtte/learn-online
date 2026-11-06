@@ -61,6 +61,8 @@ model Lesson {
   title           String
   description     String
   videoUrl        String
+  /// Picture shown for the lesson on the course page; optional.
+  thumbnailUrl    String?
   durationSeconds Int
   order           Int
   createdAt       DateTime @default(now())

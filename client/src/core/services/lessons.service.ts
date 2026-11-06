@@ -5,6 +5,12 @@
 import { api } from '@/core/api/client';
 import type { Lesson, LessonDetail, LessonInput } from '@/core/types/lesson.types';
 
+/** An empty thumbnail box means "no picture", which the API expects as null. */
+const withThumbnail = (input: LessonInput) => ({
+  ...input,
+  thumbnailUrl: input.thumbnailUrl || null,
+});
+
 /**
  * Gets one lesson with the learner's saved position, the other lessons in the course and the next and previous lesson.
  * GET /lessons/:id. Enrolled learners and administrators only.
@@ -19,7 +25,7 @@ export const getLessonById = async (lessonId: string, signal?: AbortSignal) =>
  * @param courseId the course to add the lesson to
  */
 export const createLesson = async (courseId: string, input: LessonInput) =>
-  (await api.post<Lesson>(`/courses/${courseId}/lessons`, input)).data;
+  (await api.post<Lesson>(`/courses/${courseId}/lessons`, withThumbnail(input))).data;
 
 /**
  * Updates a lesson's details (not its order; use `reorderLessons` for that).
@@ -27,7 +33,7 @@ export const createLesson = async (courseId: string, input: LessonInput) =>
  * @param id the lesson to update
  */
 export const updateLesson = async (id: string, input: LessonInput) =>
-  (await api.patch<Lesson>(`/lessons/${id}`, input)).data;
+  (await api.patch<Lesson>(`/lessons/${id}`, withThumbnail(input))).data;
 
 /**
  * Deletes a lesson and every learner's progress on it.
