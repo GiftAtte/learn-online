@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { MediaUploadButton } from '@/components/media/media-upload-button';
 import { FormField, FormModal, Input, Textarea } from '@/components/ui';
+import { videoPosterUrl } from '@/core/lib/media';
 import { handleSubmitError } from '@/core/lib/forms';
 import type { Lesson } from '@/core/types/lesson.types';
 import { useCreateLesson, useUpdateLesson } from '@/core/hooks/queries/use-lessons';
@@ -59,7 +61,7 @@ export function LessonFormModal({ courseId, existing, onClose }: Props) {
       <FormField
         label="Video address"
         required
-        hint="A direct link to an MP4 video file."
+        hint="Paste a link to an MP4 file, or upload a video."
         error={errors.videoUrl?.message}
       >
         <Input
@@ -68,10 +70,26 @@ export function LessonFormModal({ courseId, existing, onClose }: Props) {
           placeholder="https://…/lesson.mp4"
           {...form.register('videoUrl')}
         />
+        <MediaUploadButton
+          kind="video"
+          label="Upload a video"
+          onUploaded={(media) => {
+            form.setValue('videoUrl', media.url, { shouldValidate: true });
+            // Cloudinary reads the length from the file, so nobody has to type it.
+            if (media.durationSeconds) {
+              form.setValue('durationSeconds', media.durationSeconds, { shouldValidate: true });
+            }
+            // No thumbnail yet? Use a picture taken from the video itself.
+            const poster = videoPosterUrl(media.url);
+            if (poster && !form.getValues('thumbnailUrl')) {
+              form.setValue('thumbnailUrl', poster, { shouldValidate: true });
+            }
+          }}
+        />
       </FormField>
       <FormField
         label="Thumbnail address"
-        hint="Optional. A link to an image shown for this lesson on the course page."
+        hint="Optional. Paste a link to an image, or upload one. It is shown for this lesson on the course page."
         error={errors.thumbnailUrl?.message}
       >
         <Input
@@ -80,11 +98,16 @@ export function LessonFormModal({ courseId, existing, onClose }: Props) {
           placeholder="https://…/thumbnail.jpg"
           {...form.register('thumbnailUrl')}
         />
+        <MediaUploadButton
+          kind="image"
+          label="Upload an image"
+          onUploaded={(media) => form.setValue('thumbnailUrl', media.url, { shouldValidate: true })}
+        />
       </FormField>
       <FormField
         label="Video length (seconds)"
         required
-        hint="Used for progress and completion tracking."
+        hint="Used for progress and completion tracking. Filled in for you when you upload a video."
         error={errors.durationSeconds?.message}
       >
         <Input

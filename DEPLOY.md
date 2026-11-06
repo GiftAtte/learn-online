@@ -31,7 +31,7 @@ built with `VITE_API_URL=https://learnonline-api.royaliqtech.com/api/v1`.
 
 `/opt/learnonline/` holds only two files: `docker-compose.yml` (sent by every deploy) and `.env` (secrets, never in
 git): `DB_PASSWORD`, `JWT_SECRET`, `CLIENT_ORIGIN`, `VITE_API_URL`, `WEB_BIND`, `API_BIND` and
-`REGISTRY=ghcr.io/giftatte/learn-online`. No source code and no build tools are needed there.
+`REGISTRY=ghcr.io/giftatte/learn-online`, plus `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` for uploads (see "File uploads" below). No source code and no build tools are needed there.
 
 ## One-time setup
 
@@ -73,3 +73,21 @@ registry).
 After the first deploy, create the demo data (2 accounts, 13 courses, 38 lessons with free sample videos):
 `cd /opt/learnonline && docker compose exec api npm run db:seed`. It deletes all existing data first, so run it only on a fresh database.
 Set `SEED_ADMIN_PASSWORD` and `SEED_LEARNER_PASSWORD` (`docker compose exec -e ... api npm run db:seed`) to avoid the public demo passwords. The demo passwords are public, so on a real site always set your own.
+
+## File uploads (Cloudinary)
+
+Administrators can upload lesson videos and cover images in the course and lesson forms, instead of pasting links.
+Files are stored in Cloudinary (free plan is enough). The server only signs the upload; the browser sends the file
+straight to Cloudinary, so big videos never pass through our server.
+
+1. Create a free account at https://cloudinary.com. On the dashboard copy the **Cloud name**, **API key** and **API secret**.
+2. Add them to `/opt/learnonline/.env` on the server:
+   ```
+   CLOUDINARY_CLOUD_NAME=...
+   CLOUDINARY_API_KEY=...
+   CLOUDINARY_API_SECRET=...
+   ```
+3. Restart the API so it reads them: `cd /opt/learnonline && docker compose up -d api`.
+
+Until they are set, the upload buttons answer "File uploads are not set up yet" and links keep working.
+The API secret stays on the server and is never sent to the browser.

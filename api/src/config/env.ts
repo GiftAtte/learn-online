@@ -15,6 +15,11 @@ const schema = z.object({
   JWT_EXPIRES_IN: z.string().default('1h'),
   CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
   // Number of reverse proxies in front of the API (0 = none). Needed so rate limiting sees real client IPs.
+  // Cloudinary stores uploaded videos and images. All three are needed for uploads; without them the
+  // upload buttons explain that uploads are not set up, and links to files still work.
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
   TRUST_PROXY: z.coerce.number().int().min(0).default(0),
 });
 
