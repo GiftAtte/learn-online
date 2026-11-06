@@ -64,6 +64,7 @@ export default function CatalogPage() {
 
   return (
     <Page
+      hero
       title="Find your next course"
       description="Short video lessons you can finish between everything else."
     >
