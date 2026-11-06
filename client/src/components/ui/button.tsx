@@ -6,7 +6,7 @@ import { Spinner } from './spinner';
 
 export const buttonStyles = cva(
   [
-    'inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-control font-medium whitespace-nowrap select-none',
+    'inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap select-none',
     'transition-[background-color,color,box-shadow,transform] duration-150 active:translate-y-px',
     'disabled:pointer-events-none disabled:opacity-50',
   ],
@@ -21,9 +21,9 @@ export const buttonStyles = cva(
         danger: 'bg-danger text-white hover:bg-danger-hover',
       },
       size: {
-        sm: 'h-9 px-3 text-sm',
-        md: 'h-11 px-4 text-[0.95rem]',
-        lg: 'h-12 px-6 text-base',
+        sm: 'h-9 px-4 text-sm',
+        md: 'h-11 px-5 text-[0.95rem]',
+        lg: 'h-12 px-7 text-base',
         icon: 'size-11',
         'icon-sm': 'size-9',
       },
