@@ -119,11 +119,14 @@ jobs:
 
       # The only file the server needs from the repo. Its .env (secrets) is never touched.
       - name: Send the compose file
-        run: scp docker-compose.yml "server:$APP_DIR/docker-compose.yml"
+        run: |
+          APP_DIR=$(printf %s "$APP_DIR" | tr -d '[:space:]') # a pasted secret may end with a line break
+          scp docker-compose.yml "server:$APP_DIR/docker-compose.yml"
 
       # A short-lived token lets the server download the images, then it is removed again.
       - name: Download the images and restart
         run: |
+          APP_DIR=$(printf %s "$APP_DIR" | tr -d '[:space:]') # a pasted secret may end with a line break
           echo "${{ secrets.GITHUB_TOKEN }}" | ssh server "docker login ghcr.io -u ${{ github.actor }} --password-stdin"
           ssh server "cd $APP_DIR && export IMAGE_TAG=$TAG && docker compose pull api web && docker compose up -d --no-build --remove-orphans && docker image prune -f && docker logout ghcr.io"
 
