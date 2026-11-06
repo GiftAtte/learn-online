@@ -131,9 +131,13 @@ async function main() {
   await prisma.category.deleteMany();
   await prisma.user.deleteMany();
 
+  // The demo passwords are public (they are in the README), so on a real server set your own:
+  //   SEED_ADMIN_PASSWORD=... SEED_LEARNER_PASSWORD=... npm run db:seed
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? 'Admin123!';
+  const learnerPassword = process.env.SEED_LEARNER_PASSWORD ?? 'Learner123!';
   const [adminHash, learnerHash] = await Promise.all([
-    hashPassword('Admin123!'),
-    hashPassword('Learner123!'),
+    hashPassword(adminPassword),
+    hashPassword(learnerPassword),
   ]);
   await prisma.user.create({
     data: { name: 'Ada Admin', email: 'admin@learnonline.dev', passwordHash: adminHash, role: 'ADMIN' },
@@ -193,7 +197,12 @@ async function main() {
   console.log(
     `Seeded ${courses.length} courses with ${lessonCount} lessons from ${Object.keys(VIDEOS).length} videos.`,
   );
-  console.log('Admin: admin@learnonline.dev / Admin123!  Learner: learner@learnonline.dev / Learner123!');
+  const custom = process.env.SEED_ADMIN_PASSWORD || process.env.SEED_LEARNER_PASSWORD;
+  console.log(
+    custom
+      ? 'Accounts: admin@learnonline.dev and learner@learnonline.dev (passwords from the environment)'
+      : 'Admin: admin@learnonline.dev / Admin123!  Learner: learner@learnonline.dev / Learner123!',
+  );
 }
 
 main()
