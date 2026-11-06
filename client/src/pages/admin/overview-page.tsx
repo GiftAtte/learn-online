@@ -1,6 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
-import { BookOpen, GraduationCap, Percent, Users } from 'lucide-react';
+import { ArrowRight, BookOpen, GraduationCap, Percent, Users } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   DataTable,
   NumberCell,
@@ -13,7 +14,7 @@ import {
 } from '@/components/data-display';
 import { QueryBoundary } from '@/components/feedback';
 import { Page, Section, SectionCard } from '@/components/layout';
-import { Skeleton } from '@/components/ui';
+import { Button, Skeleton } from '@/components/ui';
 import { EnrollmentsByCourse } from '@/components/admin/enrollments-by-course';
 import { RecentEnrollments } from '@/components/admin/recent-enrollments';
 import { CourseThumb } from '@/components/courses/course-thumb';
@@ -23,6 +24,9 @@ import { pluralize } from '@/core/lib/format';
 import type { AdminCourseRow } from '@/core/types/dashboard.types';
 import { NoResultsState } from '@/components/feedback/no-results-state';
 import { link, PATHS } from '@/router/paths';
+
+/** How many of the newest courses the activity table shows. */
+const LATEST_COURSES = 10;
 
 const STATUS_OPTIONS = [
   { value: 'published', label: 'Published' },
@@ -118,7 +122,10 @@ export default function AdminOverviewPage() {
         }
       >
         {({ summary, courses, recentEnrollments }) => {
-          const rows = filterRows(courses);
+          // Courses arrive newest first; the overview only shows the latest few (search and
+          // filters still look through all of them, the full list lives under Courses).
+          const matches = filterRows(courses);
+          const rows = matches.slice(0, LATEST_COURSES);
           // Category filter choices come from the courses themselves.
           const categoryOptions = [
             ...new Map(courses.map((c) => [c.category.id, c.category.name])),
@@ -158,7 +165,7 @@ export default function AdminOverviewPage() {
 
               <Section
                 title="Course activity"
-                description="Progress and completion for every course"
+                description="Progress and completion for the latest courses"
               >
                 <DataTable
                   caption="Course activity"
@@ -187,7 +194,17 @@ export default function AdminOverviewPage() {
                           />
                         </>
                       }
-                      summary={pluralize(rows.length, 'course')}
+                      action={
+                        <Button variant="secondary" size="sm" asChild>
+                          <Link
+                            to={PATHS.admin.courses}
+                            aria-label={`View more: all ${pluralize(courses.length, 'course')}`}
+                          >
+                            View more
+                            <ArrowRight className="size-4" aria-hidden />
+                          </Link>
+                        </Button>
+                      }
                       onClear={hasFilters ? clearFilters : undefined}
                     />
                   }

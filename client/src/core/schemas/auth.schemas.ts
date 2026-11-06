@@ -16,3 +16,18 @@ export const signUpSchema = z.object({
     .regex(/[A-Za-z]/, 'Include at least one letter')
     .regex(/\d/, 'Include at least one number'),
 });
+
+export const profileSchema = z.object({
+  name: z.string().trim().min(2, 'Enter your name (at least 2 characters)').max(80, 'Use 80 characters or fewer'),
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Enter your current password'),
+    newPassword: signUpSchema.shape.password,
+    confirmPassword: z.string().min(1, 'Type the new password again'),
+  })
+  .refine((v) => v.newPassword === v.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'The two passwords don’t match',
+  });

@@ -8,13 +8,15 @@ interface LessonPathProps {
   currentId?: string;
   /** Not enrolled: every lesson shows a lock instead of linking. */
   locked?: boolean;
+  /** Smaller pictures, for a narrow side column (the list beside the video). */
+  compact?: boolean;
 }
 
 /**
  * A course's lessons as the numbered path (nodes joined by a line).
  * Used on the course page and beside the video, so both show lessons identically.
  */
-export function LessonPath({ lessons, currentId, locked }: LessonPathProps) {
+export function LessonPath({ lessons, currentId, locked, compact }: LessonPathProps) {
   return (
     <ol>
       {lessons.map((lesson, index) => (
@@ -24,6 +26,7 @@ export function LessonPath({ lessons, currentId, locked }: LessonPathProps) {
           to={link(PATHS.learner.lesson, { lessonId: lesson.id })}
           current={lesson.id === currentId}
           locked={locked}
+          compact={compact}
           last={index === lessons.length - 1}
         />
       ))}

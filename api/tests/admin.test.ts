@@ -101,3 +101,38 @@ describe('admin learner detail', () => {
     expect((await api().get('/api/v1/dashboard/admin/learners/not-a-uuid').set(admin.auth)).status).toBe(400);
   });
 });
+
+describe('admin course activity', () => {
+  it('lists enrolled learners with progress, and per-lesson completion counts', async () => {
+    const admin = await createUser('ADMIN');
+    const a = await createUser('LEARNER');
+    const b = await createUser('LEARNER', 'learner2@test.dev');
+    const course = await createCourse();
+    const l1 = await createLesson(course.id, 1, 100);
+    await createLesson(course.id, 2, 200);
+    for (const u of [a, b]) await api().post(`/api/v1/courses/${course.id}/enroll`).set(u.auth);
+    await api()
+      .put(`/api/v1/lessons/${l1.id}/progress`)
+      .set(a.auth)
+      .send({ positionSeconds: 100, completed: true });
+
+    const res = await api().get(`/api/v1/dashboard/admin/courses/${course.id}`).set(admin.auth);
+    expect(res.status).toBe(200);
+    expect(res.body.data.summary).toMatchObject({ enrolled: 2, inProgress: 1, notStarted: 1, completed: 0 });
+    expect(res.body.data.lessons.map((l: { completedLearners: number }) => l.completedLearners)).toEqual([1, 0]);
+    const mine = res.body.data.learners.find((l: { userId: string }) => l.userId === a.user.id);
+    expect(mine).toMatchObject({ completedLessons: 1, progressPercent: 50, status: 'IN_PROGRESS' });
+  });
+
+  it('is admin-only and 404s for an unknown course', async () => {
+    const admin = await createUser('ADMIN');
+    const learner = await createUser('LEARNER');
+    const course = await createCourse();
+    const url = `/api/v1/dashboard/admin/courses/${course.id}`;
+    expect((await api().get(url).set(learner.auth)).status).toBe(403);
+    expect(
+      (await api().get('/api/v1/dashboard/admin/courses/00000000-0000-4000-8000-000000000000').set(admin.auth))
+        .status,
+    ).toBe(404);
+  });
+});

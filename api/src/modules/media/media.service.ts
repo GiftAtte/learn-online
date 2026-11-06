@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { env } from '../../config/env';
 import { AppError } from '../../utils/AppError';
+import { getSettings } from '../settings/settings.service';
 import type { SignatureInput } from './media.schemas';
 
 /**
@@ -10,10 +11,10 @@ import type { SignatureInput } from './media.schemas';
  * change the folder or the allowed file types.
  */
 
-/** Where each kind of file is stored in Cloudinary, and which formats it accepts. */
+/** Where each kind of file is stored in Cloudinary. The formats it accepts are an administrator setting. */
 const RULES = {
-  video: { folder: 'learnonline/videos', allowedFormats: 'mp4,webm,mov' },
-  image: { folder: 'learnonline/images', allowedFormats: 'jpg,jpeg,png,webp,gif' },
+  video: { folder: 'learnonline/videos' },
+  image: { folder: 'learnonline/images' },
 } as const;
 
 /**
@@ -31,7 +32,7 @@ export const signParams = (params: Record<string, string | number>, apiSecret: s
 };
 
 /** Everything the browser needs to upload one file straight to Cloudinary. */
-export const createUploadSignature = ({ kind }: SignatureInput) => {
+export const createUploadSignature = async ({ kind }: SignatureInput) => {
   const {
     CLOUDINARY_CLOUD_NAME: cloudName,
     CLOUDINARY_API_KEY: apiKey,
@@ -41,7 +42,10 @@ export const createUploadSignature = ({ kind }: SignatureInput) => {
     throw AppError.unavailable('File uploads are not set up yet. Paste a link to the file instead.');
   }
 
-  const { folder, allowedFormats } = RULES[kind];
+  const { folder } = RULES[kind];
+  const settings = await getSettings();
+  const allowedFormats = (kind === 'video' ? settings.videoFormats : settings.imageFormats).join(',');
+  const maxMegabytes = kind === 'video' ? settings.videoMaxMegabytes : settings.imageMaxMegabytes;
   const timestamp = Math.floor(Date.now() / 1000);
   // These are exactly the settings the browser must send back; changing any of them breaks the signature.
   const signature = signParams({ allowed_formats: allowedFormats, folder, timestamp }, apiSecret);
@@ -53,6 +57,7 @@ export const createUploadSignature = ({ kind }: SignatureInput) => {
     timestamp,
     folder,
     allowedFormats,
+    maxMegabytes,
     signature,
   };
 };

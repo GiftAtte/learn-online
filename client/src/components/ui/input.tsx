@@ -1,4 +1,5 @@
-import type { ComponentProps } from 'react';
+import type { LucideIcon } from 'lucide-react';
+import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/core/lib/cn';
 import { useFieldControl } from './form-field';
 
@@ -12,9 +13,39 @@ export const fieldStyles = [
   'disabled:cursor-not-allowed disabled:bg-sunken disabled:text-ink-faint',
 ];
 
-export function Input({ className, ...props }: ComponentProps<'input'>) {
+interface InputProps extends ComponentProps<'input'> {
+  /** A small icon inside the left edge of the field, e.g. an envelope for an email address. */
+  icon?: LucideIcon;
+  /** Something inside the right edge, e.g. a show/hide button. It stays clickable. */
+  trailing?: ReactNode;
+}
+
+/**
+ * A text input. Pass `icon` for a leading icon and `trailing` for a control at the right end; with
+ * neither it renders the bare <input>, exactly as before.
+ */
+export function Input({ className, icon: Icon, trailing, ...props }: InputProps) {
   const field = useFieldControl();
-  return <input className={cn(fieldStyles, 'h-11', className)} {...field} {...props} />;
+  if (!Icon && !trailing) {
+    return <input className={cn(fieldStyles, 'h-11', className)} {...field} {...props} />;
+  }
+  return (
+    <div className="relative">
+      {Icon && (
+        <Icon
+          className="pointer-events-none absolute top-1/2 left-3.5 size-[1.15rem] -translate-y-1/2 text-ink-faint"
+          strokeWidth={1.8}
+          aria-hidden
+        />
+      )}
+      <input
+        className={cn(fieldStyles, 'h-11', Icon && 'pl-11', trailing && 'pr-12', className)}
+        {...field}
+        {...props}
+      />
+      {trailing && <div className="absolute top-1/2 right-1.5 -translate-y-1/2">{trailing}</div>}
+    </div>
+  );
 }
 
 export function Textarea({ className, ...props }: ComponentProps<'textarea'>) {

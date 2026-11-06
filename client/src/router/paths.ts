@@ -15,6 +15,8 @@ export const PATHS = {
   signUp: '/sign-up',
 
   // Free pages: for visitors who are not signed in. Signed-in people use the /learner versions below.
+  /** Your own profile: name, password. For every signed-in person. */
+  profile: '/profile',
   catalog: '/catalog',
   course: '/courses/:courseId',
 
@@ -31,8 +33,10 @@ export const PATHS = {
     overview: '/admin',
     courses: '/admin/courses',
     course: '/admin/courses/:courseId',
+    courseActivity: '/admin/courses/:courseId/activity',
     categories: '/admin/categories',
     learners: '/admin/learners',
+    settings: '/admin/settings',
     learner: '/admin/learners/:learnerId',
   },
 } as const;

@@ -1,4 +1,12 @@
-import { FolderTree, GraduationCap, LayoutDashboard, Library, Users, BookOpen } from 'lucide-react';
+import {
+  BookOpen,
+  FolderTree,
+  GraduationCap,
+  LayoutDashboard,
+  Library,
+  Settings,
+  Users,
+} from 'lucide-react';
 import { AppShell } from '@/components/layout/app-shell';
 import { PublicLayout } from '@/components/layout/public-layout';
 import type { NavItem } from '@/core/types/ui.types';
@@ -10,6 +18,12 @@ const catalog: NavItem = {
   label: 'Catalog',
   icon: BookOpen,
   end: true,
+};
+
+/** Pinned to the bottom of the sidebar, above the account. */
+const FOOTER_NAV: Record<'learner' | 'admin', NavItem[]> = {
+  learner: [],
+  admin: [{ to: PATHS.admin.settings, label: 'Settings', icon: Settings }],
 };
 
 const NAV: Record<'learner' | 'admin', NavItem[]> = {
@@ -31,7 +45,7 @@ const NAV: Record<'learner' | 'admin', NavItem[]> = {
 /**
  * The frame around every page that is not the landing page:
  *  - signed out: the public frame (same header and footer as the landing page)
- *  - signed in: the app frame (sidebar and account menu), with navigation that depends on the role
+ *  - signed in: the app frame (sidebar, and the avatar that opens your profile), with navigation that depends on the role
  */
 export function RootLayout() {
   const { user, isAdmin } = useSession();
@@ -42,6 +56,7 @@ export function RootLayout() {
   return (
     <AppShell
       nav={NAV[isAdmin ? 'admin' : 'learner']}
+      footerNav={FOOTER_NAV[isAdmin ? 'admin' : 'learner']}
       user={{
         name: user.name,
         email: user.email,

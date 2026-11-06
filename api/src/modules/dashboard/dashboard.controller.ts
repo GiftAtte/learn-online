@@ -20,3 +20,7 @@ export const learners = async (req: Request, res: Response) => {
 export const learnerDetail = async (req: Request, res: Response) => {
   ok(res, await service.adminLearnerDetail(param(req, 'learnerId')));
 };
+
+export const courseActivity = async (req: Request, res: Response) => {
+  ok(res, await service.adminCourseActivity(param(req, 'courseId')));
+};

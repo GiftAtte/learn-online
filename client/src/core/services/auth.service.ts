@@ -45,3 +45,19 @@ export const getCurrentUser = async (signal?: AbortSignal) => {
  * POST /auth/logout. Needs to be signed in.
  */
 export const signOut = () => api.post('/auth/logout');
+
+/**
+ * Changes your own name.
+ * PATCH /auth/me. Needs to be signed in.
+ * @returns the updated user
+ */
+export const updateProfile = async (values: { name: string }) =>
+  (await api.patch<User>('/auth/me', values)).data;
+
+/**
+ * Changes your own password. Every other signed-in device is signed out; this one stays signed in.
+ * POST /auth/change-password. Needs to be signed in.
+ * @throws ApiError 400 (on `currentPassword`) when the current password is wrong
+ */
+export const changePassword = (values: { currentPassword: string; newPassword: string }) =>
+  api.post('/auth/change-password', values);

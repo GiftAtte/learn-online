@@ -43,6 +43,22 @@ describe('upload signatures', () => {
     expect(res.body.data.allowedFormats).toBe('jpg,jpeg,png,webp,gif');
   });
 
+  it('follows the file types and size set in Settings', async () => {
+    const admin = await createUser('ADMIN');
+    await api().put('/api/v1/settings').set(admin.auth).send({
+      appName: 'LearnOnline',
+      imageMaxMegabytes: 3,
+      videoMaxMegabytes: 40,
+      imageFormats: ['png'],
+      videoFormats: ['mp4', 'webm'],
+      allowSignups: true,
+    });
+    const video = await api().post('/api/v1/media/signature').set(admin.auth).send({ kind: 'video' });
+    expect(video.body.data).toMatchObject({ allowedFormats: 'mp4,webm', maxMegabytes: 40 });
+    const image = await api().post('/api/v1/media/signature').set(admin.auth).send({ kind: 'image' });
+    expect(image.body.data).toMatchObject({ allowedFormats: 'png', maxMegabytes: 3 });
+  });
+
   it('refuses anyone who is not an administrator, and unknown kinds of file', async () => {
     const learner = await createUser('LEARNER');
     const admin = await createUser('ADMIN', 'second-admin@test.dev');

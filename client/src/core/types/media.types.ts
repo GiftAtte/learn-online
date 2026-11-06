@@ -10,6 +10,8 @@ export interface UploadSignature {
   timestamp: number;
   folder: string;
   allowedFormats: string;
+  /** The biggest file allowed, in megabytes (set in Settings). */
+  maxMegabytes: number;
   signature: string;
 }
 

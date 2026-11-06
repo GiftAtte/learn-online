@@ -1,6 +1,6 @@
 /** The summary screens for learners and for administrators. */
 import type { Category } from './category.types';
-import type { CourseSummary } from './course.types';
+import type { CourseStatus, CourseSummary } from './course.types';
 
 /** The lesson a learner should continue with. */
 export interface ResumeTarget {
@@ -74,3 +74,44 @@ export interface AdminDashboard {
 
 /** One course row in the admin overview table. */
 export type AdminCourseRow = AdminDashboard['courses'][number];
+
+/** One course in full for administrators: who is enrolled, how far they are, and each lesson's completions. */
+export interface CourseActivity {
+  course: {
+    id: string;
+    title: string;
+    category: Pick<Category, 'id' | 'name'>;
+    published: boolean;
+    lessonCount: number;
+    totalDurationSeconds: number;
+  };
+  summary: {
+    enrolled: number;
+    completed: number;
+    inProgress: number;
+    notStarted: number;
+    completionRate: number;
+    averageProgressPercent: number;
+  };
+  lessons: {
+    lessonId: string;
+    title: string;
+    order: number;
+    durationSeconds: number;
+    completedLearners: number;
+    startedLearners: number;
+  }[];
+  learners: {
+    userId: string;
+    name: string;
+    email: string;
+    enrolledAt: string;
+    lastActivityAt: string | null;
+    lessonCount: number;
+    completedLessons: number;
+    progressPercent: number;
+    status: CourseStatus;
+  }[];
+}
+
+export type CourseActivityLearner = CourseActivity['learners'][number];

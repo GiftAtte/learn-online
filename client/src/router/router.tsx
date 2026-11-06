@@ -24,6 +24,9 @@ const AdminCourseLessonsPage = lazy(() => import('@/pages/admin/course-lessons-p
 const AdminCategoriesPage = lazy(() => import('@/pages/admin/categories-page'));
 const AdminLearnersPage = lazy(() => import('@/pages/admin/learners-page'));
 const AdminLearnerDetailPage = lazy(() => import('@/pages/admin/learner-detail-page'));
+const AdminCourseActivityPage = lazy(() => import('@/pages/admin/course-activity-page'));
+const AdminSettingsPage = lazy(() => import('@/pages/admin/settings-page'));
+const ProfilePage = lazy(() => import('@/pages/profile-page'));
 const NotFoundPage = lazy(() => import('@/pages/not-found-page'));
 // Developer-only component library; it is only added to the routes while developing.
 const StyleguidePage = lazy(() =>
@@ -58,6 +61,7 @@ const PAGES: PageRoute[] = [
   { path: PATHS.learner.lesson, page: LessonPage, who: 'signedIn' },
   { path: PATHS.learner.myLearning, page: MyLearningPage, who: 'signedIn' },
   { path: PATHS.learner.dashboard, page: DashboardPage, who: 'signedIn' },
+  { path: PATHS.profile, page: ProfilePage, who: 'signedIn' },
 
   // Sign in and sign up
   { path: PATHS.signIn, page: SignInPage, who: 'guest' },
@@ -67,9 +71,11 @@ const PAGES: PageRoute[] = [
   { path: PATHS.admin.overview, page: AdminOverviewPage, who: 'admin' },
   { path: PATHS.admin.courses, page: AdminCoursesPage, who: 'admin' },
   { path: PATHS.admin.course, page: AdminCourseLessonsPage, who: 'admin' },
+  { path: PATHS.admin.courseActivity, page: AdminCourseActivityPage, who: 'admin' },
   { path: PATHS.admin.categories, page: AdminCategoriesPage, who: 'admin' },
   { path: PATHS.admin.learners, page: AdminLearnersPage, who: 'admin' },
   { path: PATHS.admin.learner, page: AdminLearnerDetailPage, who: 'admin' },
+  { path: PATHS.admin.settings, page: AdminSettingsPage, who: 'admin' },
 ];
 
 /** Turns one line of the sitemap into a route. */

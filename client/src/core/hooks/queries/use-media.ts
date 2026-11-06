@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
-import { validateMediaFile } from '@/core/lib/media';
+import { useAppSettings } from '@/core/hooks/queries/use-settings';
+import { uploadRulesFor, validateMediaFile } from '@/core/lib/media';
 import * as mediaService from '@/core/services/media.service';
 import type { MediaKind, UploadedMedia } from '@/core/types/media.types';
 
@@ -15,6 +16,7 @@ export const useUploadMedia = (kind: MediaKind) => {
   const [progress, setProgress] = useState(0);
   const [rejection, setRejection] = useState<string | null>(null);
   const controller = useRef<AbortController | null>(null);
+  const rules = uploadRulesFor(useAppSettings(), kind);
 
   const mutation = useMutation({
     mutationFn: (file: File) => {
@@ -31,11 +33,13 @@ export const useUploadMedia = (kind: MediaKind) => {
   return {
     /** Checks the file first; a bad file is explained at once and nothing is sent. */
     upload: (file: File, onUploaded: (media: UploadedMedia) => void) => {
-      const problem = validateMediaFile(file, kind);
+      const problem = validateMediaFile(file, rules);
       setRejection(problem);
       if (problem) return;
       mutation.mutate(file, { onSuccess: (media) => onUploaded(media) });
     },
+    /** The file types and size an administrator allows for this kind of file. */
+    rules,
     cancel: () => controller.current?.abort(),
     progress,
     isUploading: mutation.isPending,

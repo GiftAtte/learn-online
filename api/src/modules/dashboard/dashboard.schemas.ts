@@ -14,3 +14,5 @@ export const adminLearnersQuery = pageQuerySchema(10).extend({
 export type AdminLearnersQuery = z.infer<typeof adminLearnersQuery>;
 
 export const learnerIdParam = z.object({ learnerId: z.uuid() });
+
+export const courseIdParam = z.object({ courseId: z.uuid() });

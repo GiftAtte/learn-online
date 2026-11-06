@@ -10,7 +10,7 @@ const learner = {
 const signIn = async (page: Page, email: string, password: string, home = '/learner/catalog') => {
   await page.goto('/sign-in');
   await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password').fill(password);
+  await page.getByLabel('Password', { exact: true }).fill(password);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page).toHaveURL(home);
 };
@@ -20,7 +20,7 @@ test.describe.serial('learner journey', () => {
     await page.goto('/sign-up');
     await page.getByLabel('Full name').fill(learner.name);
     await page.getByLabel('Email').fill(learner.email);
-    await page.getByLabel('Password').fill(learner.password);
+    await page.getByLabel('Password', { exact: true }).fill(learner.password);
     await page.getByRole('button', { name: /create account/i }).click();
     await expect(page).toHaveURL('/learner/catalog');
 

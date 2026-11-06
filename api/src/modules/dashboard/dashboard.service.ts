@@ -302,3 +302,80 @@ export const adminLearnerDetail = async (learnerId: string) => {
     courses,
   };
 };
+
+/**
+ * One course's full activity (admin drill-down): headline numbers, how many learners finished each
+ * lesson, and every enrolled learner with their progress and last activity.
+ */
+export const adminCourseActivity = async (courseId: string) => {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    include: {
+      category: categorySelect,
+      lessons: { orderBy: { order: 'asc' } },
+      enrollments: {
+        orderBy: { enrolledAt: 'desc' },
+        include: { user: { select: { id: true, name: true, email: true } } },
+      },
+    },
+  });
+  if (!course) throw AppError.notFound('Course not found');
+
+  const learnerIds = course.enrollments.map((e) => e.userId);
+  const progress = await prisma.lessonProgress.findMany({
+    where: { userId: { in: learnerIds }, lessonId: { in: course.lessons.map((l) => l.id) } },
+  });
+  const byLearner = new Map<string, typeof progress>();
+  for (const p of progress) byLearner.set(p.userId, [...(byLearner.get(p.userId) ?? []), p]);
+
+  const learners = course.enrollments.map(({ enrolledAt, user }) => {
+    const mine = byLearner.get(user.id) ?? [];
+    const done = mine.filter((p) => p.completed).length;
+    const last = mine.reduce<Date | null>((m, p) => (!m || p.updatedAt > m ? p.updatedAt : m), null);
+    return {
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      enrolledAt,
+      lastActivityAt: last,
+      ...courseStats(course.lessons, done),
+    };
+  });
+
+  const lessons = course.lessons.map((lesson) => {
+    const rows = progress.filter((p) => p.lessonId === lesson.id);
+    return {
+      lessonId: lesson.id,
+      title: lesson.title,
+      order: lesson.order,
+      durationSeconds: lesson.durationSeconds,
+      completedLearners: rows.filter((p) => p.completed).length,
+      startedLearners: rows.filter((p) => !p.completed && p.lastPositionSeconds > 0).length,
+    };
+  });
+
+  const completed = learners.filter((l) => l.status === 'COMPLETED').length;
+  return {
+    course: {
+      id: course.id,
+      title: course.title,
+      category: course.category,
+      published: course.published,
+      lessonCount: course.lessons.length,
+      totalDurationSeconds: sum(course.lessons.map((l) => l.durationSeconds)),
+    },
+    summary: {
+      enrolled: learners.length,
+      completed,
+      inProgress: learners.filter((l) => l.status === 'IN_PROGRESS').length,
+      notStarted: learners.filter((l) => l.status === 'NOT_STARTED').length,
+      completionRate: percent(completed, learners.length),
+      averageProgressPercent: percent(
+        sum(learners.map((l) => l.completedLessons)),
+        course.lessons.length * learners.length,
+      ),
+    },
+    lessons,
+    learners,
+  };
+};

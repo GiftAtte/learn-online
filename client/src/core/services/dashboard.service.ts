@@ -3,7 +3,7 @@
  * Plain async functions, no React. The hooks in `hooks/queries/use-dashboard.ts` wrap them.
  */
 import { api } from '@/core/api/client';
-import type { AdminDashboard, LearnerDashboard } from '@/core/types/dashboard.types';
+import type { AdminDashboard, CourseActivity, LearnerDashboard } from '@/core/types/dashboard.types';
 import type { AdminLearner, LearnerDetail, LearnerFilters } from '@/core/types/learner.types';
 
 /**
@@ -43,3 +43,11 @@ export const getAllLearners = async (filters: LearnerFilters, signal?: AbortSign
  */
 export const getLearnerById = async (learnerId: string, signal?: AbortSignal) =>
   (await api.get<LearnerDetail>(`/dashboard/admin/learners/${learnerId}`, { signal })).data;
+
+/**
+ * Gets one course's full activity: enrolled learners with their progress, and completions per lesson.
+ * GET /dashboard/admin/courses/:id. Administrators only.
+ * @throws ApiError 404 when there is no such course
+ */
+export const getCourseActivity = async (courseId: string, signal?: AbortSignal) =>
+  (await api.get<CourseActivity>(`/dashboard/admin/courses/${courseId}`, { signal })).data;

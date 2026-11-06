@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Lock, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Alert } from '@/components/feedback/alert';
-import { Button, FormField, Input } from '@/components/ui';
+import { Button, FormField, Input, PasswordInput } from '@/components/ui';
 import { useSignIn } from '@/core/hooks/queries/use-auth';
 import { signInSchema } from '@/core/schemas/auth.schemas';
 import type { SignInValues } from '@/core/types/auth.types';
@@ -64,10 +65,22 @@ export default function SignInPage() {
           </Alert>
         )}
         <FormField label="Email" required error={form.formState.errors.email?.message}>
-          <Input type="email" autoComplete="email" inputMode="email" {...form.register('email')} />
+          <Input
+            type="email"
+            icon={Mail}
+            placeholder="you@example.com"
+            autoComplete="email"
+            inputMode="email"
+            {...form.register('email')}
+          />
         </FormField>
         <FormField label="Password" required error={form.formState.errors.password?.message}>
-          <Input type="password" autoComplete="current-password" {...form.register('password')} />
+          <PasswordInput
+            icon={Lock}
+            placeholder="Your password"
+            autoComplete="current-password"
+            {...form.register('password')}
+          />
         </FormField>
         <Button type="submit" size="lg" loading={signIn.isPending}>
           Sign in
