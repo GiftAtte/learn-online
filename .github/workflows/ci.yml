@@ -1,6 +1,6 @@
-name: CI/CD
+name: CI
 
-# Every push is tested. A push to dev is deployed to the server straight away (see DEPLOY.md).
+# Every push is tested. Deployment is not done here: a webhook on the server deploys pushes to dev (see DEPLOY.md).
 on:
   push:
   pull_request:
@@ -59,42 +59,3 @@ jobs:
       - run: npm run format:check
       - run: npm test -- --run
       - run: npm run build
-
-  # A push to dev deploys straight away, in parallel with the tests (it does not wait for them). Other branches and pull requests are only tested.
-  deploy:
-    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-    concurrency: deploy-production # never run two deployments at once
-    runs-on: ubuntu-latest
-    environment: production
-    env:
-      APP_DIR: ${{ secrets.DEPLOY_PATH }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Trust the server and load the deploy key
-        run: |
-          install -m 700 -d ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy
-          chmod 600 ~/.ssh/id_deploy
-          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-          printf 'Host server\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/id_deploy\n  IdentitiesOnly yes\n' \
-            "${{ secrets.DEPLOY_HOST }}" "${{ secrets.DEPLOY_USER }}" > ~/.ssh/config
-
-      # The server's .env (secrets) is not in git, so it is never overwritten or deleted.
-      - name: Copy the code
-        run: |
-          rsync -az --delete \
-            --exclude '.git' --exclude 'node_modules' --exclude 'dist' --exclude '.env' \
-            --exclude 'e2e' --exclude '.github' \
-            ./ "server:$APP_DIR/"
-
-      - name: Rebuild and restart
-        run: ssh server "cd $APP_DIR && docker compose up -d --build --remove-orphans && docker image prune -f"
-
-      # Fail the pipeline if the site is not answering after the restart.
-      - name: Check that the site is up
-        run: |
-          ssh server 'for i in $(seq 1 30); do
-            curl -fsS -o /dev/null http://127.0.0.1:8085/ && curl -fsS -o /dev/null http://127.0.0.1:4000/health && echo "site is up" && exit 0
-            sleep 2
-          done; echo "site did not come up" >&2; exit 1'
