@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { MediaUploadButton } from '@/components/media/media-upload-button';
 import { FormField, FormModal, Input, Select, Switch, Textarea } from '@/components/ui';
 import { useGetAllCategories } from '@/core/hooks/queries/use-categories';
 import { handleSubmitError } from '@/core/lib/forms';
@@ -82,8 +83,8 @@ export function CourseFormModal({ existing, onClose }: Props) {
       </FormField>
 
       <FormField
-        label="Thumbnail address"
-        hint="A link to an image. Leave empty to use a placeholder."
+        label="Cover image address"
+        hint="Paste a link to an image, or upload one. Leave empty to use a placeholder."
         error={errors.thumbnailUrl?.message}
       >
         <Input
@@ -91,6 +92,11 @@ export function CourseFormModal({ existing, onClose }: Props) {
           inputMode="url"
           placeholder="https://…"
           {...form.register('thumbnailUrl')}
+        />
+        <MediaUploadButton
+          kind="image"
+          label="Upload a cover image"
+          onUploaded={(media) => form.setValue('thumbnailUrl', media.url, { shouldValidate: true })}
         />
       </FormField>
 

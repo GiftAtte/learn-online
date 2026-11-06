@@ -76,6 +76,7 @@ API (`api/.env`, template in `api/.env.example`):
 | `CLIENT_ORIGIN`  | Allowed CORS origin(s), comma-separated                               |
 | `PORT`           | API port (default 4000)                                               |
 | `TRUST_PROXY`    | Number of reverse proxies in front of the API (default 0)             |
+| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Optional. Switch on uploading lesson videos and cover images in the admin forms (see below). Without them, links to files still work. |
 
 Client: `VITE_API_URL` (default `/api/v1`, proxied to the API in development) in `client/.env.example`.
 

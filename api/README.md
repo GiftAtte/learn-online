@@ -39,7 +39,7 @@ Demo accounts (from the seed):
 ## Tests
 
 `npm test` uses the `learnonline_test` database from `.env.test` (same Postgres server; `prisma migrate deploy` runs automatically, tables are cleared before each test).
-Latest run: **8 files, 62 tests passing** (auth, token security and sign-out revocation, categories, courses/lessons + RBAC, validation, enrollment, progress/completion, dashboards, admin learner detail, role management).
+Latest run: **9 files, 68 tests passing** (auth, token security and sign-out revocation, categories, courses/lessons + RBAC, validation, enrollment, progress/completion, dashboards, admin learner detail, role management, Cloudinary upload signatures).
 
 ## Structure
 
@@ -75,6 +75,7 @@ Auth: the token travels in an httpOnly cookie named `session`, set by login/regi
 | POST `/auth/login`                     | public   | Returns `{ user }` and sets the `session` cookie                     |
 | GET `/auth/me`                         | user     | Current user                                  |
 | POST `/auth/logout`                    | user     | Sign out everywhere: revokes every token issued so far |
+| POST `/media/signature`                | admin    | Body `{ kind }`, where kind is `video` or `image`. Returns a signed, short-lived permission to upload one file straight to Cloudinary |
 | PATCH `/users/:id/role`                | admin    | `{ role: 'LEARNER' | 'ADMIN' }`; admins can't change their own role |
 | GET `/categories`                      | public   | Categories with published-course counts       |
 | POST/PATCH/DELETE `/categories[/:id]`  | admin    | Manage categories (delete blocked while in use) |

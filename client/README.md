@@ -41,7 +41,7 @@ src/
     layout/                  RootLayout picks the frame: PublicLayout (header + footer shared with the landing page) for signed-out visitors,
                              AppShell (sidebar, top bar, mobile tab bar) for signed-in people; PageHeader, Container, Logo
     data-display/            DataTable (cards on phones), Pagination, SearchInput, FilterChips, StatTile
-    media/                   VideoPlayer
+    media/                   VideoPlayer, MediaUploadButton (upload a video or image to Cloudinary from a form)
     courses/ lessons/ dashboard/ categories/ admin/
                              building blocks for one domain (CourseCard, LessonPlayerCard, ContinueCard...)
   router/                    paths.ts (every URL, written once), router.tsx (the sitemap: page + who may open it), guards/ -
@@ -156,3 +156,17 @@ Browser tests live in `../e2e` (Playwright).
 - Demo videos from the seed are 10-second public clips. The player resumes from the saved position and reports progress every 10 seconds, on pause and when leaving the page.
 - Pages are code-split, so the first visit only downloads the page it needs.
 - Demo accounts come from the API seed (`admin@learnonline.dev` / `Admin123!`, `learner@learnonline.dev` / `Learner123!`). Change them before any real deployment.
+
+## Uploading videos and images
+
+Administrators can upload a lesson video, a lesson thumbnail or a course cover image instead of pasting a link.
+The pieces, from the bottom up:
+
+| File                                       | Job                                                                                                                                                                                                      |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core/lib/media.ts`                        | the rules (file types, sizes), `validateMediaFile`, and `videoPosterUrl` (a picture taken from an uploaded video)                                                                                        |
+| `core/services/media.service.ts`           | **the media upload function**: `uploadMedia(file, kind, { onProgress, signal })` asks our API for a signature, then sends the file straight to Cloudinary and returns its address (and a video's length) |
+| `core/hooks/queries/use-media.ts`          | `useUploadMedia(kind)`: checks the file, tracks progress, supports cancel                                                                                                                                |
+| `components/media/media-upload-button.tsx` | the "Upload a video" button with progress bar, Cancel and error text; used by the lesson and course forms                                                                                                |
+
+Forms never talk to Cloudinary themselves; they only call `MediaUploadButton` and fill their address field from the result.
