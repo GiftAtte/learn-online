@@ -30,7 +30,7 @@ export function Toaster() {
           title: 'text-[0.95rem] leading-snug font-medium',
           description: 'text-sm leading-snug text-spruce-200',
           actionButton:
-            'ml-auto shrink-0 cursor-pointer rounded-control bg-pencil-500 px-3 py-1.5 text-sm font-medium text-spruce-950',
+            'ml-auto shrink-0 cursor-pointer rounded-full bg-pencil-500 px-4 py-1.5 text-sm font-medium text-spruce-950',
         },
       }}
     />
