@@ -1,6 +1,6 @@
 name: CI/CD
 
-# Every push is tested. A push to dev that passes is deployed to the server (see DEPLOY.md).
+# Every push is tested. A push to dev is deployed to the server straight away (see DEPLOY.md).
 on:
   push:
   pull_request:
@@ -60,9 +60,8 @@ jobs:
       - run: npm test -- --run
       - run: npm run build
 
-  # Only a push to dev that passed both jobs above is deployed. Pull requests and other branches are only tested.
+  # A push to dev deploys straight away, in parallel with the tests (it does not wait for them). Other branches and pull requests are only tested.
   deploy:
-    needs: [api, client]
     if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     concurrency: deploy-production # never run two deployments at once
     runs-on: ubuntu-latest
