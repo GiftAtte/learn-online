@@ -10,6 +10,8 @@ export interface PageHeaderProps {
   actions?: ReactNode;
   /** Adds a "back" link above the title. */
   back?: { to: string; label: string };
+  /** The big dark banner used on the landing page, for pages people arrive on (such as the catalog). */
+  hero?: boolean;
   className?: string;
 }
 
@@ -18,30 +20,61 @@ export interface PageHeaderProps {
  * with a hairline so the header reads as its own band above the content.
  * Pages don't render this directly; they use <Page>, which also sets the spacing below it.
  */
-export function PageHeader({ title, description, actions, back, className }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  actions,
+  back,
+  hero,
+  className,
+}: PageHeaderProps) {
   return (
     <header
       className={cn(
-        'flex flex-col gap-5 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between',
+        'flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between',
+        hero
+          ? 'lp-hero-bg relative overflow-hidden rounded-[1.75rem] p-7 text-white sm:p-12'
+          : 'border-b border-line pb-6',
         className,
       )}
     >
-      <div className="flex min-w-0 flex-col gap-2">
+      {hero && <div aria-hidden className="lp-dots absolute inset-0" />}
+      <div className="relative flex min-w-0 flex-col gap-2">
         {back && (
           <Link
             to={back.to}
-            className="-ml-1 inline-flex w-fit items-center gap-0.5 rounded-control py-1 pr-2 text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+            className={cn(
+              '-ml-1 inline-flex w-fit items-center gap-0.5 rounded-control py-1 pr-2 text-sm font-medium transition-colors',
+              hero ? 'text-spruce-100 hover:text-white' : 'text-ink-soft hover:text-ink',
+            )}
           >
             <ChevronLeft className="size-4" aria-hidden />
             {back.label}
           </Link>
         )}
-        <h1 className="text-[1.75rem] leading-tight font-semibold tracking-[-0.025em] sm:text-[2rem]">
+        <h1
+          className={cn(
+            hero
+              ? 'font-display text-4xl leading-[1.05] font-bold tracking-tight sm:text-5xl'
+              : 'text-[1.75rem] leading-tight font-semibold tracking-[-0.025em] sm:text-[2rem]',
+          )}
+        >
           {title}
         </h1>
-        {description && <p className="max-w-prose text-[0.95rem] text-ink-soft">{description}</p>}
+        {description && (
+          <p
+            className={cn(
+              'max-w-prose',
+              hero ? 'text-lg text-spruce-100' : 'text-[0.95rem] text-ink-soft',
+            )}
+          >
+            {description}
+          </p>
+        )}
       </div>
-      {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
+      {actions && (
+        <div className="relative flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
+      )}
     </header>
   );
 }
