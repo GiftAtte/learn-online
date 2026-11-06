@@ -24,6 +24,8 @@ services:
 
   api:
     build: ./api
+    # On the server this image comes from the registry (built by the pipeline); locally it is built here.
+    image: ${REGISTRY:-learnonline}/api:${IMAGE_TAG:-local}
     restart: unless-stopped
     # Published on this machine only. On the server the reverse proxy for the API domain points here.
     ports:
@@ -41,6 +43,7 @@ services:
       TRUST_PROXY: "1"
 
   web:
+    image: ${REGISTRY:-learnonline}/web:${IMAGE_TAG:-local}
     build:
       context: ./client
       args:
