@@ -39,7 +39,6 @@ export default function LandingPage() {
       <main>
         {/* Hero: the promise on the left, the product at work on the right */}
         <section className="lp-hero-bg relative overflow-hidden text-white">
-          <div aria-hidden className="lp-dots absolute inset-0" />
           <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pt-16 pb-24 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:px-8 lg:pt-24 lg:pb-32">
             <div className="flex flex-col items-start gap-6">
               <h1
@@ -135,8 +134,7 @@ export default function LandingPage() {
 
         {/* Closing call to action */}
         <section className="px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8">
-          <div className="lp-hero-bg relative mx-auto flex max-w-6xl flex-col items-start gap-6 overflow-hidden rounded-[1.75rem] p-8 text-white sm:p-14">
-            <div aria-hidden className="lp-dots absolute inset-0" />
+          <div className="lp-hero-bg relative mx-auto flex max-w-6xl flex-col items-start gap-6 overflow-hidden rounded-stage p-8 text-white sm:p-14">
             <h2 className="relative max-w-2xl text-3xl font-bold tracking-tight sm:text-5xl">
               {user ? 'Pick up your next lesson' : 'Pick a course and start today'}
             </h2>

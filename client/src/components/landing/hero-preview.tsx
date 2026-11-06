@@ -31,7 +31,7 @@ export function HeroPreview() {
         <Check className="size-4" strokeWidth={3} />1 of 3 lessons done
       </div>
 
-      <div className="lp-settle overflow-hidden rounded-[1.375rem] border border-white/15 bg-spruce-900 shadow-overlay">
+      <div className="lp-settle overflow-hidden rounded-stage border border-white/15 bg-spruce-900 shadow-overlay">
         {/* The player */}
         <div className="relative aspect-video bg-gradient-to-br from-spruce-600 via-spruce-700 to-spruce-900">
           <div className="absolute inset-0 flex items-center justify-center">

@@ -7,8 +7,8 @@
    ========================================================================================== */
 @theme {
   /* Typography */
-  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Literata Variable', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Source Sans 3 Variable', ui-sans-serif, system-ui, sans-serif;
 
   /* Brand scale */
   --color-spruce-50: #eef4f2;
@@ -59,13 +59,13 @@
   --color-info-soft: #e7edf7;
 
   /* Radius follows hierarchy: controls < cards < media stage */
-  --radius-control: 0.5rem;
-  --radius-card: 1.25rem;
-  --radius-stage: 1.375rem;
+  --radius-control: 0.375rem;
+  --radius-card: 0.75rem;
+  --radius-stage: 0.875rem;
 
   /* Shadows are tinted with the brand colour, never neutral grey */
-  --shadow-card: 0 0 34px -24px rgb(16 48 42 / 0.65);
-  --shadow-lift: 0 2px 4px rgb(16 48 42 / 0.06), 0 20px 36px -16px rgb(16 48 42 / 0.3);
+  --shadow-card: 0 1px 2px rgb(16 48 42 / 0.05);
+  --shadow-lift: 0 1px 2px rgb(16 48 42 / 0.06), 0 10px 22px -12px rgb(16 48 42 / 0.3);
   --shadow-overlay: 0 4px 10px rgb(16 48 42 / 0.1), 0 28px 60px -12px rgb(16 48 42 / 0.4);
 
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
@@ -105,6 +105,8 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    /* Source Sans 3 has a smaller x-height than most UI fonts; 17px keeps text and labels easy to read. */
+    font-size: 106.25%;
     scroll-padding-top: 5rem;
   }
 
@@ -123,7 +125,7 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.012em;
     line-height: 1.15;
     text-wrap: balance;
   }
@@ -243,17 +245,9 @@
    meters; the reduced-motion rule above switches all of it off.
    ========================================================================================== */
 
-/* Hero background: deep green, a warm glow behind the preview, and a faint dot grid. */
+/* Hero background: plain deep green. No glows or patterns; the product preview is the decoration. */
 .lp-hero-bg {
-  background:
-    radial-gradient(60rem 36rem at 85% 20%, rgb(242 185 59 / 0.16), transparent 60%),
-    radial-gradient(40rem 30rem at 0% 100%, rgb(58 109 95 / 0.45), transparent 60%),
-    var(--color-spruce-950);
-}
-.lp-dots {
-  background-image: radial-gradient(rgb(255 255 255 / 0.09) 1px, transparent 1px);
-  background-size: 22px 22px;
-  mask-image: linear-gradient(to bottom, black 30%, transparent 95%);
+  background: var(--color-spruce-950);
 }
 
 /* The hero text arrives line by line; `--d` sets each line's delay. */

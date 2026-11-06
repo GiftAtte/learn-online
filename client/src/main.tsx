@@ -1,5 +1,8 @@
-import '@fontsource-variable/bricolage-grotesque';
-import '@fontsource-variable/instrument-sans';
+// Literata (headings) was designed for reading on screens; Source Sans 3 (text and controls) is a calm,
+// legible humanist sans. Together they give the look of a well-made textbook. `opsz` lets big headings
+// use Literata's display design.
+import '@fontsource-variable/literata/opsz.css';
+import '@fontsource-variable/source-sans-3';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';

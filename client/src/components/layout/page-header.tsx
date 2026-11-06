@@ -33,12 +33,11 @@ export function PageHeader({
       className={cn(
         'flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between',
         hero
-          ? 'lp-hero-bg relative overflow-hidden rounded-[1.75rem] p-7 text-white sm:p-12'
+          ? 'lp-hero-bg relative overflow-hidden rounded-stage p-7 text-white sm:p-12'
           : 'border-b border-line pb-6',
         className,
       )}
     >
-      {hero && <div aria-hidden className="lp-dots absolute inset-0" />}
       <div className="relative flex min-w-0 flex-col gap-2">
         {back && (
           <Link
