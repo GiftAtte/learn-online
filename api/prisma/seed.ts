@@ -4,20 +4,49 @@ import { hashPassword } from '../src/utils/password';
 
 const prisma = new PrismaClient();
 
-// Public sample clips (checked reachable). Lengths are the real ones so that resume and completion
-// tracking behave exactly as they would with full-length lessons. They are short on purpose: swap in
-// your own video URLs from the admin area for real content.
-const CLIPS = 'https://test-videos.co.uk/vids';
+/**
+ * Free sample videos. Every URL was checked to be reachable, and `seconds` was read from the file's
+ * own header, so resume and completion tracking behave exactly as they would with real lessons.
+ *
+ *  - Blender open movies (Sintel, Elephants Dream, Tears of Steel, Big Buck Bunny): CC-BY, (c) Blender Foundation
+ *  - MDN flower clip: CC0
+ *  - the rest are public sample clips made for testing video players
+ *
+ * To use your own content, change the videos from the admin area; no code change is needed.
+ */
 const VIDEOS = {
-  bunny: { url: `${CLIPS}/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4`, seconds: 10 },
-  bunnyHd: { url: `${CLIPS}/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_2MB.mp4`, seconds: 10 },
-  jellyfish: { url: `${CLIPS}/jellyfish/mp4/h264/360/Jellyfish_360_10s_1MB.mp4`, seconds: 10 },
-  sintel: { url: `${CLIPS}/sintel/mp4/h264/360/Sintel_360_10s_1MB.mp4`, seconds: 10 },
+  // Full-length films (several minutes): good for testing resume and the 95% completion rule.
+  elephantsDream: { url: 'https://archive.org/download/ElephantsDream/ed_1024_512kb.mp4', seconds: 654 },
+  tearsOfSteel: { url: 'https://archive.org/download/Tears-of-Steel/tears_of_steel_1080p.mp4', seconds: 734 },
+  sintelFilm: { url: 'https://archive.org/download/Sintel/sintel-2048-surround_512kb.mp4', seconds: 888 },
+  movie300: { url: 'https://media.w3.org/2010/05/video/movie_300.mp4', seconds: 300 },
+
+  // Trailers and short clips (under a minute).
+  sintelTrailer: { url: 'https://media.w3.org/2010/05/sintel/trailer.mp4', seconds: 52 },
+  bunnyTrailer: { url: 'https://media.w3.org/2010/05/bunny/trailer.mp4', seconds: 33 },
+  oceans: { url: 'https://vjs.zencdn.net/v/oceans.mp4', seconds: 47 },
+  sample30: { url: 'https://samplelib.com/lib/preview/mp4/sample-30s.mp4', seconds: 30 },
+  sample20: { url: 'https://samplelib.com/lib/preview/mp4/sample-20s.mp4', seconds: 20 },
+  sample15: { url: 'https://samplelib.com/lib/preview/mp4/sample-15s.mp4', seconds: 16 },
+  bear: { url: 'https://www.w3schools.com/html/movie.mp4', seconds: 13 },
+  bunny: {
+    url: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_2MB.mp4',
+    seconds: 10,
+  },
+  jellyfish: {
+    url: 'https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_5MB.mp4',
+    seconds: 10,
+  },
+  sintel: { url: 'https://test-videos.co.uk/vids/sintel/mp4/h264/360/Sintel_360_10s_1MB.mp4', seconds: 10 },
+  sample10: { url: 'https://samplelib.com/lib/preview/mp4/sample-10s.mp4', seconds: 10 },
+  bunnyShort: { url: 'https://www.w3schools.com/html/mov_bbb.mp4', seconds: 10 },
+  sample5: { url: 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4', seconds: 6 },
   flower: { url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4', seconds: 5 },
 } as const;
 
 type VideoKey = keyof typeof VIDEOS;
 
+/** Each lesson is [title, description, which video it plays]. */
 const courses: {
   title: string;
   category: string;
@@ -32,10 +61,10 @@ const courses: {
       'Go from JavaScript to confident TypeScript: types, generics, narrowing and building maintainable codebases.',
     published: true,
     lessons: [
-      ['Why TypeScript?', 'The case for static types and how the compiler helps you.', 'bunny'],
-      ['Types and Interfaces', 'Modelling data with type aliases, interfaces and unions.', 'bunnyHd'],
-      ['Generics in Practice', 'Writing reusable, type-safe functions and components.', 'jellyfish'],
-      ['Type Narrowing', 'Discriminated unions, guards and exhaustive checks.', 'sintel'],
+      ['Why TypeScript?', 'The case for static types and how the compiler helps you.', 'elephantsDream'],
+      ['Types and Interfaces', 'Modelling data with type aliases, interfaces and unions.', 'bunny'],
+      ['Generics in Practice', 'Writing reusable, type-safe functions and components.', 'sample20'],
+      ['Type Narrowing', 'Discriminated unions, guards and exhaustive checks.', 'sample30'],
     ],
   },
   {
@@ -46,8 +75,20 @@ const courses: {
     published: true,
     lessons: [
       ['Components and Props', 'Composing UIs from small, reusable pieces.', 'flower'],
-      ['State and Effects', 'Managing local state and side effects with hooks.', 'bunnyHd'],
-      ['Data Fetching', 'Caching and synchronising server state.', 'jellyfish'],
+      ['State and Effects', 'Managing local state and side effects with hooks.', 'bunnyTrailer'],
+      ['Data Fetching', 'Caching and synchronising server state.', 'oceans'],
+      ['Performance Basics', 'Memoisation, lazy loading and measuring before optimising.', 'sample15'],
+    ],
+  },
+  {
+    title: 'Building APIs with Node',
+    category: 'Programming',
+    description: 'Design a secure REST API: routing, validation, authentication and a clean service layer.',
+    published: true,
+    lessons: [
+      ['REST Basics', 'Resources, verbs and status codes.', 'tearsOfSteel'],
+      ['Authentication', 'Passwords, sessions and httpOnly cookies.', 'movie300'],
+      ['Input Validation', 'Rejecting bad data at the edge.', 'sample10'],
     ],
   },
   {
@@ -57,8 +98,20 @@ const courses: {
       'A practical introduction to empathising, defining, ideating and testing user-centred solutions.',
     published: true,
     lessons: [
-      ['Empathise with Users', 'Interviewing and observing real people.', 'sintel'],
-      ['Define the Problem', 'Turning research into a clear problem statement.', 'flower'],
+      ['Empathise with Users', 'Interviewing and observing real people.', 'sintelFilm'],
+      ['Define the Problem', 'Turning research into a clear problem statement.', 'sintelTrailer'],
+      ['Ideate and Prototype', 'Generating options quickly and testing the best ones.', 'sintel'],
+    ],
+  },
+  {
+    title: 'Visual Design Basics',
+    category: 'Design',
+    description: 'Colour, type and layout: the small decisions that make an interface feel professional.',
+    published: true,
+    lessons: [
+      ['Colour and Contrast', 'Palettes that work and stay accessible.', 'jellyfish'],
+      ['Typography', 'Choosing and pairing type for readability.', 'bear'],
+      ['Layout and Spacing', 'Grids, rhythm and whitespace.', 'sample5'],
     ],
   },
   {
@@ -66,7 +119,7 @@ const courses: {
     category: 'Data',
     description: 'An unpublished draft course used to demonstrate admin-only visibility.',
     published: false,
-    lessons: [['Choosing the Right Chart', 'Matching questions to chart types.', 'bunny']],
+    lessons: [['Choosing the Right Chart', 'Matching questions to chart types.', 'bunnyShort']],
   },
 ];
 
@@ -136,9 +189,11 @@ async function main() {
     ],
   });
 
+  const lessonCount = courses.reduce((n, c) => n + c.lessons.length, 0);
   console.log(
-    'Seeded. Admin: admin@learnonline.dev / Admin123!  Learner: learner@learnonline.dev / Learner123!',
+    `Seeded ${courses.length} courses with ${lessonCount} lessons from ${Object.keys(VIDEOS).length} videos.`,
   );
+  console.log('Admin: admin@learnonline.dev / Admin123!  Learner: learner@learnonline.dev / Learner123!');
 }
 
 main()
