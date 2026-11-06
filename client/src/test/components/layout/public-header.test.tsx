@@ -15,7 +15,7 @@ const renderHeader = (path: string) =>
 describe('public header', () => {
   it('shows the same menu on the landing page and on the catalog', () => {
     session.current = { user: null };
-    for (const path of ['/', '/learner/catalog']) {
+    for (const path of ['/', '/catalog']) {
       const { unmount } = renderHeader(path);
       expect(screen.getByRole('link', { name: 'How it works' })).toHaveAttribute(
         'href',
@@ -25,10 +25,7 @@ describe('public header', () => {
         'href',
         '/#features',
       );
-      expect(screen.getByRole('link', { name: 'Courses' })).toHaveAttribute(
-        'href',
-        '/learner/catalog',
-      );
+      expect(screen.getByRole('link', { name: 'Courses' })).toHaveAttribute('href', '/catalog');
       expect(screen.getByRole('link', { name: 'Sign up free' })).toHaveAttribute(
         'href',
         '/sign-up',

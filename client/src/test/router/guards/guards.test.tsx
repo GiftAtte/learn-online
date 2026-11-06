@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { GuestOnly } from '@/router/guards/guest-only';
 import { PATHS } from '@/router/paths';
 import { RequireAdmin } from '@/router/guards/require-admin';
+import { PublicOnly } from '@/router/guards/public-only';
 import { RequireAuth } from '@/router/guards/require-auth';
 
 const session = vi.hoisted(() => ({ current: {} as Record<string, unknown> }));
@@ -14,6 +15,9 @@ const renderAt = (path: string) =>
       <Routes>
         <Route element={<GuestOnly />}>
           <Route path="/sign-in" element={<p>sign-in page</p>} />
+        </Route>
+        <Route element={<PublicOnly />}>
+          <Route path="/catalog" element={<p>free catalog</p>} />
         </Route>
         <Route element={<RequireAuth />}>
           <Route path="/dashboard" element={<p>dashboard</p>} />
@@ -60,5 +64,17 @@ describe('route guards', () => {
     session.current = { status: 'authenticated', isAdmin: false };
     renderAt('/sign-in');
     expect(screen.getByText('home')).toBeInTheDocument();
+  });
+
+  it('shows the free catalog to visitors and sends signed-in people to the /learner version', () => {
+    session.current = { status: 'guest', isAdmin: false };
+    const { unmount } = renderAt('/catalog');
+    expect(screen.getByText('free catalog')).toBeInTheDocument();
+    unmount();
+
+    session.current = { status: 'authenticated', isAdmin: false };
+    renderAt('/catalog');
+    expect(screen.queryByText('free catalog')).not.toBeInTheDocument();
+    expect(screen.getByText('home')).toBeInTheDocument(); // /learner/catalog
   });
 });

@@ -47,7 +47,7 @@ src/
   router/                    paths.ts (every URL, written once), router.tsx (the sitemap: page + who may open it), guards/ -
                              RequireAuth, RequireAdmin, GuestOnly (they render React, so they live here, not in core)
   pages/                     route-level screens (thin: compose components and hooks), grouped by audience:
-                             landing-page.tsx (the home page), learner/ (catalog, course, lesson, my learning, dashboard), admin/, auth/; plus
+                             landing-page.tsx (the home page), browse/ (catalog and course: the same screens for visitors and signed-in people), learner/ (lesson, my learning, dashboard), admin/, auth/; plus
                              app-providers.tsx: the wrapper around every page (query client, confirm dialog, toasts, 401 handling)
   styles/                    globals.css = design tokens + base styles
   test/                      every unit test, mirroring the folders above (test/core/..., test/components/...),
@@ -97,13 +97,14 @@ Each page file starts with a comment saying its route and who can open it. Big p
 
 URLs are grouped by audience. `router/paths.ts` lists every address once (`PATHS`; `link(PATHS.learner.lesson, { lessonId })` fills in an id). `router/router.tsx` is the sitemap: one line per page saying its address, the page, and who may open it (`everyone`, `guest`, `signedIn` or `admin`). The guards in `router/guards/` enforce that column.
 
-| URL                                                                            | Who            | Page                                 |
-| ------------------------------------------------------------------------------ | -------------- | ------------------------------------ |
-| `/`                                                                            | everyone       | landing page (about LearnOnline)     |
-| `/learner/catalog`, `/learner/courses/:id`                                     | everyone       | catalog, course detail               |
-| `/learner/lessons/:id`, `/learner/my-learning`, `/learner/dashboard`           | signed-in      | lesson player, my learning, progress |
-| `/sign-in`, `/sign-up`                                                         | guests         | authentication                       |
-| `/admin`, `/admin/courses[/:id]`, `/admin/categories`, `/admin/learners[/:id]` | administrators | management                           |
+| URL                                                                            | Who            | Page                                                                              |
+| ------------------------------------------------------------------------------ | -------------- | --------------------------------------------------------------------------------- |
+| `/`                                                                            | everyone       | landing page (about LearnOnline)                                                  |
+| `/catalog`, `/courses/:id`                                                     | visitors       | free catalog and course detail; signed-in people are redirected to `/learner/...` |
+| `/learner/catalog`, `/learner/courses/:id`                                     | signed-in      | the same two screens inside the app (sidebar)                                     |
+| `/learner/lessons/:id`, `/learner/my-learning`, `/learner/dashboard`           | signed-in      | lesson player, my learning, progress                                              |
+| `/sign-in`, `/sign-up`                                                         | guests         | authentication                                                                    |
+| `/admin`, `/admin/courses[/:id]`, `/admin/categories`, `/admin/learners[/:id]` | administrators | management                                                                        |
 
 Pages load on demand (code splitting). In development, `/styleguide` shows every component and state.
 

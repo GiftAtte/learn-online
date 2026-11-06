@@ -3,14 +3,15 @@ import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { PageLoader } from '@/components/feedback/page-loader';
 import { RootLayout } from '@/components/layout/root-layout';
 import { GuestOnly } from '@/router/guards/guest-only';
+import { PublicOnly } from '@/router/guards/public-only';
 import { RequireAdmin } from '@/router/guards/require-admin';
 import { RequireAuth } from '@/router/guards/require-auth';
 import { PATHS } from './paths';
 
 // Each page is loaded when it is first opened, so the first visit only downloads what it needs.
 const LandingPage = lazy(() => import('@/pages/landing-page'));
-const CatalogPage = lazy(() => import('@/pages/learner/catalog-page'));
-const CoursePage = lazy(() => import('@/pages/learner/course-page'));
+const CatalogPage = lazy(() => import('@/pages/browse/catalog-page'));
+const CoursePage = lazy(() => import('@/pages/browse/course-page'));
 const LessonPage = lazy(() => import('@/pages/learner/lesson-page'));
 const MyLearningPage = lazy(() => import('@/pages/learner/my-learning-page'));
 const DashboardPage = lazy(() => import('@/pages/learner/dashboard-page'));
@@ -31,11 +32,12 @@ const StyleguidePage = lazy(() =>
 /**
  * Who may open a page:
  *   everyone   anybody, signed in or not
+ *   public     the free pages for visitors; signed-in people are sent to the /learner version
  *   guest      only people who are signed out (sign-in and sign-up)
  *   signedIn   any signed-in person
  *   admin      signed-in administrators only
  */
-type Who = 'everyone' | 'guest' | 'signedIn' | 'admin';
+type Who = 'everyone' | 'public' | 'guest' | 'signedIn' | 'admin';
 
 interface PageRoute {
   path: string;
@@ -45,9 +47,13 @@ interface PageRoute {
 
 /** The sitemap: one line per page. */
 const PAGES: PageRoute[] = [
-  // Learner pages
-  { path: PATHS.learner.catalog, page: CatalogPage, who: 'everyone' },
-  { path: PATHS.learner.course, page: CoursePage, who: 'everyone' },
+  // Free pages (no account needed)
+  { path: PATHS.catalog, page: CatalogPage, who: 'public' },
+  { path: PATHS.course, page: CoursePage, who: 'public' },
+
+  // Learner pages. The catalog and course are the same screens as the free ones, inside the app.
+  { path: PATHS.learner.catalog, page: CatalogPage, who: 'signedIn' },
+  { path: PATHS.learner.course, page: CoursePage, who: 'signedIn' },
   { path: PATHS.learner.lesson, page: LessonPage, who: 'signedIn' },
   { path: PATHS.learner.myLearning, page: MyLearningPage, who: 'signedIn' },
   { path: PATHS.learner.dashboard, page: DashboardPage, who: 'signedIn' },
@@ -89,7 +95,8 @@ export const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
-      ...pagesFor('everyone'),
+      // Free pages: visitors only. Signed-in people are redirected to /learner/...
+      { element: <PublicOnly />, children: pagesFor('public') },
 
       // Signed-in people only. Admin pages need that too, plus the administrator role.
       {

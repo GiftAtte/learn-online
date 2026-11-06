@@ -16,7 +16,7 @@ export function AuthLayout({ title, description, children, footer }: AuthLayoutP
   return (
     <div className="grid min-h-dvh grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-spruce-900 p-12 text-white lg:flex">
-        <Link to={PATHS.learner.catalog} aria-label="LearnOnLine home" className="w-fit text-white">
+        <Link to={PATHS.catalog} aria-label="LearnOnLine home" className="w-fit text-white">
           <Logo />
         </Link>
         <div className="flex max-w-md flex-col gap-6">
@@ -35,11 +35,7 @@ export function AuthLayout({ title, description, children, footer }: AuthLayoutP
 
       <main className="flex items-center justify-center px-4 py-10 sm:px-8">
         <div className="flex w-full max-w-md flex-col gap-8">
-          <Link
-            to={PATHS.learner.catalog}
-            aria-label="LearnOnLine home"
-            className="w-fit lg:hidden"
-          >
+          <Link to={PATHS.catalog} aria-label="LearnOnLine home" className="w-fit lg:hidden">
             <LogoMark className="size-10" />
           </Link>
           <div className="flex flex-col gap-2">

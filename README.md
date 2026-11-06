@@ -105,7 +105,7 @@ CI (`.github/workflows/ci.yml`) runs typecheck, format check, tests and the clie
 | --- | --- |
 | Sign-up, sign-in, protected routes, learner and admin roles | `api/src/modules/auth`, `middleware/authenticate.ts`, `authorize.ts`; `client/src/router/guards`, `core/hooks/queries/use-auth.ts` |
 | Secure sessions | bcrypt, HS256 JWT with pinned algorithm, role loaded from the database on every request, real sign-out (token version), rate limiting, helmet, CORS allow-list |
-| Course catalog with card layout (thumbnail, category, duration, progress) | `client/src/pages/learner/catalog-page.tsx`, `components/courses/course-card.tsx` |
+| Course catalog with card layout (thumbnail, category, duration, progress) | `client/src/pages/browse/catalog-page.tsx`, `components/courses/course-card.tsx` |
 | Course detail with lesson cards; focused video card with next-up lessons | `pages/learner/course-page.tsx`, `pages/learner/lesson-page.tsx`, `components/lessons` |
 | Video: play, pause, seek, replay, speed, resume, completion at the end | `client/src/components/media/video-player.tsx`; rules in `api/src/modules/progress` |
 | Enrollment and progress tracking, learner dashboard | `modules/enrollments`, `modules/progress`, `modules/dashboard`; `pages/learner/dashboard-page.tsx` |
