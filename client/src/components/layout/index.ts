@@ -3,5 +3,8 @@ export * from './container';
 export * from './logo';
 export * from './page';
 export * from './page-header';
+export * from './public-footer';
+export * from './public-header';
+export * from './public-layout';
 export * from './section';
 export * from './sidebar';

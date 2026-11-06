@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import { FeatureGrid } from '@/components/landing/feature-grid';
 import { HeroPreview } from '@/components/landing/hero-preview';
 import { HowItWorks } from '@/components/landing/how-it-works';
-import { LandingHeader } from '@/components/landing/landing-header';
-import { Logo } from '@/components/layout/logo';
+import { PublicFooter } from '@/components/layout/public-footer';
+import { PublicHeader } from '@/components/layout/public-header';
 import { Button } from '@/components/ui/button';
 import { useSession } from '@/core/hooks/queries/use-auth';
 import { PATHS } from '@/router/paths';
@@ -26,7 +26,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-dvh bg-canvas">
-      <LandingHeader />
+      <PublicHeader showSections />
 
       <main>
         {/* Hero: the promise on the left, the product at work on the right */}
@@ -162,28 +162,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-line">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center sm:px-6">
-          <span className="text-ink">
-            <Logo />
-          </span>
-          <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft">
-            <Link to={PATHS.learner.catalog} className="hover:text-ink">
-              Courses
-            </Link>
-            {!user && (
-              <>
-                <Link to={PATHS.signIn} className="hover:text-ink">
-                  Sign in
-                </Link>
-                <Link to={PATHS.signUp} className="hover:text-ink">
-                  Sign up
-                </Link>
-              </>
-            )}
-          </nav>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }
