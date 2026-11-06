@@ -1,0 +1,15 @@
+[Unit]
+Description=LearnOnline deploy webhook
+After=network.target
+
+[Service]
+# HOOK_SECRET lives in this file, outside git (chmod 600).
+EnvironmentFile=/etc/learnonline-webhook.env
+# Listens on this machine only; the reverse proxy (CyberPanel) exposes it over HTTPS.
+ExecStart=/usr/bin/webhook -template -hooks /opt/learnonline/deploy/hooks.json -ip 127.0.0.1 -port 9000
+Restart=on-failure
+# A deploy started by the webhook must survive a restart of this service.
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
