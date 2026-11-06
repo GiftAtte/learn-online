@@ -1,3 +1,4 @@
+import { useAppSettings } from '@/core/hooks/queries/use-settings';
 import type { CSSProperties } from 'react';
 import { Check } from 'lucide-react';
 import { useEffect } from 'react';
@@ -24,6 +25,7 @@ const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
  */
 export default function LandingPage() {
   const { user, isAdmin } = useSession();
+  const { appName } = useAppSettings();
   const { hash } = useLocation();
 
   // The header's "How it works" and "What you get" links point to #sections of this page. The router
@@ -48,7 +50,7 @@ export default function LandingPage() {
                 Video courses you can actually finish
               </h1>
               <p className="lp-rise max-w-xl text-lg text-spruce-100" style={delay(120)}>
-                LearnOnline gives you short lessons, a player that remembers where you stopped, and
+                {appName} gives you short lessons, a player that remembers where you stopped, and
                 a dashboard that shows how far you have come.
               </p>
 

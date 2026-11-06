@@ -103,3 +103,20 @@ model LessonProgress {
   @@unique([userId, lessonId])
   @@index([lessonId])
 }
+
+/// Application details an administrator can change: one row, always id "app".
+model AppSettings {
+  id                String   @id @default("app")
+  appName           String   @default("LearnOnline")
+  tagline           String?
+  logoUrl           String?
+  supportEmail      String?
+  /// Upload rules: biggest file in megabytes, and the file extensions allowed, per kind.
+  imageMaxMegabytes Int      @default(10)
+  videoMaxMegabytes Int      @default(100)
+  imageFormats      String[] @default(["jpg", "jpeg", "png", "webp", "gif"])
+  videoFormats      String[] @default(["mp4", "webm", "mov"])
+  /// Whether new people can create their own account (administrators can still be promoted).
+  allowSignups      Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
+}

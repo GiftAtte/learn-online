@@ -1,3 +1,4 @@
+import { useAppSettings } from '@/core/hooks/queries/use-settings';
 import { Link, useLocation } from 'react-router-dom';
 import type { To } from 'react-router-dom';
 import { Logo } from '@/components/layout/logo';
@@ -14,8 +15,8 @@ interface MenuItem {
 }
 
 /**
- * The same menu on every public page. The first two items jump to a section of the landing page;
- * once someone is signed in they are not needed, so only "Courses" stays.
+ * The same menu on every public page, signed in or not. The first two items jump to a section of the
+ * landing page; "Courses" opens the catalog (the signed-in version once you have an account).
  */
 function useMenuItems(signedIn: boolean): MenuItem[] {
   const { pathname, hash } = useLocation();
@@ -42,7 +43,7 @@ function useMenuItems(signedIn: boolean): MenuItem[] {
       pathname.startsWith('/learner/'),
   };
 
-  return signedIn ? [courses] : [...sections, courses];
+  return [...sections, courses];
 }
 
 /**
@@ -53,12 +54,13 @@ function useMenuItems(signedIn: boolean): MenuItem[] {
 export function PublicHeader() {
   const { user, isAdmin } = useSession();
   const items = useMenuItems(!!user);
+  const { appName } = useAppSettings();
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-spruce-950">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6 lg:gap-10">
-          <Link to={PATHS.home} aria-label="LearnOnline home">
+          <Link to={PATHS.home} aria-label={`${appName} home`}>
             <Logo inverted />
           </Link>
 

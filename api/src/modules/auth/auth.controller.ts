@@ -27,3 +27,14 @@ export const logout = async (req: Request, res: Response) => {
   clearSessionCookie(res);
   noContent(res);
 };
+
+export const updateProfile = async (req: Request, res: Response) => {
+  ok(res, await service.updateProfile(requireUser(req).id, req.body));
+};
+
+/** Keeps this browser signed in with a new token; every other session is signed out. */
+export const changePassword = async (req: Request, res: Response) => {
+  const { token } = await service.changePassword(requireUser(req).id, req.body);
+  setSessionCookie(res, token);
+  noContent(res);
+};

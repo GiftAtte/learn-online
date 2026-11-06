@@ -3,7 +3,7 @@ import { authenticate } from '../../middleware/authenticate';
 import { requireAdmin } from '../../middleware/authorize';
 import { validate } from '../../middleware/validate';
 import * as controller from './dashboard.controller';
-import { adminLearnersQuery, learnerIdParam } from './dashboard.schemas';
+import { adminLearnersQuery, courseIdParam, learnerIdParam } from './dashboard.schemas';
 
 export const dashboardRouter = Router();
 dashboardRouter.use(authenticate);
@@ -21,4 +21,10 @@ dashboardRouter.get(
   requireAdmin,
   validate({ params: learnerIdParam }),
   controller.learnerDetail,
+);
+dashboardRouter.get(
+  '/admin/courses/:courseId',
+  requireAdmin,
+  validate({ params: courseIdParam }),
+  controller.courseActivity,
 );

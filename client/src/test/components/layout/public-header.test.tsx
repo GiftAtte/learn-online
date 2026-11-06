@@ -34,13 +34,22 @@ describe('public header', () => {
     }
   });
 
-  it('hides the section links once someone is signed in, and keeps Courses', () => {
+  it('keeps every link once someone is signed in, and sends Courses to the signed-in catalog', () => {
     session.current = { user: { id: '1', name: 'Leo' } };
     renderHeader('/');
 
-    expect(screen.queryByRole('link', { name: 'How it works' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'What you get' })).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Courses' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'How it works' })).toHaveAttribute(
+      'href',
+      '/#how-it-works',
+    );
+    expect(screen.getByRole('link', { name: 'What you get' })).toHaveAttribute(
+      'href',
+      '/#features',
+    );
+    expect(screen.getByRole('link', { name: 'Courses' })).toHaveAttribute(
+      'href',
+      '/learner/catalog',
+    );
     expect(screen.getByRole('link', { name: 'Open the app' })).toBeInTheDocument();
   });
 });

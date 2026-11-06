@@ -17,6 +17,8 @@ export const MESSAGES = {
     registered: 'Account created. Welcome aboard.',
     signedOut: 'You’re signed out',
     roleChanged: 'Role updated',
+    profileUpdated: 'Profile updated',
+    passwordChanged: 'Password changed. Other devices were signed out.',
     sessionExpired: 'Your session ended. Sign in to continue.',
     invalidCredentials: 'That email and password don’t match.',
   },

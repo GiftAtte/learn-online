@@ -84,3 +84,24 @@ export const useSignOut = () => {
     notify.info(MESSAGES.auth.signedOut);
   };
 };
+
+/** Changes your own name and updates it everywhere it is shown. Form errors are left for the form to show. */
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: authService.updateProfile,
+    meta: { handlesOwnError: true },
+    onSuccess: (user) => {
+      queryClient.setQueryData(queryKeys.me, user);
+      notify.success(MESSAGES.auth.profileUpdated);
+    },
+  });
+};
+
+/** Changes your own password. Wrong-password errors are left for the form to show. */
+export const useChangePassword = () =>
+  useMutation({
+    mutationFn: authService.changePassword,
+    meta: { handlesOwnError: true },
+    onSuccess: () => notify.success(MESSAGES.auth.passwordChanged),
+  });

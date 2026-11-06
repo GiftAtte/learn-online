@@ -32,3 +32,10 @@ export const useGetLearnerById = (learnerId: string) =>
     queryKey: queryKeys.adminLearner(learnerId),
     queryFn: ({ signal }) => dashboardService.getLearnerById(learnerId, signal),
   });
+
+/** Loads one course's full activity (administrators only). */
+export const useGetCourseActivity = (courseId: string) =>
+  useQuery({
+    queryKey: queryKeys.adminCourseActivity(courseId),
+    queryFn: ({ signal }) => dashboardService.getCourseActivity(courseId, signal),
+  });

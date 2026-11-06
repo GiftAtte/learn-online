@@ -6,7 +6,7 @@ import { useFieldControl } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { ProgressBar } from '@/components/ui/progress';
 import { useUploadMedia } from '@/core/hooks/queries/use-media';
-import { MEDIA_RULES, videoPosterUrl } from '@/core/lib/media';
+import { acceptOf, videoPosterUrl } from '@/core/lib/media';
 import type { MediaKind, UploadedMedia } from '@/core/types/media.types';
 
 interface MediaFieldProps {
@@ -42,11 +42,10 @@ const fileNameOf = (url: string) => {
  */
 export function MediaField({ kind, value, onChange, onUploaded }: MediaFieldProps) {
   const field = useFieldControl();
-  const { upload, cancel, progress, isUploading, error } = useUploadMedia(kind);
+  const { upload, cancel, progress, isUploading, error, rules } = useUploadMedia(kind);
   const [fileName, setFileName] = useState('');
   const [linkMode, setLinkMode] = useState(false);
   const replacePicker = useRef<HTMLInputElement>(null);
-  const rules = MEDIA_RULES[kind];
 
   const start = (file: File) => {
     setFileName(file.name);
@@ -65,7 +64,7 @@ export function MediaField({ kind, value, onChange, onUploaded }: MediaFieldProp
       <input
         ref={replacePicker}
         type="file"
-        accept={rules.accept}
+        accept={acceptOf(rules.extensions)}
         className="sr-only"
         tabIndex={-1}
         aria-hidden
@@ -144,7 +143,7 @@ export function MediaField({ kind, value, onChange, onUploaded }: MediaFieldProp
             id={field.id}
             aria-describedby={field['aria-describedby']}
             invalid={!!field['aria-invalid']}
-            accept={rules.accept}
+            accept={acceptOf(rules.extensions)}
             onFile={start}
           >
             <span className="flex size-11 items-center justify-center rounded-full bg-spruce-50 text-spruce-600">

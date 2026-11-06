@@ -1,29 +1,27 @@
+import type { AppSettings } from '@/core/types/settings.types';
 import type { MediaKind } from '@/core/types/media.types';
 
-/** What each kind of file may be: the types the file picker offers, and the biggest size we accept. */
-export const MEDIA_RULES: Record<
-  MediaKind,
-  { accept: string; extensions: string[]; maxMegabytes: number }
-> = {
-  // 100 MB is the largest video Cloudinary's free plan accepts.
-  video: {
-    accept: 'video/mp4,video/webm,video/quicktime',
-    extensions: ['mp4', 'webm', 'mov'],
-    maxMegabytes: 100,
-  },
-  image: {
-    accept: 'image/jpeg,image/png,image/webp,image/gif',
-    extensions: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-    maxMegabytes: 10,
-  },
-};
+/** What one kind of file may be: the extensions allowed, and the biggest size in megabytes. */
+export interface UploadRules {
+  extensions: string[];
+  maxMegabytes: number;
+}
+
+/** The rules an administrator has set in Settings, for one kind of file. */
+export const uploadRulesFor = (settings: AppSettings, kind: MediaKind): UploadRules =>
+  kind === 'video'
+    ? { extensions: settings.videoFormats, maxMegabytes: settings.videoMaxMegabytes }
+    : { extensions: settings.imageFormats, maxMegabytes: settings.imageMaxMegabytes };
+
+/** The value for a file picker's `accept`, so it offers only the allowed types: ".mp4,.webm". */
+export const acceptOf = (extensions: string[]) => extensions.map((e) => `.${e}`).join(',');
 
 /**
  * Checks a chosen file BEFORE sending it, so people get an instant explanation instead of waiting
  * for an upload to fail. Returns the message to show, or null when the file is fine.
  */
-export const validateMediaFile = (file: File, kind: MediaKind): string | null => {
-  const { extensions, maxMegabytes } = MEDIA_RULES[kind];
+export const validateMediaFile = (file: File, rules: UploadRules): string | null => {
+  const { extensions, maxMegabytes } = rules;
   const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
 
   if (!extensions.includes(extension)) {

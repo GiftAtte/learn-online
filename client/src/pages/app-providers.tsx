@@ -2,6 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, type ReactNode } from 'react';
 import { ConfirmProvider } from '@/components/feedback/confirm-dialog';
 import { Toaster } from '@/components/feedback/toaster';
+import { Branding } from '@/components/layout/branding';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { queryKeys } from '@/core/hooks/queries/query-keys';
 import { setUnauthorizedHandler } from '@/core/api/client';
@@ -26,6 +27,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <ConfirmProvider>
+          <Branding />
           {children}
           <Toaster />
         </ConfirmProvider>

@@ -40,7 +40,16 @@ interface DataTableProps<T> {
    */
   sorting?: SortingState;
   onSortingChange?: (sorting: SortingState) => void;
+  /**
+   * Makes the whole row (table row or phone card) clickable. Keep a real link in the row too, so
+   * keyboard and screen-reader users have something to focus; clicks on links and buttons are left alone.
+   */
+  onRowClick?: (row: T) => void;
 }
+
+/** True when the click landed on (or inside) something that handles clicks itself. */
+const isInteractive = (target: EventTarget) =>
+  target instanceof Element && !!target.closest('a, button, input, select, textarea, label');
 
 /**
  * The one table for every list in the app (courses, learners, categories, lessons).
@@ -65,6 +74,7 @@ export function DataTable<T>({
   empty,
   sorting,
   onSortingChange,
+  onRowClick,
 }: DataTableProps<T>) {
   const serverSorted = sorting !== undefined;
   const [localSorting, setLocalSorting] = useState<SortingState>([]);
@@ -129,7 +139,20 @@ export function DataTable<T>({
               </thead>
               <tbody className="divide-y divide-line/80">
                 {rows.map((row) => (
-                  <tr key={row.id} className="group/row transition-colors hover:bg-spruce-50/50">
+                  <tr
+                    key={row.id}
+                    className={cn(
+                      'group/row transition-colors hover:bg-spruce-50/50',
+                      onRowClick && 'cursor-pointer',
+                    )}
+                    onClick={
+                      onRowClick
+                        ? (e) => {
+                            if (!isInteractive(e.target)) onRowClick(row.original);
+                          }
+                        : undefined
+                    }
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <td
                         key={cell.id}
@@ -155,7 +178,17 @@ export function DataTable<T>({
               const rest = cells.filter((c) => c.column.id !== titleId);
               return (
                 <li key={row.id}>
-                  <Card padding="sm" className="flex flex-col gap-3">
+                  <Card
+                    padding="sm"
+                    className={cn('flex flex-col gap-3', onRowClick && 'cursor-pointer')}
+                    onClick={
+                      onRowClick
+                        ? (e) => {
+                            if (!isInteractive(e.target)) onRowClick(row.original);
+                          }
+                        : undefined
+                    }
+                  >
                     {title && (
                       <div className="font-display text-lg font-semibold">
                         {flexRender(title.column.columnDef.cell, title.getContext())}

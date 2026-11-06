@@ -4,6 +4,7 @@
  */
 export const queryKeys = {
   me: ['me'] as const,
+  settings: ['settings'] as const,
   categories: ['categories'] as const,
   courses: (params?: object) => ['courses', 'list', params ?? {}] as const,
   coursesAll: ['courses'] as const,
@@ -15,5 +16,6 @@ export const queryKeys = {
   adminDashboard: ['dashboard', 'admin'] as const,
   adminLearners: (params: object) => ['dashboard', 'admin', 'learners', params] as const,
   adminLearner: (id: string) => ['dashboard', 'admin', 'learner', id] as const,
+  adminCourseActivity: (id: string) => ['dashboard', 'admin', 'course', id] as const,
   dashboardAll: ['dashboard'] as const,
 };

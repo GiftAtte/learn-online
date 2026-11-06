@@ -9,6 +9,7 @@ beforeEach(async () => {
     prisma.course.deleteMany(),
     prisma.category.deleteMany(),
     prisma.user.deleteMany(),
+    prisma.appSettings.deleteMany(),
   ]);
 });
 

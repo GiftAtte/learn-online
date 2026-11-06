@@ -6,6 +6,7 @@ export * from './dropdown-menu';
 export * from './form-field';
 export * from './form-modal';
 export * from './input';
+export * from './password-input';
 export * from './label';
 export * from './modal';
 export * from './progress';

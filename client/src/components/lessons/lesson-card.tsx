@@ -15,6 +15,8 @@ interface LessonCardProps {
   locked?: boolean;
   /** The last item has no line continuing below its node. */
   last?: boolean;
+  /** Smaller picture and tighter padding, for the list beside the video. */
+  compact?: boolean;
 }
 
 /**
@@ -22,7 +24,7 @@ interface LessonCardProps {
  * joined by a line: filled spruce = done, pencil = in progress / current, outline = not started.
  * The same component is used on the course page and in the "up next" list beside the video.
  */
-export function LessonCard({ lesson, to, current, locked, last }: LessonCardProps) {
+export function LessonCard({ lesson, to, current, locked, last, compact }: LessonCardProps) {
   const started = !lesson.completed && lesson.lastPositionSeconds > 0;
 
   const body = (
@@ -32,9 +34,16 @@ export function LessonCard({ lesson, to, current, locked, last }: LessonCardProp
         durationSeconds={lesson.durationSeconds}
         completed={lesson.completed}
         locked={locked}
+        compact={compact}
       />
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <p className={cn('leading-snug font-medium', current && 'text-ink')}>
+        <p
+          className={cn(
+            'leading-snug font-medium',
+            compact && 'text-[0.95rem]',
+            current && 'text-ink',
+          )}
+        >
           {lesson.title}
           <span className="sr-only">, {formatDuration(lesson.durationSeconds)}</span>
         </p>
@@ -59,7 +68,8 @@ export function LessonCard({ lesson, to, current, locked, last }: LessonCardProp
   );
 
   const cardClasses = cn(
-    'flex flex-1 items-center gap-3 rounded-card border bg-surface p-3.5 text-left transition-[border-color,box-shadow] duration-150',
+    'flex flex-1 items-center gap-3 rounded-card border bg-surface text-left transition-[border-color,box-shadow] duration-150',
+    compact ? 'p-2.5' : 'p-3.5',
     current ? 'border-pencil-500 shadow-card' : 'border-line',
     locked ? 'cursor-not-allowed opacity-70' : 'hover:border-spruce-300 hover:shadow-card',
   );

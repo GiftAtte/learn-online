@@ -13,6 +13,7 @@ import { dashboardRouter } from './modules/dashboard/dashboard.routes';
 import { enrollmentsRouter } from './modules/enrollments/enrollments.routes';
 import { lessonsRouter } from './modules/lessons/lessons.routes';
 import { mediaRouter } from './modules/media/media.routes';
+import { settingsRouter } from './modules/settings/settings.routes';
 import { usersRouter } from './modules/users/users.routes';
 
 /**
@@ -45,6 +46,7 @@ export const createApp = () => {
   api.use('/dashboard', dashboardRouter);
   api.use('/users', usersRouter);
   api.use('/media', mediaRouter);
+  api.use('/settings', settingsRouter);
   app.use('/api/v1', api);
 
   app.use(notFound);

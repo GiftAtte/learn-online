@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
   DataTable,
   MutedCell,
@@ -90,6 +91,7 @@ const columns: ColumnDef<AdminLearner>[] = [
  * they have enrolled, sort by name or join date, and page through results (all handled by the API).
  */
 export default function AdminLearnersPage() {
+  const navigate = useNavigate();
   const [params, setParams] = useUrlParams({
     q: '',
     enrolled: '',
@@ -126,6 +128,7 @@ export default function AdminLearnersPage() {
           columns={columns}
           data={data?.items ?? []}
           getRowId={(row) => row.id}
+          onRowClick={(learner) => navigate(link(PATHS.admin.learner, { learnerId: learner.id }))}
           mobileTitleColumn="name"
           loading={learners.isPending}
           busy={learners.isFetching && !learners.isPending}

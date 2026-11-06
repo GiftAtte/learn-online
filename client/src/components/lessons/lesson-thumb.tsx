@@ -10,6 +10,8 @@ interface LessonThumbProps {
   completed?: boolean;
   /** Not enrolled yet: the picture is dimmed and shows a lock. */
   locked?: boolean;
+  /** A smaller picture for lesson lists in a narrow side column (beside the video). */
+  compact?: boolean;
   className?: string;
 }
 
@@ -23,6 +25,7 @@ export function LessonThumb({
   durationSeconds,
   completed,
   locked,
+  compact,
   className,
 }: LessonThumbProps) {
   const [failed, setFailed] = useState(false);
@@ -31,7 +34,8 @@ export function LessonThumb({
     <span
       aria-hidden
       className={cn(
-        'relative block aspect-video w-28 shrink-0 overflow-hidden rounded-control bg-gradient-to-br from-spruce-600 to-spruce-900 sm:w-40',
+        'relative block aspect-video shrink-0 overflow-hidden rounded-control bg-gradient-to-br from-spruce-600 to-spruce-900',
+        compact ? 'w-24' : 'w-28 sm:w-40',
         className,
       )}
     >
@@ -46,11 +50,19 @@ export function LessonThumb({
       )}
 
       <span className="absolute inset-0 flex items-center justify-center">
-        <span className="flex size-8 items-center justify-center rounded-full bg-white/90 text-spruce-800 shadow-card sm:size-10">
+        <span
+          className={cn(
+            'flex items-center justify-center rounded-full bg-white/90 text-spruce-800 shadow-card',
+            compact ? 'size-6' : 'size-8 sm:size-10',
+          )}
+        >
           {locked ? (
-            <Lock className="size-4" />
+            <Lock className={compact ? 'size-3' : 'size-4'} />
           ) : (
-            <Play className="size-4 translate-x-px" fill="currentColor" />
+            <Play
+              className={cn('translate-x-px', compact ? 'size-3' : 'size-4')}
+              fill="currentColor"
+            />
           )}
         </span>
       </span>
@@ -60,7 +72,12 @@ export function LessonThumb({
           <Check className="size-3" strokeWidth={3} />
         </span>
       )}
-      <span className="absolute right-1.5 bottom-1.5 rounded bg-black/70 px-1.5 py-0.5 text-xs font-medium text-white tnum">
+      <span
+        className={cn(
+          'absolute right-1.5 bottom-1.5 rounded bg-black/70 px-1.5 py-0.5 font-medium text-white tnum',
+          compact ? 'text-[0.7rem]' : 'text-xs',
+        )}
+      >
         {formatDuration(durationSeconds)}
       </span>
     </span>

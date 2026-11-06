@@ -10,6 +10,8 @@ interface TableToolbarProps {
   sort?: ReactNode;
   /** Result count, e.g. "12 courses". Announced to screen readers when it changes. */
   summary?: ReactNode;
+  /** A link or button at the far right, e.g. "View more" to the full list. */
+  action?: ReactNode;
   /** Pass when any search or filter is active; shows a "Clear filters" button. */
   onClear?: () => void;
 }
@@ -18,7 +20,14 @@ interface TableToolbarProps {
  * The bar above every data table: search, then filters, then the result count on the right.
  * All controls share one height, and a filter that is applied tints itself.
  */
-export function TableToolbar({ search, filters, sort, summary, onClear }: TableToolbarProps) {
+export function TableToolbar({
+  search,
+  filters,
+  sort,
+  summary,
+  action,
+  onClear,
+}: TableToolbarProps) {
   return (
     <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
       <SearchInput
@@ -47,6 +56,7 @@ export function TableToolbar({ search, filters, sort, summary, onClear }: TableT
             {summary}
           </p>
         )}
+        {action}
       </div>
     </div>
   );
