@@ -1,161 +1,189 @@
-import { BarChart3, BookOpen, History, Library, PlayCircle, ShieldCheck } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import type { CSSProperties } from 'react';
+import { Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { FeatureGrid } from '@/components/landing/feature-grid';
+import { HeroPreview } from '@/components/landing/hero-preview';
+import { HowItWorks } from '@/components/landing/how-it-works';
+import { LandingHeader } from '@/components/landing/landing-header';
+import { Logo } from '@/components/layout/logo';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { useSession } from '@/core/hooks/queries/use-auth';
 import { PATHS } from '@/router/paths';
 
-/** The three steps of using the platform, shown under the headline. */
-const STEPS: { title: string; text: string; icon: LucideIcon }[] = [
-  {
-    title: 'Browse',
-    text: 'Look through the catalog by category and open any course to see its lessons. No account needed.',
-    icon: BookOpen,
-  },
-  {
-    title: 'Enroll and watch',
-    text: 'Create a free account, enroll in a course and watch its short video lessons in order.',
-    icon: PlayCircle,
-  },
-  {
-    title: 'Track your progress',
-    text: 'Finished lessons are marked for you, and your dashboard shows how far you are in every course.',
-    icon: BarChart3,
-  },
-];
+/** Short promises under the main buttons. */
+const PROMISES = ['Free to join', 'No card needed', 'Works on phone and computer'];
 
-/** What a learner gets. */
-const FEATURES: { title: string; text: string; icon: LucideIcon }[] = [
-  {
-    title: 'Pick up where you left off',
-    text: 'The player remembers your position in every lesson and resumes from there on any device.',
-    icon: History,
-  },
-  {
-    title: 'Short, focused lessons',
-    text: 'Each course is split into video lessons you can finish between everything else.',
-    icon: Library,
-  },
-  {
-    title: 'Your account stays yours',
-    text: 'Passwords are hashed, your session cookie is hidden from scripts, and you can sign out everywhere.',
-    icon: ShieldCheck,
-  },
-];
+/** Delay (in ms) for the hero text lines, so they arrive one after another. */
+const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
 
 /**
- * Route "/": the first page a visitor sees. It explains what LearnOnline is before asking anyone to
- * sign up. People who are already signed in get links into the app instead of the sign-up buttons.
+ * Route "/": the first page a visitor sees. It stands on its own (no app menu): it says what
+ * LearnOnline is, shows the product at work, explains the steps, and asks people to sign up.
+ * People who are already signed in get links into the app instead of the sign-up buttons.
  */
 export default function LandingPage() {
   const { user } = useSession();
 
   return (
-    <div className="flex flex-col gap-16 sm:gap-24">
-      {/* Headline and the main call to action */}
-      <section className="flex flex-col items-start gap-6 pt-2 sm:pt-8">
-        <p className="rounded-full bg-pencil-100 px-3 py-1 text-sm font-medium text-pencil-700">
-          Online learning, one lesson at a time
-        </p>
-        <h1 className="max-w-3xl font-display text-4xl font-bold tracking-tight text-balance sm:text-6xl">
-          Learn new skills at your own pace
-        </h1>
-        <p className="max-w-2xl text-lg text-ink-soft">
-          LearnOnline is a library of video courses. Browse the catalog, enroll for free, watch
-          lessons in order and see your progress grow. Come back any time and continue exactly where
-          you stopped.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          {user ? (
-            <>
-              <Button asChild size="lg">
-                <Link to={PATHS.learner.catalog}>Go to the catalog</Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary">
-                <Link to={PATHS.learner.myLearning}>My learning</Link>
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button asChild size="lg">
-                <Link to={PATHS.signUp}>Create a free account</Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary">
-                <Link to={PATHS.learner.catalog}>Browse the catalog</Link>
-              </Button>
-            </>
-          )}
-        </div>
-      </section>
+    <div className="min-h-dvh bg-canvas">
+      <LandingHeader />
 
-      {/* How it works */}
-      <section aria-labelledby="how-it-works" className="flex flex-col gap-6">
-        <h2 id="how-it-works" className="text-2xl font-semibold tracking-tight">
-          How it works
-        </h2>
-        <ol className="grid gap-4 sm:grid-cols-3">
-          {STEPS.map(({ title, text, icon: Icon }, index) => (
-            <li key={title}>
-              <Card className="flex h-full flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="flex size-10 items-center justify-center rounded-full bg-spruce-100 text-spruce-700">
-                    <Icon className="size-5" aria-hidden />
-                  </span>
-                  <span className="text-sm font-medium text-ink-faint">Step {index + 1}</span>
-                </div>
-                <h3 className="text-lg font-semibold">{title}</h3>
-                <p className="text-ink-soft">{text}</p>
-              </Card>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <main>
+        {/* Hero: the promise on the left, the product at work on the right */}
+        <section className="lp-hero-bg relative overflow-hidden text-white">
+          <div aria-hidden className="lp-dots absolute inset-0" />
+          <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pt-16 pb-24 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-24 lg:pb-32">
+            <div className="flex flex-col items-start gap-6">
+              <h1
+                className="lp-rise font-display text-5xl leading-[1.02] font-bold tracking-tight text-balance sm:text-6xl lg:text-7xl"
+                style={delay(0)}
+              >
+                Video courses you can actually finish
+              </h1>
+              <p className="lp-rise max-w-xl text-lg text-spruce-100" style={delay(120)}>
+                LearnOnline gives you short lessons, a player that remembers where you stopped, and
+                a dashboard that shows how far you have come.
+              </p>
 
-      {/* Why learners like it */}
-      <section aria-labelledby="why" className="flex flex-col gap-6">
-        <h2 id="why" className="text-2xl font-semibold tracking-tight">
-          Made for learning, not for scrolling
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          {FEATURES.map(({ title, text, icon: Icon }) => (
-            <Card key={title} className="flex flex-col gap-3">
-              <Icon className="size-6 text-spruce-600" aria-hidden />
-              <h3 className="text-lg font-semibold">{title}</h3>
-              <p className="text-ink-soft">{text}</p>
-            </Card>
-          ))}
-        </div>
-      </section>
+              <div className="lp-rise flex flex-wrap gap-3" style={delay(240)}>
+                {user ? (
+                  <>
+                    <Button asChild size="lg" variant="accent">
+                      <Link to={PATHS.learner.catalog}>Go to the catalog</Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="lg"
+                      variant="ghost"
+                      className="text-white hover:bg-white/10 hover:text-white"
+                    >
+                      <Link to={PATHS.learner.myLearning}>My learning</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button asChild size="lg" variant="accent">
+                      <Link to={PATHS.signUp}>Create a free account</Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="lg"
+                      variant="ghost"
+                      className="text-white hover:bg-white/10 hover:text-white"
+                    >
+                      <Link to={PATHS.learner.catalog}>Browse courses</Link>
+                    </Button>
+                  </>
+                )}
+              </div>
 
-      {/* For the people who run the courses */}
-      <section
-        aria-labelledby="for-teams"
-        className="flex flex-col gap-3 rounded-card bg-spruce-950 p-6 text-white sm:p-10"
-      >
-        <h2 id="for-teams" className="text-2xl font-semibold tracking-tight">
-          Running a course?
-        </h2>
-        <p className="max-w-2xl text-spruce-100">
-          Administrators create courses and categories, add and reorder lessons, publish when ready,
-          and see how every learner is getting on, lesson by lesson.
-        </p>
-      </section>
+              <ul
+                className="lp-rise flex flex-wrap gap-x-6 gap-y-2 text-sm text-spruce-100"
+                style={delay(360)}
+              >
+                {PROMISES.map((text) => (
+                  <li key={text} className="flex items-center gap-2">
+                    <Check className="size-4 text-pencil-500" strokeWidth={3} aria-hidden />
+                    {text}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-      {/* Closing call to action (guests only) */}
-      {!user && (
-        <section className="flex flex-col items-start gap-4">
-          <h2 className="text-2xl font-semibold tracking-tight">Ready to start?</h2>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg" variant="accent">
-              <Link to={PATHS.signUp}>Sign up, it is free</Link>
-            </Button>
-            <Button asChild size="lg" variant="ghost">
-              <Link to={PATHS.signIn}>I already have an account</Link>
-            </Button>
+            <HeroPreview />
           </div>
         </section>
-      )}
+
+        {/* The steps */}
+        <section
+          id="how-it-works"
+          aria-labelledby="how-title"
+          className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28"
+        >
+          <h2 id="how-title" className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
+            From first visit to finished course in four steps
+          </h2>
+          <div className="mt-12">
+            <HowItWorks />
+          </div>
+        </section>
+
+        {/* What you get */}
+        <section
+          id="features"
+          aria-labelledby="features-title"
+          className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 sm:pb-28"
+        >
+          <h2
+            id="features-title"
+            className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl"
+          >
+            Made for learning, not for scrolling
+          </h2>
+          <div className="mt-12">
+            <FeatureGrid />
+          </div>
+        </section>
+
+        {/* Closing call to action */}
+        <section className="px-4 pb-20 sm:px-6 sm:pb-28">
+          <div className="lp-hero-bg relative mx-auto flex max-w-6xl flex-col items-start gap-6 overflow-hidden rounded-[1.75rem] p-8 text-white sm:p-14">
+            <div aria-hidden className="lp-dots absolute inset-0" />
+            <h2 className="relative max-w-2xl text-3xl font-bold tracking-tight sm:text-5xl">
+              {user ? 'Pick up your next lesson' : 'Pick a course and start today'}
+            </h2>
+            <p className="relative max-w-xl text-spruce-100">
+              {user
+                ? 'Your progress is saved. Open the catalog to continue or start something new.'
+                : 'Create an account in under a minute. The first lesson is one click away.'}
+            </p>
+            <div className="relative flex flex-wrap gap-3">
+              {user ? (
+                <Button asChild size="lg" variant="accent">
+                  <Link to={PATHS.learner.catalog}>Go to the catalog</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button asChild size="lg" variant="accent">
+                    <Link to={PATHS.signUp}>Create a free account</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="ghost"
+                    className="text-white hover:bg-white/10 hover:text-white"
+                  >
+                    <Link to={PATHS.signIn}>I already have an account</Link>
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-line">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center sm:px-6">
+          <span className="text-ink">
+            <Logo />
+          </span>
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft">
+            <Link to={PATHS.learner.catalog} className="hover:text-ink">
+              Courses
+            </Link>
+            {!user && (
+              <>
+                <Link to={PATHS.signIn} className="hover:text-ink">
+                  Sign in
+                </Link>
+                <Link to={PATHS.signUp} className="hover:text-ink">
+                  Sign up
+                </Link>
+              </>
+            )}
+          </nav>
+        </div>
+      </footer>
     </div>
   );
 }
