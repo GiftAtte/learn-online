@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { MediaUploadButton } from '@/components/media/media-upload-button';
+import { Controller, useForm } from 'react-hook-form';
+import { MediaField } from '@/components/media/media-field';
 import { FormField, FormModal, Input, Textarea } from '@/components/ui';
 import { videoPosterUrl } from '@/core/lib/media';
 import { handleSubmitError } from '@/core/lib/forms';
@@ -59,49 +59,45 @@ export function LessonFormModal({ courseId, existing, onClose }: Props) {
         <Textarea className="min-h-24" {...form.register('description')} />
       </FormField>
       <FormField
-        label="Video address"
+        label="Video"
         required
-        hint="Paste a link to an MP4 file, or upload a video."
+        hint="Upload a video file, or paste a link to an MP4."
         error={errors.videoUrl?.message}
       >
-        <Input
-          type="url"
-          inputMode="url"
-          placeholder="https://…/lesson.mp4"
-          {...form.register('videoUrl')}
-        />
-        <MediaUploadButton
-          kind="video"
-          label="Upload a video"
-          onUploaded={(media) => {
-            form.setValue('videoUrl', media.url, { shouldValidate: true });
-            // Cloudinary reads the length from the file, so nobody has to type it.
-            if (media.durationSeconds) {
-              form.setValue('durationSeconds', media.durationSeconds, { shouldValidate: true });
-            }
-            // No thumbnail yet? Use a picture taken from the video itself.
-            const poster = videoPosterUrl(media.url);
-            if (poster && !form.getValues('thumbnailUrl')) {
-              form.setValue('thumbnailUrl', poster, { shouldValidate: true });
-            }
-          }}
+        <Controller
+          control={form.control}
+          name="videoUrl"
+          render={({ field }) => (
+            <MediaField
+              kind="video"
+              value={field.value}
+              onChange={field.onChange}
+              onUploaded={(media) => {
+                // Cloudinary reads the length from the file, so nobody has to type it.
+                if (media.durationSeconds) {
+                  form.setValue('durationSeconds', media.durationSeconds, { shouldValidate: true });
+                }
+                // No thumbnail yet? Use a picture taken from the video itself.
+                const poster = videoPosterUrl(media.url);
+                if (poster && !form.getValues('thumbnailUrl')) {
+                  form.setValue('thumbnailUrl', poster, { shouldValidate: true });
+                }
+              }}
+            />
+          )}
         />
       </FormField>
       <FormField
-        label="Thumbnail address"
-        hint="Optional. Paste a link to an image, or upload one. It is shown for this lesson on the course page."
+        label="Thumbnail"
+        hint="Optional. The picture shown for this lesson on the course page."
         error={errors.thumbnailUrl?.message}
       >
-        <Input
-          type="url"
-          inputMode="url"
-          placeholder="https://…/thumbnail.jpg"
-          {...form.register('thumbnailUrl')}
-        />
-        <MediaUploadButton
-          kind="image"
-          label="Upload an image"
-          onUploaded={(media) => form.setValue('thumbnailUrl', media.url, { shouldValidate: true })}
+        <Controller
+          control={form.control}
+          name="thumbnailUrl"
+          render={({ field }) => (
+            <MediaField kind="image" value={field.value ?? ''} onChange={field.onChange} />
+          )}
         />
       </FormField>
       <FormField
