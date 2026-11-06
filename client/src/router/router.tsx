@@ -6,6 +6,7 @@ import { GuestOnly } from '@/router/guards/guest-only';
 import { PublicOnly } from '@/router/guards/public-only';
 import { RequireAdmin } from '@/router/guards/require-admin';
 import { RequireAuth } from '@/router/guards/require-auth';
+import RouteErrorPage from '@/pages/route-error-page';
 import { PATHS } from './paths';
 
 // Each page is loaded when it is first opened, so the first visit only downloads what it needs.
@@ -74,6 +75,7 @@ const PAGES: PageRoute[] = [
 /** Turns one line of the sitemap into a route. */
 const toRoute = ({ path, page: Page }: PageRoute): RouteObject => ({
   path,
+  errorElement: <RouteErrorPage />,
   element: (
     <Suspense fallback={<PageLoader />}>
       <Page />
@@ -89,11 +91,12 @@ export const router = createBrowserRouter([
   toRoute({ path: PATHS.home, page: LandingPage, who: 'everyone' }),
 
   // Sign in and sign up: full screen, and closed to people who are already signed in.
-  { element: <GuestOnly />, children: pagesFor('guest') },
+  { element: <GuestOnly />, errorElement: <RouteErrorPage />, children: pagesFor('guest') },
 
   // Everything else sits inside the app frame (menu, sidebar).
   {
     element: <RootLayout />,
+    errorElement: <RouteErrorPage />,
     children: [
       // Free pages: visitors only. Signed-in people are redirected to /learner/...
       { element: <PublicOnly />, children: pagesFor('public') },
