@@ -17,22 +17,27 @@ describe('landing page', () => {
     session.current = { status: 'guest', user: null };
     renderPage();
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Learn new skills');
-    expect(screen.getByRole('heading', { name: 'How it works' })).toBeInTheDocument();
-    expect(
-      screen.getAllByRole('link', { name: /sign up|create a free account/i })[0],
-    ).toHaveAttribute('href', '/sign-up');
-    expect(screen.getByRole('link', { name: 'Browse the catalog' })).toHaveAttribute(
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Video courses you can actually finish',
+    );
+    expect(screen.getByRole('heading', { name: /four steps/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Create a free account' })[0]).toHaveAttribute(
+      'href',
+      '/sign-up',
+    );
+    expect(screen.getByRole('link', { name: 'Browse courses' })).toHaveAttribute(
       'href',
       '/learner/catalog',
     );
+    // The four steps are numbered in order.
+    expect(screen.getAllByRole('listitem').length).toBeGreaterThanOrEqual(4);
   });
 
   it('sends a signed-in person into the app instead of asking them to sign up', () => {
     session.current = { status: 'authenticated', user: { id: '1', name: 'Leo' } };
     renderPage();
 
-    expect(screen.getByRole('link', { name: 'Go to the catalog' })).toHaveAttribute(
+    expect(screen.getAllByRole('link', { name: 'Go to the catalog' })[0]).toHaveAttribute(
       'href',
       '/learner/catalog',
     );

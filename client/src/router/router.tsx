@@ -45,9 +45,6 @@ interface PageRoute {
 
 /** The sitemap: one line per page. */
 const PAGES: PageRoute[] = [
-  // The first page a visitor sees
-  { path: PATHS.home, page: LandingPage, who: 'everyone' },
-
   // Learner pages
   { path: PATHS.learner.catalog, page: CatalogPage, who: 'everyone' },
   { path: PATHS.learner.course, page: CoursePage, who: 'everyone' },
@@ -82,6 +79,9 @@ const toRoute = ({ path, page: Page }: PageRoute): RouteObject => ({
 const pagesFor = (who: Who) => PAGES.filter((p) => p.who === who).map(toRoute);
 
 export const router = createBrowserRouter([
+  // The landing page has its own header and footer, so it sits outside the app frame.
+  toRoute({ path: PATHS.home, page: LandingPage, who: 'everyone' }),
+
   // Sign in and sign up: full screen, and closed to people who are already signed in.
   { element: <GuestOnly />, children: pagesFor('guest') },
 
