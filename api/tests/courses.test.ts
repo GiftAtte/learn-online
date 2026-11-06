@@ -185,3 +185,45 @@ describe('lesson management', () => {
     expect(bad.status).toBe(400);
   });
 });
+
+describe('lesson thumbnails', () => {
+  it('lets an admin set and clear a thumbnail, and shows it to everyone, even before enrolling', async () => {
+    const admin = await createUser('ADMIN');
+    const course = await createCourse();
+    const body = {
+      title: 'With a picture',
+      description: 'A lesson that has a thumbnail.',
+      videoUrl: 'https://example.com/video.mp4',
+      durationSeconds: 60,
+      thumbnailUrl: 'https://example.com/thumb.jpg',
+    };
+
+    const created = await api().post(`/api/v1/courses/${course.id}/lessons`).set(admin.auth).send(body);
+    expect(created.status).toBe(201);
+
+    // Unlike the video address, the picture is public: it is what makes the lesson list worth opening.
+    const anon = await api().get(`/api/v1/courses/${course.id}`);
+    expect(anon.body.data.lessons[0].thumbnailUrl).toBe('https://example.com/thumb.jpg');
+    expect(anon.body.data.lessons[0].videoUrl).toBeUndefined();
+
+    const cleared = await api()
+      .patch(`/api/v1/lessons/${created.body.data.id}`)
+      .set(admin.auth)
+      .send({ thumbnailUrl: null });
+    expect(cleared.status).toBe(200);
+    expect(cleared.body.data.thumbnailUrl).toBeNull();
+  });
+
+  it('rejects a thumbnail that is not an http(s) address', async () => {
+    const admin = await createUser('ADMIN');
+    const course = await createCourse();
+    const res = await api().post(`/api/v1/courses/${course.id}/lessons`).set(admin.auth).send({
+      title: 'Bad picture',
+      description: 'Should not be accepted.',
+      videoUrl: 'https://example.com/video.mp4',
+      durationSeconds: 60,
+      thumbnailUrl: 'javascript:alert(1)',
+    });
+    expect(res.status).toBe(400);
+  });
+});

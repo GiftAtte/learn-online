@@ -260,6 +260,7 @@ async function main() {
             title,
             description,
             videoUrl: VIDEOS[video].url,
+            thumbnailUrl: `https://picsum.photos/seed/learnonline-lesson-${i + 1}-${idx + 1}/640/360`,
             durationSeconds: VIDEOS[video].seconds,
             order: idx + 1,
           })),
