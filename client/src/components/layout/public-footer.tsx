@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom';
 import { Logo } from '@/components/layout/logo';
 import { useSession } from '@/core/hooks/queries/use-auth';
 import { PATHS } from '@/router/paths';
+import { useBrowsePaths } from '@/router/use-browse-paths';
 
 /** The bottom of every public page (landing, catalog, course): logo and a few links. */
 export function PublicFooter() {
   const { user } = useSession();
+  const browse = useBrowsePaths();
 
   return (
     <footer className="border-t border-line">
@@ -14,7 +16,7 @@ export function PublicFooter() {
           <Logo />
         </span>
         <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft">
-          <Link to={PATHS.learner.catalog} className="hover:text-ink">
+          <Link to={browse.catalog} className="hover:text-ink">
             Courses
           </Link>
           {!user && (

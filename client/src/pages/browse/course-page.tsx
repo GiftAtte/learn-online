@@ -9,10 +9,10 @@ import { LessonPath } from '@/components/lessons/lesson-path';
 import { formatDuration, pluralize } from '@/core/lib/format';
 import { MESSAGES } from '@/core/lib/messages';
 import type { CourseDetail } from '@/core/types/course.types';
-import { PATHS } from '@/router/paths';
+import { useBrowsePaths } from '@/router/use-browse-paths';
 
 /**
- * Course detail: route "/learner/courses/:courseId" (open to everyone).
+ * Course detail: route "/courses/:courseId" (open to everyone).
  * Shows the lesson path and a summary card with the right action for the viewer
  * (sign in, enroll, continue...). Lessons are locked until the learner enrolls.
  */
@@ -36,12 +36,13 @@ export default function CoursePage() {
 
 function CourseView({ course }: { course: CourseDetail }) {
   const { isAdmin } = useSession();
+  const browse = useBrowsePaths();
   // Learners must enroll to watch; administrators can always preview.
   const canWatch = !!course.enrolled || isAdmin;
 
   return (
     <Page
-      back={{ to: PATHS.learner.catalog, label: 'All courses' }}
+      back={{ to: browse.catalog, label: 'All courses' }}
       title={course.title}
       description={course.description}
     >

@@ -27,7 +27,7 @@ describe('landing page', () => {
     );
     expect(screen.getByRole('link', { name: 'Browse courses' })).toHaveAttribute(
       'href',
-      '/learner/catalog',
+      '/catalog',
     );
     // The four steps are numbered in order.
     expect(screen.getAllByRole('listitem').length).toBeGreaterThanOrEqual(4);

@@ -76,5 +76,5 @@ test('the bare address shows the landing page, with a way to sign up and to brow
     'Video courses you can actually finish',
   );
   await page.getByRole('link', { name: 'Browse courses' }).first().click();
-  await expect(page).toHaveURL('/learner/catalog');
+  await expect(page).toHaveURL('/catalog');
 });

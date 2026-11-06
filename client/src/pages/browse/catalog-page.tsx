@@ -19,7 +19,8 @@ import { pluralize } from '@/core/lib/format';
 import { MESSAGES } from '@/core/lib/messages';
 import { NoResultsState } from '@/components/feedback/no-results-state';
 import { DEFAULT_SORT, parseSortOption } from '@/core/lib/table';
-import { link, PATHS } from '@/router/paths';
+import { PATHS } from '@/router/paths';
+import { useBrowsePaths } from '@/router/use-browse-paths';
 
 const PAGE_SIZE = 9;
 
@@ -30,12 +31,13 @@ const SORT_OPTIONS = [
 ];
 
 /**
- * Catalog: route "/learner/catalog" (open to everyone).
+ * Catalog: route "/catalog" (open to everyone).
  * Search, filter by category, sort, and page through published courses. Signed-in learners also get
  * a "continue learning" banner. The search text, filters, sort and page all live in the URL.
  */
 export default function CatalogPage() {
   const { user, isAdmin } = useSession();
+  const browse = useBrowsePaths();
   const [params, setParams] = useUrlParams({
     q: '',
     categoryId: '',
@@ -132,11 +134,7 @@ export default function CatalogPage() {
           <div className="flex flex-col gap-6">
             <CourseGrid>
               {items.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  to={link(PATHS.learner.course, { courseId: course.id })}
-                />
+                <CourseCard key={course.id} course={course} to={browse.course(course.id)} />
               ))}
             </CourseGrid>
             {/* A single page needs no paging controls; the toolbar already shows the count */}
