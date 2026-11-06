@@ -19,11 +19,15 @@ interface MediaFieldProps {
 }
 
 const NOUN: Record<MediaKind, string> = { video: 'video', image: 'image' };
+/** "a video" / "an image" */
+const WITH_ARTICLE: Record<MediaKind, string> = { video: 'a video', image: 'an image' };
 
-/** "https://x.com/a/my%20file.mp4?x=1" -> "my file.mp4" */
+/** "https://x.com/a/my%20file.mp4?x=1" -> "my file.mp4". Addresses without a real file name show the site instead. */
 const fileNameOf = (url: string) => {
   try {
-    return decodeURIComponent(new URL(url).pathname.split('/').pop() || url);
+    const { hostname, pathname } = new URL(url);
+    const name = decodeURIComponent(pathname.split('/').pop() ?? '');
+    return name && !/^d+$/.test(name) ? name : hostname;
   } catch {
     return url;
   }
@@ -31,7 +35,7 @@ const fileNameOf = (url: string) => {
 
 /**
  * One input for a video or an image, used inside a <FormField>. It covers the whole life of the file:
- *  - empty: a drop area ("Drop a video here, or browse"), or paste a link instead
+ *  - empty: a drop area ("Drop a video here, or browse"; "Drop an image here..." for images), or paste a link instead
  *  - uploading: file name, progress bar and Cancel
  *  - filled: a preview with Replace, Edit link and Remove
  * The form only sees `value` (an address) and `onChange`, so it works with any form library.
@@ -147,7 +151,7 @@ export function MediaField({ kind, value, onChange, onUploaded }: MediaFieldProp
               <UploadCloud className="size-5" aria-hidden />
             </span>
             <span className="text-[0.95rem] font-medium">
-              Drop a {NOUN[kind]} here, or{' '}
+              Drop {WITH_ARTICLE[kind]} here, or{' '}
               <span className="underline underline-offset-4">browse</span>
             </span>
             <span className="text-sm text-ink-faint">{rulesText}</span>
