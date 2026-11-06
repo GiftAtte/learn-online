@@ -39,6 +39,21 @@ npm run dev:api                  # http://localhost:4000      (terminal 1)
 npm run dev:client               # http://localhost:5173      (terminal 2)
 ```
 
+## Seeding the database
+
+The seed fills an empty database with the demo data: 2 accounts, 3 categories and 6 courses with 18 lessons,
+each lesson playing a free sample video (Blender films, MDN and W3C clips). It lives in `api/prisma/seed.ts`.
+
+| Where | Command |
+| --- | --- |
+| Local development | `npm run db:seed` (from the repo root; the same script exists in `api/`) |
+| Docker locally | `docker compose exec api npm run db:seed` |
+| The server | `cd /opt/learnonline && docker compose exec api npm run db:seed` |
+
+**Running it again deletes everything first**, including users, courses and progress, then recreates the demo data.
+It is meant for an empty or throwaway database. The demo passwords are public, so to use your own, set them
+for the run: `docker compose exec -e SEED_ADMIN_PASSWORD=... -e SEED_LEARNER_PASSWORD=... api npm run db:seed`.
+
 Demo accounts (from the seed, for local use only):
 
 | Role    | Email                   | Password    |
