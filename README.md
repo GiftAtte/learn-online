@@ -41,7 +41,7 @@ npm run dev:client               # http://localhost:5173      (terminal 2)
 
 ## Seeding the database
 
-The seed fills an empty database with the demo data: 2 accounts, 3 categories and 6 courses with 18 lessons,
+The seed fills an empty database with the demo data: 2 accounts, 4 categories and 13 courses (12 published) with 38 lessons,
 each lesson playing a free sample video (Blender films, MDN and W3C clips). It lives in `api/prisma/seed.ts`.
 
 | Where | Command |

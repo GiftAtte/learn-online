@@ -19,6 +19,14 @@ const VIDEOS = {
   elephantsDream: { url: 'https://archive.org/download/ElephantsDream/ed_1024_512kb.mp4', seconds: 654 },
   tearsOfSteel: { url: 'https://archive.org/download/Tears-of-Steel/tears_of_steel_1080p.mp4', seconds: 734 },
   sintelFilm: { url: 'https://archive.org/download/Sintel/sintel-2048-surround_512kb.mp4', seconds: 888 },
+  bunnyFull: {
+    url: 'https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4',
+    seconds: 596,
+  },
+  sitaFilm: {
+    url: 'https://archive.org/download/Sita_Sings_the_Blues/Sita_Sings_the_Blues_512kb.mp4',
+    seconds: 4891,
+  },
   movie300: { url: 'https://media.w3.org/2010/05/video/movie_300.mp4', seconds: 300 },
 
   // Trailers and short clips (under a minute).
@@ -40,6 +48,16 @@ const VIDEOS = {
   sintel: { url: 'https://test-videos.co.uk/vids/sintel/mp4/h264/360/Sintel_360_10s_1MB.mp4', seconds: 10 },
   sample10: { url: 'https://samplelib.com/lib/preview/mp4/sample-10s.mp4', seconds: 10 },
   bunnyShort: { url: 'https://www.w3schools.com/html/mov_bbb.mp4', seconds: 10 },
+  androidScreens: {
+    url: 'https://storage.googleapis.com/exoplayer-test-media-1/mp4/android-screens-10s.mp4',
+    seconds: 10,
+  },
+  dizzy: {
+    url: 'https://storage.googleapis.com/exoplayer-test-media-1/mp4/dizzy-with-tx3g.mp4',
+    seconds: 25,
+  },
+  sampleHd: { url: 'https://filesamples.com/samples/video/mp4/sample_1280x720.mp4', seconds: 28 },
+  sampleSmall: { url: 'https://filesamples.com/samples/video/mp4/sample_640x360.mp4', seconds: 13 },
   sample5: { url: 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4', seconds: 6 },
   flower: { url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4', seconds: 5 },
 } as const;
@@ -112,6 +130,83 @@ const courses: {
       ['Colour and Contrast', 'Palettes that work and stay accessible.', 'jellyfish'],
       ['Typography', 'Choosing and pairing type for readability.', 'bear'],
       ['Layout and Spacing', 'Grids, rhythm and whitespace.', 'sample5'],
+    ],
+  },
+  {
+    title: 'Git and Team Collaboration',
+    category: 'Programming',
+    description:
+      'Branches, pull requests and code review: how teams ship changes without stepping on each other.',
+    published: true,
+    lessons: [
+      ['Branching Basics', 'Working on a change without breaking the main line.', 'bunnyFull'],
+      ['Pull Requests That Get Merged', 'Small, clear changes that are easy to review.', 'androidScreens'],
+      ['Resolving Conflicts', 'What a merge conflict is and a calm way to fix one.', 'sampleSmall'],
+    ],
+  },
+  {
+    title: 'UX Research Methods',
+    category: 'Design',
+    description: 'Interviews, usability tests and surveys: learn which method answers which question.',
+    published: true,
+    lessons: [
+      ['Planning a Study', 'Start from the question you need answered.', 'dizzy'],
+      ['Running Usability Tests', 'Watching people use your design without leading them.', 'sampleHd'],
+      ['Turning Notes into Insights', 'Finding patterns and writing them up.', 'bear'],
+    ],
+  },
+  {
+    title: 'SQL and Data Modelling',
+    category: 'Data',
+    description: 'Design clean tables and write queries that stay fast as the data grows.',
+    published: true,
+    lessons: [
+      ['Tables and Relationships', 'Keys, foreign keys and how data connects.', 'elephantsDream'],
+      ['Writing Joins', 'Combining tables without duplicating rows.', 'sample20'],
+      ['Indexes and Speed', 'Why a query is slow and how to fix it.', 'sample15'],
+    ],
+  },
+  {
+    title: 'Introduction to Data Analysis',
+    category: 'Data',
+    description: 'Ask a question, clean the data, find the answer and explain it to someone else.',
+    published: true,
+    lessons: [
+      ['Asking Good Questions', 'What you want to know before you open a spreadsheet.', 'oceans'],
+      ['Cleaning Data', 'Missing values, duplicates and odd formats.', 'bunnyTrailer'],
+      ['Reading a Chart', 'What a chart shows and what it hides.', 'sample30'],
+    ],
+  },
+  {
+    title: 'Product Management Basics',
+    category: 'Business',
+    description: 'From a rough idea to a shipped feature: priorities, roadmaps and talking to users.',
+    published: true,
+    lessons: [
+      ['What Does a Product Manager Do?', 'The role, in plain words.', 'tearsOfSteel'],
+      ['Setting Priorities', 'Choosing what to build first and what to leave out.', 'sintelTrailer'],
+      ['Writing a Simple Roadmap', 'Sharing the plan without over-promising.', 'jellyfish'],
+    ],
+  },
+  {
+    title: 'Writing Clear Documentation',
+    category: 'Business',
+    description: 'Guides, READMEs and decision records that people actually read and keep up to date.',
+    published: true,
+    lessons: [
+      ['Who Is Reading?', 'Write for the person who will use it.', 'sample10'],
+      ['Structure and Examples', 'Headings, short steps and examples that work.', 'sample5'],
+    ],
+  },
+  {
+    title: 'Public Speaking for Developers',
+    category: 'Business',
+    description: 'Explain technical ideas to a room: structure a talk, handle nerves, answer questions.',
+    published: true,
+    lessons: [
+      ['Structuring a Talk', 'One idea, a clear path to it.', 'sitaFilm'],
+      ['Slides That Help', 'Use slides to support you, not replace you.', 'flower'],
+      ['Handling Questions', 'Listening, answering and saying "I do not know".', 'bunny'],
     ],
   },
   {
@@ -195,7 +290,7 @@ async function main() {
 
   const lessonCount = courses.reduce((n, c) => n + c.lessons.length, 0);
   console.log(
-    `Seeded ${courses.length} courses with ${lessonCount} lessons from ${Object.keys(VIDEOS).length} videos.`,
+    `Seeded ${courses.length} courses (${courses.filter((c) => c.published).length} published) with ${lessonCount} lessons from ${Object.keys(VIDEOS).length} videos.`,
   );
   const custom = process.env.SEED_ADMIN_PASSWORD || process.env.SEED_LEARNER_PASSWORD;
   console.log(
