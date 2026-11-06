@@ -70,5 +70,7 @@ docker compose exec db pg_dump -U learn learnonline > backup.sql   # backup
 To roll back, run `IMAGE_TAG=<older commit sha> docker compose up -d --no-build` (the old images are still in the
 registry).
 
-After the first deploy, create the demo data if you want it: `docker compose exec api npm run db:seed`
+After the first deploy, create the demo data (2 accounts, 6 courses, 18 lessons with free sample videos):
+`cd /opt/learnonline && docker compose exec api npm run db:seed`. It deletes all existing data first, so run it only on a fresh database.
+Set `SEED_ADMIN_PASSWORD` and `SEED_LEARNER_PASSWORD` (`docker compose exec -e ... api npm run db:seed`) to avoid the public demo passwords.
 (the demo accounts have public passwords, so skip this on a real site).
