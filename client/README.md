@@ -46,7 +46,7 @@ src/
   router/                    paths.ts (every URL, written once), router.tsx (the sitemap: page + who may open it), guards/ -
                              RequireAuth, RequireAdmin, GuestOnly (they render React, so they live here, not in core)
   pages/                     route-level screens (thin: compose components and hooks), grouped by audience:
-                             learner/ (catalog, course, lesson, my learning, dashboard), admin/, auth/; plus
+                             landing-page.tsx (the home page), learner/ (catalog, course, lesson, my learning, dashboard), admin/, auth/; plus
                              app-providers.tsx: the wrapper around every page (query client, confirm dialog, toasts, 401 handling)
   styles/                    globals.css = design tokens + base styles
   test/                      every unit test, mirroring the folders above (test/core/..., test/components/...),
@@ -98,7 +98,7 @@ URLs are grouped by audience. `router/paths.ts` lists every address once (`PATHS
 
 | URL                                                                            | Who            | Page                                 |
 | ------------------------------------------------------------------------------ | -------------- | ------------------------------------ |
-| `/`                                                                            | everyone       | redirects to the catalog             |
+| `/`                                                                            | everyone       | landing page (about LearnOnline)     |
 | `/learner/catalog`, `/learner/courses/:id`                                     | everyone       | catalog, course detail               |
 | `/learner/lessons/:id`, `/learner/my-learning`, `/learner/dashboard`           | signed-in      | lesson player, my learning, progress |
 | `/sign-in`, `/sign-up`                                                         | guests         | authentication                       |
