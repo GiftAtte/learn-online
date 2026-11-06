@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { FeatureGrid } from '@/components/landing/feature-grid';
 import { HeroPreview } from '@/components/landing/hero-preview';
 import { HowItWorks } from '@/components/landing/how-it-works';
@@ -23,10 +24,17 @@ const delay = (ms: number) => ({ '--d': `${ms}ms` }) as CSSProperties;
  */
 export default function LandingPage() {
   const { user } = useSession();
+  const { hash } = useLocation();
+
+  // The header's "How it works" and "What you get" links point to #sections of this page. The router
+  // does not scroll to them by itself, so do it here (also when arriving from the catalog).
+  useEffect(() => {
+    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
+  }, [hash]);
 
   return (
     <div className="min-h-dvh bg-canvas">
-      <PublicHeader showSections />
+      <PublicHeader />
 
       <main>
         {/* Hero: the promise on the left, the product at work on the right */}

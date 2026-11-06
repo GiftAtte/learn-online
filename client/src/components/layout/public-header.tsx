@@ -7,16 +7,12 @@ import { PATHS } from '@/router/paths';
 const LINK_STYLE =
   'rounded-control px-3 py-2 text-sm text-white/75 transition-colors hover:text-white';
 
-interface PublicHeaderProps {
-  /** Show links that jump to the sections of the landing page (only meaningful on that page). */
-  showSections?: boolean;
-}
-
 /**
  * The top bar for everyone who is not inside the app: the landing page and the public catalog.
- * Logo, links, and sign-in / sign-up buttons (or "Open the app" when already signed in).
+ * Logo, the same menu items on every page (the section links only for signed-out visitors), and sign-in / sign-up buttons (or "Open the app"
+ * when already signed in).
  */
-export function PublicHeader({ showSections }: PublicHeaderProps) {
+export function PublicHeader() {
   const { user } = useSession();
 
   return (
@@ -28,14 +24,16 @@ export function PublicHeader({ showSections }: PublicHeaderProps) {
           </Link>
 
           <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-            {showSections && (
+            {/* Signed-out visitors get the same menu on every public page; the first two jump to a section
+                of the landing page. Once signed in, they are not needed, so they are hidden. */}
+            {!user && (
               <>
-                <a href="#how-it-works" className={LINK_STYLE}>
+                <Link to={{ pathname: PATHS.home, hash: 'how-it-works' }} className={LINK_STYLE}>
                   How it works
-                </a>
-                <a href="#features" className={LINK_STYLE}>
+                </Link>
+                <Link to={{ pathname: PATHS.home, hash: 'features' }} className={LINK_STYLE}>
                   What you get
-                </a>
+                </Link>
               </>
             )}
             <Link to={PATHS.learner.catalog} className={LINK_STYLE}>
