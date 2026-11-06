@@ -1,0 +1,101 @@
+name: CI/CD
+
+# Every push is tested. A push to main that passes is deployed to the server (see DEPLOY.md).
+on:
+  push:
+  pull_request:
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: learn
+          POSTGRES_PASSWORD: learn
+          POSTGRES_DB: learnonline_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U learn -d learnonline_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: api
+    env:
+      DATABASE_URL: postgresql://learn:learn@localhost:5432/learnonline_test?schema=public
+      JWT_SECRET: ci-secret-ci-secret-ci-secret-ci-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          {
+            node-version: 22,
+            cache: npm,
+            cache-dependency-path: api/package-lock.json,
+          }
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run typecheck
+      - run: npm run format:check
+      - run: npm test
+
+  client:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          {
+            node-version: 22,
+            cache: npm,
+            cache-dependency-path: client/package-lock.json,
+          }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run format:check
+      - run: npm test -- --run
+      - run: npm run build
+
+  # Only a push to main that passed both jobs above is deployed. Pull requests and other branches are only tested.
+  deploy:
+    needs: [api, client]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    concurrency: deploy-production # never run two deployments at once
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      APP_DIR: ${{ secrets.DEPLOY_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trust the server and load the deploy key
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          printf 'Host server\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/id_deploy\n  IdentitiesOnly yes\n' \
+            "${{ secrets.DEPLOY_HOST }}" "${{ secrets.DEPLOY_USER }}" > ~/.ssh/config
+
+      # The server's .env (secrets) is not in git, so it is never overwritten or deleted.
+      - name: Copy the code
+        run: |
+          rsync -az --delete \
+            --exclude '.git' --exclude 'node_modules' --exclude 'dist' --exclude '.env' \
+            --exclude 'e2e' --exclude '.github' \
+            ./ "server:$APP_DIR/"
+
+      - name: Rebuild and restart
+        run: ssh server "cd $APP_DIR && docker compose up -d --build --remove-orphans && docker image prune -f"
+
+      # Fail the pipeline if the site is not answering after the restart.
+      - name: Check that the site is up
+        run: |
+          ssh server 'for i in $(seq 1 30); do
+            curl -fsS -o /dev/null http://127.0.0.1:8085/ && curl -fsS -o /dev/null http://127.0.0.1:4000/health && echo "site is up" && exit 0
+            sleep 2
+          done; echo "site did not come up" >&2; exit 1'

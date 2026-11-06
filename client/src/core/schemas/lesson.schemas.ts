@@ -1,0 +1,20 @@
+import { z } from 'zod';
+
+/** Validation rules for the lesson form. Messages are what the person sees under the field. */
+export const lessonSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(3, 'Enter at least 3 characters')
+    .max(120, 'Use 120 characters or fewer'),
+  description: z
+    .string()
+    .trim()
+    .min(1, 'Add a short description')
+    .max(2000, 'Use 2,000 characters or fewer'),
+  videoUrl: z.url('Enter a full web address, starting with https://'),
+  durationSeconds: z
+    .number({ error: 'Enter the video length in seconds' })
+    .int('Use whole seconds')
+    .min(1, 'Enter at least 1 second'),
+});
