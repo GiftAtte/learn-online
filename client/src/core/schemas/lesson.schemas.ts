@@ -12,7 +12,7 @@ export const lessonSchema = z.object({
     .trim()
     .min(1, 'Add a short description')
     .max(2000, 'Use 2,000 characters or fewer'),
-  videoUrl: z.url('Enter a full web address, starting with https://'),
+  videoUrl: z.url('Add a video: upload a file, paste a link, or enter a YouTube video ID'),
   thumbnailUrl: z
     .union([z.literal(''), z.url('Enter a full web address, starting with https://')])
     .optional(),

@@ -1,7 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { MediaField } from '@/components/media/media-field';
+import { YouTubeField } from '@/components/lessons/youtube-field';
 import { FormField, FormModal, Input, Textarea } from '@/components/ui';
+import { cn } from '@/core/lib/cn';
+import { youTubeIdOf, youTubeThumbnail } from '@/core/lib/youtube';
 import { videoPosterUrl } from '@/core/lib/media';
 import { handleSubmitError } from '@/core/lib/forms';
 import type { Lesson } from '@/core/types/lesson.types';
@@ -31,6 +35,15 @@ export function LessonFormModal({ courseId, existing, onClose }: Props) {
     },
   });
   const errors = form.formState.errors;
+  // Where the video comes from: a file or link (uploaded to Cloudinary, or any MP4 link), or YouTube.
+  const [source, setSource] = useState<'file' | 'youtube'>(
+    existing?.videoUrl && youTubeIdOf(existing.videoUrl) ? 'youtube' : 'file',
+  );
+  const chooseSource = (next: 'file' | 'youtube') => {
+    if (next === source) return;
+    setSource(next);
+    form.setValue('videoUrl', '', { shouldValidate: form.formState.isSubmitted });
+  };
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {
@@ -61,31 +74,90 @@ export function LessonFormModal({ courseId, existing, onClose }: Props) {
       <FormField
         label="Video"
         required
-        hint="Upload a video file, or paste a link to an MP4."
+        hint={
+          source === 'youtube'
+            ? 'Paste the YouTube video ID or the link. The length is filled in for you.'
+            : 'Upload a video file, or paste a link to an MP4.'
+        }
         error={errors.videoUrl?.message}
       >
-        <Controller
-          control={form.control}
-          name="videoUrl"
-          render={({ field }) => (
-            <MediaField
-              kind="video"
-              value={field.value}
-              onChange={field.onChange}
-              onUploaded={(media) => {
-                // Cloudinary reads the length from the file, so nobody has to type it.
-                if (media.durationSeconds) {
-                  form.setValue('durationSeconds', media.durationSeconds, { shouldValidate: true });
-                }
-                // No thumbnail yet? Use a picture taken from the video itself.
-                const poster = videoPosterUrl(media.url);
-                if (poster && !form.getValues('thumbnailUrl')) {
-                  form.setValue('thumbnailUrl', poster, { shouldValidate: true });
-                }
-              }}
+        <div className="flex flex-col gap-3">
+          <div
+            role="radiogroup"
+            aria-label="Where the video comes from"
+            className="inline-flex w-fit rounded-full border border-line bg-sunken/50 p-1"
+          >
+            {(
+              [
+                { value: 'file', label: 'Upload or link' },
+                { value: 'youtube', label: 'YouTube' },
+              ] as const
+            ).map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={source === value}
+                onClick={() => chooseSource(value)}
+                className={cn(
+                  'cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+                  source === value
+                    ? 'bg-surface text-ink shadow-card'
+                    : 'text-ink-soft hover:text-ink',
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {source === 'youtube' ? (
+            <Controller
+              control={form.control}
+              name="videoUrl"
+              render={({ field }) => (
+                <YouTubeField
+                  value={field.value}
+                  onChange={field.onChange}
+                  onDetected={({ id, durationSeconds }) => {
+                    if (durationSeconds) {
+                      form.setValue('durationSeconds', durationSeconds, { shouldValidate: true });
+                    }
+                    // No thumbnail yet? Use YouTube's own picture of the video.
+                    if (!form.getValues('thumbnailUrl')) {
+                      form.setValue('thumbnailUrl', youTubeThumbnail(id), { shouldValidate: true });
+                    }
+                  }}
+                />
+              )}
+            />
+          ) : (
+            <Controller
+              control={form.control}
+              name="videoUrl"
+              render={({ field }) => (
+                <MediaField
+                  kind="video"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onUploaded={(media) => {
+                    // Cloudinary reads the length from the file, so nobody has to type it.
+                    if (media.durationSeconds) {
+                      form.setValue('durationSeconds', media.durationSeconds, {
+                        shouldValidate: true,
+                      });
+                    }
+                    // No thumbnail yet? Use a picture taken from the video itself.
+                    const poster = videoPosterUrl(media.url);
+                    if (poster && !form.getValues('thumbnailUrl')) {
+                      form.setValue('thumbnailUrl', poster, { shouldValidate: true });
+                    }
+                  }}
+                />
+              )}
             />
           )}
-        />
+        </div>
       </FormField>
       <FormField
         label="Thumbnail"
@@ -103,7 +175,7 @@ export function LessonFormModal({ courseId, existing, onClose }: Props) {
       <FormField
         label="Video length (seconds)"
         required
-        hint="Used for progress and completion tracking. Filled in for you when you upload a video."
+        hint="Used for progress and completion tracking. Filled in for you when you upload a video or enter a YouTube video."
         error={errors.durationSeconds?.message}
       >
         <Input
