@@ -18,7 +18,11 @@ export const signUpSchema = z.object({
 });
 
 export const profileSchema = z.object({
-  name: z.string().trim().min(2, 'Enter your name (at least 2 characters)').max(80, 'Use 80 characters or fewer'),
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Enter your name (at least 2 characters)')
+    .max(80, 'Use 80 characters or fewer'),
 });
 
 export const changePasswordSchema = z

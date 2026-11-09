@@ -29,7 +29,9 @@ const renderPage = async (path = '/admin/settings') => {
     supportEmail: values.supportEmail || null,
   }));
   render(
-    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
       <MemoryRouter initialEntries={[path]}>
         <AdminSettingsPage />
       </MemoryRouter>

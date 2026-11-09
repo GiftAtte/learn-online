@@ -42,7 +42,7 @@ Input is validated with Zod at the edge; services never see unvalidated data.
   are settings (`AUTH_MAX_FAILED_ATTEMPTS`, `AUTH_LOCKOUT_MINUTES`).
 - **Progress is derived, not stored.** Only per-lesson progress (position, completed) is saved; course
   percentages and statuses are computed, so they cannot drift. Completion is sticky and fires when the
-  video ends; the server clamps positions to the lesson length.
+  video ends or at 95% watched; the server clamps positions to the lesson length.
 - **Video URLs are access-controlled.** They are only returned to enrolled learners and admins; drafts
   are invisible to everyone else. A YouTube lesson stores a normal `youtube.com/watch?v=` address in the
   same field, and the lesson page picks YouTube's player when it sees one.

@@ -4,12 +4,7 @@ import { AppError } from '../../utils/AppError';
 import { signToken } from '../../utils/jwt';
 import { hashPassword, verifyPassword } from '../../utils/password';
 import { getSettings } from '../settings/settings.service';
-import type {
-  ChangePasswordInput,
-  LoginInput,
-  RegisterInput,
-  UpdateProfileInput,
-} from './auth.schemas';
+import type { ChangePasswordInput, LoginInput, RegisterInput, UpdateProfileInput } from './auth.schemas';
 
 export const toPublicUser = (u: User) => ({
   id: u.id,

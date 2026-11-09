@@ -56,7 +56,10 @@ const columns: ColumnDef<CourseActivityLearner>[] = [
     sortDescFirst: true,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
-        <ProgressCell value={row.original.progressPercent} label={`${row.original.name} progress`} />
+        <ProgressCell
+          value={row.original.progressPercent}
+          label={`${row.original.name} progress`}
+        />
         <span className="shrink-0 text-sm text-ink-faint tnum">
           {row.original.completedLessons}/{row.original.lessonCount}
         </span>
@@ -124,11 +127,23 @@ function ActivityView({ activity }: { activity: CourseActivity }) {
           icon={GraduationCap}
           tone="success"
         />
-        <StatTile label="Completion rate" value={`${summary.completionRate}%`} icon={CheckCircle2} />
-        <StatTile label="Average progress" value={`${summary.averageProgressPercent}%`} icon={Percent} />
+        <StatTile
+          label="Completion rate"
+          value={`${summary.completionRate}%`}
+          icon={CheckCircle2}
+        />
+        <StatTile
+          label="Average progress"
+          value={`${summary.averageProgressPercent}%`}
+          icon={Percent}
+        />
       </StatGrid>
 
-      <SectionCard title="Lessons" description="How many enrolled learners finished each lesson" flush>
+      <SectionCard
+        title="Lessons"
+        description="How many enrolled learners finished each lesson"
+        flush
+      >
         {lessons.length === 0 ? (
           <p className="p-6 text-ink-soft">This course has no lessons yet.</p>
         ) : (

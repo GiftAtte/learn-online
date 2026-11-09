@@ -3,7 +3,11 @@
  * Plain async functions, no React. The hooks in `hooks/queries/use-dashboard.ts` wrap them.
  */
 import { api } from '@/core/api/client';
-import type { AdminDashboard, CourseActivity, LearnerDashboard } from '@/core/types/dashboard.types';
+import type {
+  AdminDashboard,
+  CourseActivity,
+  LearnerDashboard,
+} from '@/core/types/dashboard.types';
 import type { AdminLearner, LearnerDetail, LearnerFilters } from '@/core/types/learner.types';
 
 /**

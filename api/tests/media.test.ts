@@ -45,14 +45,17 @@ describe('upload signatures', () => {
 
   it('follows the file types and size set in Settings', async () => {
     const admin = await createUser('ADMIN');
-    await api().put('/api/v1/settings').set(admin.auth).send({
-      appName: 'LearnOnline',
-      imageMaxMegabytes: 3,
-      videoMaxMegabytes: 40,
-      imageFormats: ['png'],
-      videoFormats: ['mp4', 'webm'],
-      allowSignups: true,
-    });
+    await api()
+      .put('/api/v1/settings')
+      .set(admin.auth)
+      .send({
+        appName: 'LearnOnline',
+        imageMaxMegabytes: 3,
+        videoMaxMegabytes: 40,
+        imageFormats: ['png'],
+        videoFormats: ['mp4', 'webm'],
+        allowSignups: true,
+      });
     const video = await api().post('/api/v1/media/signature').set(admin.auth).send({ kind: 'video' });
     expect(video.body.data).toMatchObject({ allowedFormats: 'mp4,webm', maxMegabytes: 40 });
     const image = await api().post('/api/v1/media/signature').set(admin.auth).send({ kind: 'image' });

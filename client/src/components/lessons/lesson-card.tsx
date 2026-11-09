@@ -47,15 +47,14 @@ export function LessonCard({ lesson, to, current, locked, last, compact }: Lesso
           {lesson.title}
           <span className="sr-only">, {formatDuration(lesson.durationSeconds)}</span>
         </p>
-        {(lesson.completed || started || locked) && (
-          <p className="flex flex-wrap items-center gap-x-3 text-sm text-ink-faint tnum">
-            {lesson.completed && <span className="font-medium text-success">Completed</span>}
-            {started && (
-              <span className="font-medium text-pencil-700">{lesson.progressPercent}% watched</span>
-            )}
-            {locked && <span>Enroll to unlock</span>}
-          </p>
-        )}
+        <p className="flex flex-wrap items-center gap-x-3 text-sm text-ink-faint tnum">
+          {lesson.completed && <span className="font-medium text-success">Completed</span>}
+          {started && (
+            <span className="font-medium text-pencil-700">{lesson.progressPercent}% watched</span>
+          )}
+          {locked && <span>Enroll to unlock</span>}
+          {!lesson.completed && !started && !locked && <span>Not started</span>}
+        </p>
         {started && (
           <ProgressBar
             value={lesson.progressPercent}

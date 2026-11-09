@@ -32,7 +32,9 @@ export function AuthLayout({ title, description, children, footer }: AuthLayoutP
             <p className="text-sm text-spruce-200">Your next lesson is always one tap away.</p>
           </div>
         </div>
-        <p className="text-sm text-spruce-300">{tagline ?? "Courses built for people with busy days."}</p>
+        <p className="text-sm text-spruce-300">
+          {tagline ?? 'Courses built for people with busy days.'}
+        </p>
       </aside>
 
       <main className="flex items-center justify-center px-4 py-10 sm:px-8">

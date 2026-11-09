@@ -49,7 +49,11 @@ describe('application settings', () => {
     const learner = await createUser('LEARNER');
     expect((await api().put(URL).send(valid)).status).toBe(401);
     expect((await api().put(URL).set(learner.auth).send(valid)).status).toBe(403);
-    const bad = (patch: object) => api().put(URL).set(admin.auth).send({ ...valid, ...patch });
+    const bad = (patch: object) =>
+      api()
+        .put(URL)
+        .set(admin.auth)
+        .send({ ...valid, ...patch });
     expect((await bad({ appName: 'A' })).status).toBe(400);
     expect((await bad({ logoUrl: 'javascript:alert(1)' })).status).toBe(400);
     expect((await bad({ imageMaxMegabytes: 0 })).status).toBe(400);
@@ -64,15 +68,23 @@ describe('closing sign-ups', () => {
 
   it('stops new accounts, but not people who already have one', async () => {
     const admin = await createUser('ADMIN');
-    await api().put(URL).set(admin.auth).send({ ...valid, allowSignups: false });
+    await api()
+      .put(URL)
+      .set(admin.auth)
+      .send({ ...valid, allowSignups: false });
 
     const blocked = await api().post('/api/v1/auth/register').send(account);
     expect(blocked.status).toBe(403);
     expect(blocked.body.error.message).toMatch(/closed/i);
-    const signIn = await api().post('/api/v1/auth/login').send({ email: admin.user.email, password: 'Passw0rdTest' });
+    const signIn = await api()
+      .post('/api/v1/auth/login')
+      .send({ email: admin.user.email, password: 'Passw0rdTest' });
     expect(signIn.status).toBe(200);
 
-    await api().put(URL).set(admin.auth).send({ ...valid, allowSignups: true });
+    await api()
+      .put(URL)
+      .set(admin.auth)
+      .send({ ...valid, allowSignups: true });
     expect((await api().post('/api/v1/auth/register').send(account)).status).toBe(201);
   });
 });

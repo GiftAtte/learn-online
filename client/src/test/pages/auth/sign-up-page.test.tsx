@@ -29,6 +29,9 @@ describe('sign-up page', () => {
     renderPage();
     expect(screen.queryByRole('button', { name: 'Create account' })).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('New sign-ups are closed');
-    expect(screen.getByRole('link', { name: 'help@x.test' })).toHaveAttribute('href', 'mailto:help@x.test');
+    expect(screen.getByRole('link', { name: 'help@x.test' })).toHaveAttribute(
+      'href',
+      'mailto:help@x.test',
+    );
   });
 });

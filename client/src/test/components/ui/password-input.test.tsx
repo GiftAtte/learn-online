@@ -22,7 +22,10 @@ describe('PasswordInput', () => {
 
     expect(field).toHaveAttribute('type', 'text');
     expect(field).toHaveValue('Secret123'); // what was typed is kept
-    expect(screen.getByRole('button', { name: 'Hide password' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Hide password' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
 
     await user.click(screen.getByRole('button', { name: 'Hide password' }));
     expect(field).toHaveAttribute('type', 'password');

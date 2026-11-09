@@ -258,7 +258,9 @@ test.describe.serial("pages that depend on a learner’s progress", () => {
       }),
     ).toBeVisible();
     await expect(page.getByText("Completion rate")).toBeVisible();
-    await expect(page.getByText(/1 of \d+ finished/).first()).toBeVisible();
+    // The seeded demo learner may have finished lessons in this course too, so only require
+    // that some lesson has at least one finisher.
+    await expect(page.getByText(/[1-9]\d* of \d+ finished/).first()).toBeVisible();
     await expect(
       page.getByRole("table", { name: /Learners enrolled/ }),
     ).toContainText(student.name);

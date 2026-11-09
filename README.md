@@ -65,6 +65,16 @@ These accounts are for your own computer only. Never use them on a public site.
 > **Careful:** `db:seed` deletes everything in the database first (users, courses, progress) and then adds
 > the demo data. Only run it on an empty or throwaway database.
 
+## Test results
+
+Last full run on the `dev` branch (typecheck and format check were clean too):
+
+| Suite | Result | Covers |
+| ----- | ------ | ------ |
+| Server (Vitest) | 12 files, **83 tests passed** | sign-up and sign-in, token security and sign-out, password-guess lockout, roles and access, input validation, courses, lessons and categories, enrollment, progress and completion rules, dashboards, settings, uploads |
+| Website (Vitest) | 29 files, **136 tests passed** | API client and services, session and route guards, video players (resume, progress, completion, seek), upload and YouTube fields, forms, pages, UI parts |
+| Browser (Playwright) | **22 tests passed** | sign up, enroll, finish a lesson and see it on the dashboard; learner blocked from admin; admin sees learner progress; settings and profile; YouTube lessons; My learning; course activity |
+
 ## Settings you may need
 
 The server reads `api/.env` (a template with every option is in `api/.env.example`). The ones that matter:

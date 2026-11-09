@@ -50,8 +50,8 @@ export default function LandingPage() {
                 Video courses you can actually finish
               </h1>
               <p className="lp-rise max-w-xl text-lg text-spruce-100" style={delay(120)}>
-                {appName} gives you short lessons, a player that remembers where you stopped, and
-                a dashboard that shows how far you have come.
+                {appName} gives you short lessons, a player that remembers where you stopped, and a
+                dashboard that shows how far you have come.
               </p>
 
               <div className="lp-rise flex flex-wrap gap-3" style={delay(240)}>

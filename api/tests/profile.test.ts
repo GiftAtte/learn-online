@@ -35,7 +35,9 @@ describe('change password', () => {
     expect((await api().get('/api/v1/auth/me').set(other)).status).toBe(401);
 
     // Sign-in now needs the new password.
-    expect((await api().post('/api/v1/auth/login').send({ email: user.email, password: PASSWORD })).status).toBe(401);
+    expect(
+      (await api().post('/api/v1/auth/login').send({ email: user.email, password: PASSWORD })).status,
+    ).toBe(401);
     expect(
       (await api().post('/api/v1/auth/login').send({ email: user.email, password: NEW_PASSWORD })).status,
     ).toBe(200);
@@ -61,7 +63,11 @@ describe('change password', () => {
     expect((await change('nodigitshere')).status).toBe(400);
     expect((await change(PASSWORD)).status).toBe(400);
     expect(
-      (await api().post('/api/v1/auth/change-password').send({ currentPassword: PASSWORD, newPassword: NEW_PASSWORD })).status,
+      (
+        await api()
+          .post('/api/v1/auth/change-password')
+          .send({ currentPassword: PASSWORD, newPassword: NEW_PASSWORD })
+      ).status,
     ).toBe(401);
   });
 });

@@ -119,7 +119,9 @@ describe('admin course activity', () => {
     const res = await api().get(`/api/v1/dashboard/admin/courses/${course.id}`).set(admin.auth);
     expect(res.status).toBe(200);
     expect(res.body.data.summary).toMatchObject({ enrolled: 2, inProgress: 1, notStarted: 1, completed: 0 });
-    expect(res.body.data.lessons.map((l: { completedLearners: number }) => l.completedLearners)).toEqual([1, 0]);
+    expect(res.body.data.lessons.map((l: { completedLearners: number }) => l.completedLearners)).toEqual([
+      1, 0,
+    ]);
     const mine = res.body.data.learners.find((l: { userId: string }) => l.userId === a.user.id);
     expect(mine).toMatchObject({ completedLessons: 1, progressPercent: 50, status: 'IN_PROGRESS' });
   });
@@ -131,8 +133,11 @@ describe('admin course activity', () => {
     const url = `/api/v1/dashboard/admin/courses/${course.id}`;
     expect((await api().get(url).set(learner.auth)).status).toBe(403);
     expect(
-      (await api().get('/api/v1/dashboard/admin/courses/00000000-0000-4000-8000-000000000000').set(admin.auth))
-        .status,
+      (
+        await api()
+          .get('/api/v1/dashboard/admin/courses/00000000-0000-4000-8000-000000000000')
+          .set(admin.auth)
+      ).status,
     ).toBe(404);
   });
 });
