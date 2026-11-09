@@ -21,6 +21,7 @@ export const MESSAGES = {
     passwordChanged: 'Password changed. Other devices were signed out.',
     sessionExpired: 'Your session ended. Sign in to continue.',
     invalidCredentials: 'That email and password don’t match.',
+    passwordReset: 'Password updated. Sign in with your new password.',
   },
   course: {
     created: 'Course created',

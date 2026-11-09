@@ -1,6 +1,11 @@
 /** Signing in, signing up and the state of the current session. */
 import type { z } from 'zod';
-import type { signInSchema, signUpSchema } from '@/core/schemas/auth.schemas';
+import type {
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  signInSchema,
+  signUpSchema,
+} from '@/core/schemas/auth.schemas';
 
 /** What the sign-in form submits (derived from its validation rules). */
 export type SignInValues = z.infer<typeof signInSchema>;
@@ -17,3 +22,6 @@ export type SignUpValues = z.infer<typeof signUpSchema>;
  *    signed out, they get a "Try again" instead
  */
 export type SessionStatus = 'loading' | 'authenticated' | 'guest' | 'error';
+
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;

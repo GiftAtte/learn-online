@@ -105,3 +105,15 @@ export const useChangePassword = () =>
     meta: { handlesOwnError: true },
     onSuccess: () => notify.success(MESSAGES.auth.passwordChanged),
   });
+
+export const useForgotPassword = () =>
+  useMutation({
+    mutationFn: (email: string) => authService.forgotPassword(email),
+    meta: { handlesOwnError: true },
+  });
+
+export const useResetPassword = () =>
+  useMutation({
+    mutationFn: (values: { token: string; password: string }) => authService.resetPassword(values),
+    meta: { handlesOwnError: true },
+  });

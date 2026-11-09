@@ -31,7 +31,7 @@ built with `VITE_API_URL=https://learnonline-api.royaliqtech.com/api/v1`.
 
 `/opt/learnonline/` holds only two files: `docker-compose.yml` (sent by every deploy) and `.env` (secrets, never in
 git): `DB_PASSWORD`, `JWT_SECRET`, `CLIENT_ORIGIN`, `VITE_API_URL`, `WEB_BIND`, `API_BIND` and
-`REGISTRY=ghcr.io/giftatte/learn-online`, plus `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` for uploads (see "File uploads" below). No source code and no build tools are needed there.
+`REGISTRY=ghcr.io/giftatte/learn-online`, plus `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` for uploads (see "File uploads" below), and `MAIL_USER` and `MAIL_PASS` for password-reset email (see "Email" below; `MAIL_HOST`, `MAIL_PORT` and `MAIL_FROM` are optional). No source code and no build tools are needed there.
 
 ## One-time setup
 
@@ -97,3 +97,24 @@ straight to Cloudinary, so big videos never pass through our server.
 
 Until they are set, the upload buttons answer "File uploads are not set up yet" and links keep working.
 The API secret stays on the server and is never sent to the browser.
+
+## Email (password reset)
+
+"Forgot your password?" emails a one-time link. The API sends it over SMTP; in development and on the demo server
+that is a [Mailtrap](https://mailtrap.io) sandbox inbox, which catches the messages instead of delivering them.
+
+1. In Mailtrap open **Email Testing → Inboxes → your inbox → SMTP Settings** and copy the **Username** and **Password**.
+2. Add them to `/opt/learnonline/.env` on the server (and to `api/.env` for local development):
+
+   ```
+   MAIL_USER=...
+   MAIL_PASS=...
+   ```
+
+   `MAIL_HOST` (default `sandbox.smtp.mailtrap.io`), `MAIL_PORT` (default `2525`) and `MAIL_FROM` are optional.
+   To send real email, point these at a real provider's SMTP settings instead.
+3. Restart the API so it reads them: `cd /opt/learnonline && docker compose up -d`.
+
+Without `MAIL_USER` nothing is sent: the message, including the reset link, is printed in the API log
+(`docker compose logs api`), which is handy for a quick local check. Reset links work once and expire after
+`EMAIL_TOKEN_MINUTES` (default 60). Sign-ins last `REFRESH_TOKEN_DAYS` (default 30) and are renewed quietly.

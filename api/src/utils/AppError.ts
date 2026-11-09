@@ -30,5 +30,6 @@ export class AppError extends Error {
     new AppError(403, ErrorCode.FORBIDDEN, msg);
   static notFound = (msg = 'Resource not found') => new AppError(404, ErrorCode.NOT_FOUND, msg);
   static conflict = (msg: string) => new AppError(409, ErrorCode.CONFLICT, msg);
+  static tooMany = (msg: string) => new AppError(429, ErrorCode.RATE_LIMITED, msg);
   static unavailable = (msg: string) => new AppError(503, ErrorCode.UNAVAILABLE, msg);
 }

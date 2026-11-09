@@ -13,6 +13,10 @@ export const PATHS = {
   home: '/',
   signIn: '/sign-in',
   signUp: '/sign-up',
+  /** Ask for a password-reset email. */
+  forgotPassword: '/forgot-password',
+  /** Choose a new password; opened from the emailed link, with the token in the address. */
+  resetPassword: '/reset-password',
 
   // Free pages: for visitors who are not signed in. Signed-in people use the /learner versions below.
   /** Your own profile: name, password. For every signed-in person. */

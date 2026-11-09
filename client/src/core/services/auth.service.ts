@@ -61,3 +61,32 @@ export const updateProfile = async (values: { name: string }) =>
  */
 export const changePassword = (values: { currentPassword: string; newPassword: string }) =>
   api.post('/auth/change-password', values);
+
+/**
+ * Asks for a password-reset email. The answer is the same whether or not the address has an account.
+ * POST /auth/forgot-password. Public.
+ */
+export const forgotPassword = (email: string) => api.post('/auth/forgot-password', { email });
+
+/**
+ * Sets a new password using the token from the emailed link. The link works once, and every session is ended.
+ * POST /auth/reset-password. Public.
+ * @throws ApiError 400 when the link is invalid or has expired
+ */
+export const resetPassword = (values: { token: string; password: string }) =>
+  api.post('/auth/reset-password', values);
+
+/**
+ * Renews the session from the refresh cookie (the server sends a new access token and a new refresh token).
+ * POST /auth/refresh.
+ * @returns true when the session was renewed, false when there is no valid session to renew
+ */
+export const refreshSession = async () => {
+  try {
+    await api.post('/auth/refresh');
+    return true;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) return false;
+    throw error;
+  }
+};

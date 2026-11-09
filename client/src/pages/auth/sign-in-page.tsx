@@ -84,6 +84,12 @@ export default function SignInPage() {
             {...form.register('password')}
           />
         </FormField>
+        <Link
+          to={PATHS.forgotPassword}
+          className="-mt-2 self-end text-sm font-medium text-spruce-700 underline underline-offset-4"
+        >
+          Forgot your password?
+        </Link>
         <Button type="submit" size="lg" loading={signIn.isPending}>
           Sign in
         </Button>

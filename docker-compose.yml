@@ -38,13 +38,21 @@ services:
       # The defaults below are for local use only. On a server, set DB_PASSWORD, JWT_SECRET and
       # CLIENT_ORIGIN in the .env file next to this one (see DEPLOY.md).
       JWT_SECRET: ${JWT_SECRET:-local-demo-secret-change-me-0123456789abcdef}
-      JWT_EXPIRES_IN: 1h
+      # Short-lived access token; the refresh token (REFRESH_TOKEN_DAYS) renews it quietly.
+      JWT_EXPIRES_IN: 15m
       CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:8080}
       TRUST_PROXY: "1"
       # Cloudinary stores uploaded videos and images (see DEPLOY.md). Leave empty to switch uploads off.
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      # Email for password-reset links (Mailtrap sandbox by default). Leave MAIL_USER empty and the link is
+      # printed in the API log instead of being sent.
+      MAIL_HOST: ${MAIL_HOST:-sandbox.smtp.mailtrap.io}
+      MAIL_PORT: ${MAIL_PORT:-2525}
+      MAIL_USER: ${MAIL_USER:-}
+      MAIL_PASS: ${MAIL_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-LearnOnline <no-reply@learnonline.dev>}
 
   web:
     image: ${REGISTRY:-learnonline}/web:${IMAGE_TAG:-local}

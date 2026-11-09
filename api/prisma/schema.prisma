@@ -23,8 +23,29 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  enrollments Enrollment[]
-  progress    LessonProgress[]
+  enrollments   Enrollment[]
+  progress      LessonProgress[]
+  tokens        UserToken[]
+  refreshTokens RefreshToken[]
+}
+
+enum UserTokenType {
+  RESET_PASSWORD
+}
+
+/// A single-use link token emailed to a person (password reset). Only a hash is stored, so a database leak is not a key.
+model UserToken {
+  id        String        @id @default(uuid())
+  userId    String
+  type      UserTokenType
+  tokenHash String        @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
 }
 
 model Category {
@@ -119,4 +140,19 @@ model AppSettings {
   /// Whether new people can create their own account (administrators can still be promoted).
   allowSignups      Boolean  @default(true)
   updatedAt         DateTime @updatedAt
+}
+
+/// A long-lived sign-in that can only be used once: using it hands out a new one (rotation). Only a hash is
+/// stored. Presenting one that was already used means it leaked, so every session of that person is ended.
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

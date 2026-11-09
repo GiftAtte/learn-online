@@ -33,7 +33,10 @@ Demo accounts (from the seed):
 | ---------------- | ----------------------------------------- |
 | `DATABASE_URL`   | PostgreSQL connection string              |
 | `JWT_SECRET`     | Signing key, minimum 32 characters        |
-| `JWT_EXPIRES_IN` | Token lifetime, e.g. `1h`                 |
+| `JWT_EXPIRES_IN` | How long one access token lasts (default `15m`). The refresh token renews it quietly |
+| `REFRESH_TOKEN_DAYS` | How many days a sign-in lasts without being used (default 30) |
+| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USER`, `MAIL_PASS`, `MAIL_FROM` | SMTP for password-reset emails. Defaults point at the Mailtrap sandbox; copy the credentials from Mailtrap > Email Testing > Inboxes > SMTP Settings. Without `MAIL_USER` the email is printed in the server log |
+| `EMAIL_TOKEN_MINUTES` | How long a reset link works (default 60) |
 | `CLIENT_ORIGIN`  | Allowed CORS origin(s), comma-separated   |
 | `PORT`           | Server port (default 4000)                |
 | `AUTH_RATE_LIMIT` | Sign-up attempts per address per 15 minutes (default 20; only the browser tests raise it) |
@@ -87,6 +90,9 @@ Auth: the token travels in an httpOnly cookie named `session`, set by login/regi
 | GET `/auth/me` | user | The current user |
 | PATCH `/auth/me` | user | Change your own name `{ name }` |
 | POST `/auth/change-password` | user | `{ currentPassword, newPassword }`. Signs every other device out and keeps this one. A wrong current password is a 400 on that field. |
+| POST `/auth/refresh` | refresh cookie | Trades the refresh cookie for a new session (rotation: each refresh token works once; reusing one ends every session of that person) |
+| POST `/auth/forgot-password` | public | `{ email }`. Always 204; emails a single-use link if the account exists |
+| POST `/auth/reset-password` | public | `{ token, password }`. Sets the new password, ends every session; the link works once |
 | POST `/auth/logout` | user | Sign out everywhere: every earlier token stops working |
 | PATCH `/users/:id/role` | admin | `{ role: 'LEARNER' \| 'ADMIN' }`. Administrators cannot change their own role. |
 | **Settings and uploads** | | |

@@ -12,7 +12,10 @@ const schema = z.object({
 
   // A short secret makes tokens brute-forceable, so enforce a minimum length.
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
-  JWT_EXPIRES_IN: z.string().default('1h'),
+  // The access token is short-lived; the refresh token (below) quietly gets a new one.
+  JWT_EXPIRES_IN: z.string().default('15m'),
+  // How long a refresh token (the "stay signed in" part of a session) lasts without being used.
+  REFRESH_TOKEN_DAYS: z.coerce.number().int().positive().default(30),
   CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
   // Number of reverse proxies in front of the API (0 = none). Needed so rate limiting sees real client IPs.
   // Cloudinary stores uploaded videos and images. All three are needed for uploads; without them the
@@ -31,6 +34,17 @@ const schema = z.object({
   // again. After this many wrong passwords the address is blocked until the time has passed.
   AUTH_MAX_FAILED_ATTEMPTS: z.coerce.number().int().positive().default(5),
   AUTH_LOCKOUT_MINUTES: z.coerce.number().int().positive().default(15),
+
+  // Email (verification and password-reset links) is sent over SMTP. Mailtrap's sandbox inbox is the
+  // default: copy the credentials from Email Testing > Inboxes > SMTP Settings. Without MAIL_USER the
+  // message is printed in the server log instead of being sent.
+  MAIL_HOST: z.string().default('sandbox.smtp.mailtrap.io'),
+  MAIL_PORT: z.coerce.number().int().positive().default(2525),
+  MAIL_USER: z.string().optional(),
+  MAIL_PASS: z.string().optional(),
+  MAIL_FROM: z.string().default('LearnOnline <no-reply@learnonline.dev>'),
+  // How long an emailed link stays valid.
+  EMAIL_TOKEN_MINUTES: z.coerce.number().int().positive().default(60),
 });
 
 const parsed = schema.safeParse(process.env);

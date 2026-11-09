@@ -24,6 +24,8 @@ const MyLearningPage = lazy(() => import('@/pages/learner/my-learning-page'));
 const ProgressPage = lazy(() => import('@/pages/learner/progress-page'));
 const SignInPage = lazy(() => import('@/pages/auth/sign-in-page'));
 const SignUpPage = lazy(() => import('@/pages/auth/sign-up-page'));
+const ForgotPasswordPage = lazy(() => import('@/pages/auth/forgot-password-page'));
+const ResetPasswordPage = lazy(() => import('@/pages/auth/reset-password-page'));
 const AdminOverviewPage = lazy(() => import('@/pages/admin/overview-page'));
 const AdminCoursesPage = lazy(() => import('@/pages/admin/courses-page'));
 const AdminCourseLessonsPage = lazy(() => import('@/pages/admin/course-lessons-page'));
@@ -73,6 +75,8 @@ const PAGES: PageRoute[] = [
   // Sign in and sign up
   { path: PATHS.signIn, page: SignInPage, who: 'guest' },
   { path: PATHS.signUp, page: SignUpPage, who: 'guest' },
+  { path: PATHS.forgotPassword, page: ForgotPasswordPage, who: 'guest' },
+  { path: PATHS.resetPassword, page: ResetPasswordPage, who: 'guest' },
 
   // Admin pages
   { path: PATHS.admin.overview, page: AdminOverviewPage, who: 'admin' },

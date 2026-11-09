@@ -25,11 +25,38 @@ const buildUrl = (path: string, query: RequestOptions['query']) => {
   return `${BASE_URL}${path}${qs ? `?${qs}` : ''}`;
 };
 
+/** Calls where a 401 means "wrong details", not "your session ran out", so there is nothing to renew. */
+const NO_RENEWAL = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/refresh',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+];
+
+let renewing: Promise<boolean> | null = null;
+
+/**
+ * Asks the server to renew the session from the refresh cookie. Several requests can fail at the same moment;
+ * they share one renewal, because a refresh token works only once.
+ */
+const renewSession = () =>
+  (renewing ??= fetch(`${BASE_URL}/auth/refresh`, { method: 'POST', credentials: 'include' })
+    .then((r) => r.ok)
+    .catch(() => false)
+    .finally(() => {
+      renewing = null;
+    }));
+
 /**
  * Typed fetch wrapper that understands the API envelope and always throws ApiError on failure.
  * Returns `{ data, meta }`; use `api.get/post/...` helpers below for the common cases.
  */
-const request = async <T>(path: string, options: RequestOptions = {}): Promise<ApiResult<T>> => {
+const request = async <T>(
+  path: string,
+  options: RequestOptions = {},
+  renewed = false,
+): Promise<ApiResult<T>> => {
   let response: Response;
   try {
     response = await fetch(buildUrl(path, options.query), {
@@ -46,6 +73,11 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<A
   } catch (cause) {
     if (cause instanceof DOMException && cause.name === 'AbortError') throw cause;
     throw new ApiError(MESSAGES.generic.network, 0, 'NETWORK');
+  }
+
+  // The short-lived sign-in ran out: renew it quietly and repeat the request once, so the person is not signed out.
+  if (response.status === 401 && !renewed && !NO_RENEWAL.includes(path) && (await renewSession())) {
+    return request<T>(path, options, true);
   }
 
   if (response.status === 204) return { data: undefined as T };

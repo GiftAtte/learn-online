@@ -35,3 +35,17 @@ export const changePasswordSchema = z
     path: ['confirmPassword'],
     message: 'The two passwords don’t match',
   });
+
+export const forgotPasswordSchema = z.object({
+  email: z.email('Enter a valid email address'),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    password: signUpSchema.shape.password,
+    confirmPassword: z.string().min(1, 'Type the new password again'),
+  })
+  .refine((v) => v.password === v.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'The two passwords don’t match',
+  });

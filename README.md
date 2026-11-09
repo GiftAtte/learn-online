@@ -118,7 +118,10 @@ The demo passwords are public, so to use your own, set them for the run:
 | --- | --- |
 | `DATABASE_URL` | PostgreSQL connection string |
 | `JWT_SECRET` | Secret used to sign people in, 32+ characters. The server will not start without it. |
-| `JWT_EXPIRES_IN` | How long a sign-in lasts, for example `1h` |
+| `JWT_EXPIRES_IN` | How long one access token lasts (default `15m`). The refresh token renews it quietly |
+| `REFRESH_TOKEN_DAYS` | How many days a sign-in lasts without being used (default 30) |
+| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USER`, `MAIL_PASS`, `MAIL_FROM` | SMTP for password-reset emails. Defaults point at the Mailtrap sandbox; copy the credentials from Mailtrap > Email Testing > Inboxes > SMTP Settings. Without `MAIL_USER` the email is printed in the server log |
+| `EMAIL_TOKEN_MINUTES` | How long a reset link works (default 60) |
 | `CLIENT_ORIGIN` | Website address(es) the server accepts requests from (CORS), comma-separated |
 | `PORT` | Server port (default 4000) |
 | `TRUST_PROXY` | Number of reverse proxies in front of the server (default 0), so limits see real addresses |
@@ -161,6 +164,7 @@ may open each one. The guards enforce that column, and the server enforces it ag
 | `/catalog` | visitors | Free course catalog (signed-in people are sent to `/learner/catalog`) |
 | `/courses/:courseId` | visitors | Free course page with its lessons (signed-in people are sent to `/learner/courses/:courseId`) |
 | `/sign-in`, `/sign-up` | visitors only | Sign in and create an account (sign-up can be closed in Settings) |
+| `/forgot-password`, `/reset-password` | visitors only | Ask for a password-reset email, then choose a new password from the emailed link |
 | `/learner/catalog` | signed in | The catalog inside the app |
 | `/learner/courses/:courseId` | signed in | Course page: lessons, progress, enroll or leave |
 | `/learner/lessons/:lessonId` | signed in | The video player with the course's lessons beside it |
@@ -184,7 +188,7 @@ may open each one. The guards enforce that column, and the server enforces it ag
 The server is under `/api/v1`, plus `GET /health` (returns `{ "status": "ok" }`).
 
 The sign-in token travels in an httpOnly cookie named `session`, set by sign-in and sign-up and removed by
-sign-out. Clients only need to send cookies (`credentials: 'include'`).
+sign-out. A second httpOnly cookie, `refresh` (sent only to `/auth/*`), renews it when it runs out; each refresh token works once. Clients only need to send cookies (`credentials: 'include'`).
 
 **Access:** *public* = anyone, *user* = signed in, *enrolled* = signed in and enrolled in that course (or an
 administrator), *admin* = administrators only.
@@ -197,6 +201,9 @@ administrator), *admin* = administrators only.
 | GET `/auth/me` | user | The current user |
 | PATCH `/auth/me` | user | Change your own name `{ name }` |
 | POST `/auth/change-password` | user | `{ currentPassword, newPassword }`. Signs every other device out and keeps this one. A wrong current password is a 400 on that field. |
+| POST `/auth/refresh` | refresh cookie | Trades the refresh cookie for a new session (rotation: each refresh token works once; reusing one ends every session of that person) |
+| POST `/auth/forgot-password` | public | `{ email }`. Always 204; emails a single-use link if the account exists |
+| POST `/auth/reset-password` | public | `{ token, password }`. Sets the new password, ends every session; the link works once |
 | POST `/auth/logout` | user | Sign out everywhere: every earlier token stops working |
 | PATCH `/users/:id/role` | admin | `{ role: 'LEARNER' \| 'ADMIN' }`. Administrators cannot change their own role. |
 | **Settings and uploads** | | |
@@ -235,7 +242,7 @@ Security notes and more detail are in [api/README.md](api/README.md).
 
 | Requirement | Where |
 | --- | --- |
-| Sign-up, sign-in, protected routes, learner and admin roles | `api/src/modules/auth`, `middleware/authenticate.ts`, `authorize.ts`; `client/src/router/guards`, `core/hooks/queries/use-auth.ts` |
+| Sign-up, sign-in, password reset by email (Mailtrap), refresh tokens, protected routes, learner and admin roles | `api/src/modules/auth`, `api/src/modules/mail`, `middleware/authenticate.ts`, `authorize.ts`; `client/src/router/guards`, `core/hooks/queries/use-auth.ts` |
 | Secure sessions | bcrypt, HS256 JWT with a pinned algorithm, role loaded from the database on every request, real sign-out (token version), rate limiting and a password-guess lockout, helmet, CORS allow-list |
 | Profile: change name and password | `api/src/modules/auth` (`PATCH /auth/me`, `POST /auth/change-password`); `client/src/pages/profile-page.tsx` |
 | Course catalog with card layout (thumbnail, category, duration, progress) | `client/src/pages/browse/catalog-page.tsx`, `components/courses/course-card.tsx` |
@@ -269,7 +276,7 @@ Last full run on the `dev` branch (typecheck and format check were clean too):
 
 | Suite | Result | Covers |
 | ----- | ------ | ------ |
-| Server (Vitest) | 12 files, **83 tests passed** | sign-up and sign-in, token security and sign-out, password-guess lockout, roles and access, input validation, courses, lessons and categories, enrollment, progress and completion rules, dashboards, settings, uploads |
+| Server (Vitest) | 14 files, **99 tests passed** | sign-up and sign-in, token security, refresh-token rotation and sign-out, password reset, password-guess lockout, roles and access, input validation, courses, lessons and categories, enrollment, progress and completion rules, dashboards, settings, uploads |
 | Website (Vitest) | 31 files, **143 tests passed** | API client and services, session and route guards, video players (resume, progress, completion, seek), upload and YouTube fields, forms, pages, UI parts |
 | Browser (Playwright) | **28 tests passed** | sign up, enroll, finish a lesson and see it on the Progress page; learner blocked from admin; admin sees learner progress; settings and profile; YouTube lessons; My learning; course activity; an automated accessibility scan (axe, WCAG 2.1 A and AA) of every main screen on a desktop and a phone |
 
@@ -318,8 +325,8 @@ see unvalidated data.
 - **Design system.** Tokens in `client/src/styles/globals.css`; every page is built from shared blocks
   (`Page`, `Section`, `SettingsSection`, `QueryBoundary`, `DataTable`) so screens behave the same.
 
-**Known limits.** No refresh tokens; the lockout is per address, not per account; demo videos are external
-sample clips; no email verification or password reset; payment details on the profile page are a design
+**Known limits.** The lockout is per address, not per account; demo videos are external
+sample clips; no email verification (password reset by email works, through Mailtrap in development); payment details on the profile page are a design
 preview only; `npm audit` reports findings in the Prisma CLI's dev-time tooling (see `api/README.md`).
 
 ## More documentation
