@@ -23,7 +23,9 @@ const ID = 'dQw4w9WgXcQ';
 const videoBox = () => screen.getByPlaceholderText(/video id or link/i);
 
 describe('lesson form: YouTube videos', () => {
-  beforeEach(() => create.mockReset().mockResolvedValue({}));
+  beforeEach(() => {
+    create.mockReset().mockResolvedValue({});
+  });
 
   it('adds a lesson from a pasted YouTube link: stores the standard address, fills length and thumbnail', async () => {
     const user = userEvent.setup();

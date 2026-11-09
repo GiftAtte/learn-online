@@ -1,28 +1,31 @@
 import { Router } from 'express';
+import { env } from '../../config/env';
 import { authenticate } from '../../middleware/authenticate';
 import { createLimiter } from '../../middleware/rateLimit';
 import { validate } from '../../middleware/validate';
 import * as controller from './auth.controller';
-import {
-  changePasswordSchema,
-  loginSchema,
-  registerSchema,
-  updateProfileSchema,
-} from './auth.schemas';
+import { changePasswordSchema, loginSchema, registerSchema, updateProfileSchema } from './auth.schemas';
 
-// Stricter than the global limit: slows down password guessing and mass sign-ups.
-const authLimiter = createLimiter(20);
+// Sign-up: stricter than the global limit, to slow down mass sign-ups.
+const signUpLimiter = createLimiter(env.AUTH_RATE_LIMIT);
+
+// Password guessing: only FAILED attempts count. After AUTH_MAX_FAILED_ATTEMPTS wrong tries the address
+// is blocked for AUTH_LOCKOUT_MINUTES, then the count starts again. Signing in correctly never uses it up.
+const passwordGuessLimiter = createLimiter(env.AUTH_MAX_FAILED_ATTEMPTS, env.AUTH_LOCKOUT_MINUTES * 60_000, {
+  failuresOnly: true,
+  message: 'Too many failed attempts.',
+});
 
 export const authRouter = Router();
-authRouter.post('/register', authLimiter, validate({ body: registerSchema }), controller.register);
-authRouter.post('/login', authLimiter, validate({ body: loginSchema }), controller.login);
+authRouter.post('/register', signUpLimiter, validate({ body: registerSchema }), controller.register);
+authRouter.post('/login', passwordGuessLimiter, validate({ body: loginSchema }), controller.login);
 authRouter.get('/me', authenticate, controller.me);
 authRouter.post('/logout', authenticate, controller.logout);
 authRouter.patch('/me', authenticate, validate({ body: updateProfileSchema }), controller.updateProfile);
 authRouter.post(
   '/change-password',
   authenticate,
-  authLimiter, // password guessing against your own account is still guessing
+  passwordGuessLimiter, // guessing the current password of a stolen session is still guessing
   validate({ body: changePasswordSchema }),
   controller.changePassword,
 );

@@ -147,7 +147,7 @@ Radix primitives provide focus trapping, keyboard support and ARIA; every contro
 
 ## Tests
 
-`npm test` (Vitest + Testing Library, **62 tests**): API client (envelope, errors, 401 handling), services (URLs, verbs, query strings), session and sign-out (server-side token revocation), route guards (guest / learner / admin), the video player (resume, progress reporting, completion, seek, speed, error recovery), enroll and course actions, notifications, formatting helpers, form-field accessibility wiring, buttons, progress bar, confirm dialog.
+`npm test` (Vitest + Testing Library): API client (envelope, errors, 401 handling), services (URLs, verbs, query strings), session and sign-out (server-side token revocation), route guards (guest / learner / admin), the video player (resume, progress reporting, completion, seek, speed, error recovery), enroll and course actions, notifications, formatting helpers, form-field accessibility wiring, buttons, progress bar, confirm dialog.
 
 Browser tests live in `../e2e` (Playwright).
 

@@ -27,7 +27,13 @@ export default defineConfig({
     {
       command: 'npm run dev',
       cwd: '../api',
-      env: { PORT: String(API_PORT), CLIENT_ORIGIN: `http://localhost:${CLIENT_PORT}` },
+      env: {
+        PORT: String(API_PORT),
+        CLIENT_ORIGIN: `http://localhost:${CLIENT_PORT}`,
+        // The suite signs in far more often than the real limit (20 per 15 minutes) allows.
+        AUTH_RATE_LIMIT: '1000',
+        AUTH_MAX_FAILED_ATTEMPTS: '1000',
+      },
       url: `http://127.0.0.1:${API_PORT}/health`,
       reuseExistingServer: false,
       timeout: 60_000,

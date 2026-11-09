@@ -25,6 +25,8 @@ test.describe.serial('learner journey', () => {
     await expect(page).toHaveURL('/learner/catalog');
 
     // Catalog -> course -> enroll
+    // Search for it: the catalog is paged, so the course is not always on the first page.
+    await page.getByRole('searchbox', { name: 'Search courses' }).fill('Design Thinking');
     await page.getByRole('link', { name: 'Design Thinking Essentials' }).first().click();
     await page.getByRole('button', { name: 'Enroll in this course' }).click();
     await page.getByRole('link', { name: 'Start course' }).click();

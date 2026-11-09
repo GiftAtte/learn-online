@@ -38,6 +38,8 @@ export default function SignInPage() {
       // Wrong credentials are explained in the form; anything else becomes a toast.
       if (error instanceof ApiError && error.isUnauthorized)
         setFormError(MESSAGES.auth.invalidCredentials);
+      // Too many wrong passwords: the server says how long to wait, and the form keeps saying it.
+      else if (error instanceof ApiError && error.status === 429) setFormError(error.message);
       else handleSubmitError(error, form.setError);
     }
   });
