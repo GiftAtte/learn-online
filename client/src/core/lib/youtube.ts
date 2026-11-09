@@ -40,3 +40,10 @@ export const youTubeThumbnail = (id: string) => `https://i.ytimg.com/vi/${id}/hq
 /** The video ID when a stored lesson address is a YouTube video, otherwise null. */
 export const youTubeIdOf = (videoUrl: string): string | null =>
   /^https?:\/\//i.test(videoUrl) ? parseYouTubeId(videoUrl) : null;
+
+/** The picture to show for a lesson: its own thumbnail, else YouTube's for a YouTube video, else none. */
+export const lessonPicture = (thumbnailUrl?: string | null, videoUrl?: string | null) => {
+  if (thumbnailUrl) return thumbnailUrl;
+  const id = videoUrl ? youTubeIdOf(videoUrl) : null;
+  return id ? youTubeThumbnail(id) : null;
+};

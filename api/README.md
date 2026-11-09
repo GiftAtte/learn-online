@@ -4,6 +4,12 @@ Node.js + Express + TypeScript, Prisma ORM, PostgreSQL.
 
 ## Setup
 
+**Everything in Docker (database, server and website together):** from the repository root run
+`docker compose up --build`, then `docker compose exec api npm run db:seed` and open <http://localhost:8080>.
+See "Run it" in the [root README](../README.md#run-it).
+
+**Or run just the server on your computer** (Option B):
+
 ```bash
 cd api
 npm install
@@ -31,6 +37,7 @@ Demo accounts (from the seed):
 | `CLIENT_ORIGIN`  | Allowed CORS origin(s), comma-separated   |
 | `PORT`           | Server port (default 4000)                |
 | `AUTH_RATE_LIMIT` | Sign-up attempts per address per 15 minutes (default 20; only the browser tests raise it) |
+| `API_RATE_LIMIT` | Requests of any kind per address per 15 minutes (default 600; only the browser tests raise it) |
 | `AUTH_MAX_FAILED_ATTEMPTS` | Wrong passwords (sign-in or password change) allowed per address before it is blocked (default 5) |
 | `AUTH_LOCKOUT_MINUTES` | How long that block lasts before the count starts again (default 15) |
 | `TRUST_PROXY`    | Reverse proxies in front of the API (default 0); set it behind a proxy/load balancer so rate limiting sees real client IPs |
@@ -72,31 +79,44 @@ Codes: `VALIDATION_ERROR`, `BAD_REQUEST`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUN
 
 Auth: the token travels in an httpOnly cookie named `session`, set by login/register and removed by logout. Clients only need to send cookies (`credentials: 'include'`).
 
-| Method & path                          | Access   | Description                                   |
-| -------------------------------------- | -------- | --------------------------------------------- |
-| POST `/auth/register`                  | public   | Sign up (always a learner)                    |
-| POST `/auth/login`                     | public   | Returns `{ user }` and sets the `session` cookie                     |
-| GET `/auth/me`                         | user     | Current user                                  |
-| POST `/auth/logout`                    | user     | Sign out everywhere: revokes every token issued so far |
-| POST `/media/signature`                | admin    | Body `{ kind }`, where kind is `video` or `image`. Returns a signed, short-lived permission to upload one file straight to Cloudinary |
-| PATCH `/users/:id/role`                | admin    | `{ role: 'LEARNER' | 'ADMIN' }`; admins can't change their own role |
-| GET `/categories`                      | public   | Categories with published-course counts       |
-| POST/PATCH/DELETE `/categories[/:id]`  | admin    | Manage categories (delete blocked while in use) |
-| GET `/courses`                         | public   | Catalog: `?q=&categoryId=&page=&pageSize=`    |
-| GET `/courses/:id`                     | public   | Course + lessons (video URLs for enrolled/admin only) |
-| POST/PATCH/DELETE `/courses[/:id]`     | admin    | Manage courses                                |
-| POST `/courses/:id/lessons`            | admin    | Add lesson (auto-ordered)                     |
-| PUT `/courses/:id/lessons/reorder`     | admin    | `{ lessonIds: [...] }`                        |
-| GET `/lessons`                         | admin    | Every lesson of every course: `?q=` (title, description or course), `?courseId=`, `?sortBy=createdAt|title|course|duration`, `?sortDir=`, `?page=`, `?pageSize=` |
-| GET `/lessons/:id`                     | enrolled/admin | Lesson + sibling lessons + next/prev    |
-| PATCH/DELETE `/lessons/:id`            | admin    | Update / delete lesson                        |
-| POST/DELETE `/courses/:id/enroll`      | user     | Enroll (idempotent) / unenroll                |
-| GET `/enrollments/me`                  | user     | My courses with progress                      |
-| GET/PUT `/lessons/:id/progress`        | enrolled | `{ positionSeconds, completed? }` resume + completion |
-| GET `/dashboard/learner`               | user     | Summary, continue-learning, recent activity   |
-| GET `/dashboard/admin`                 | admin    | Totals, per-course enrollments & completion   |
-| GET `/dashboard/admin/learners`        | admin    | Paginated learner progress                    |
-| GET `/dashboard/admin/learners/:id`    | admin    | One learner: every enrolled course, lesson by lesson |
+| Method and path | Access | What it does |
+| --- | --- | --- |
+| **Account** | | |
+| POST `/auth/register` | public | Sign up (always a learner). Refused when sign-ups are closed in Settings. |
+| POST `/auth/login` | public | Sign in. Returns `{ user }` and sets the cookie. 5 wrong passwords block the address for 15 minutes. |
+| GET `/auth/me` | user | The current user |
+| PATCH `/auth/me` | user | Change your own name `{ name }` |
+| POST `/auth/change-password` | user | `{ currentPassword, newPassword }`. Signs every other device out and keeps this one. A wrong current password is a 400 on that field. |
+| POST `/auth/logout` | user | Sign out everywhere: every earlier token stops working |
+| PATCH `/users/:id/role` | admin | `{ role: 'LEARNER' \| 'ADMIN' }`. Administrators cannot change their own role. |
+| **Settings and uploads** | | |
+| GET `/settings` | public | App name, tagline, logo, support email, upload limits and file types, and whether sign-ups are open |
+| PUT `/settings` | admin | Save those settings (blank optional text is cleared) |
+| POST `/media/signature` | admin | `{ kind: 'video' \| 'image' }`. A signed, short-lived permission to upload one file straight to Cloudinary, limited to the file types in Settings. |
+| **Categories** | | |
+| GET `/categories` | public | Categories with their published-course counts |
+| POST `/categories` | admin | Add a category |
+| PATCH, DELETE `/categories/:id` | admin | Rename, or delete (blocked while courses use it) |
+| **Courses** | | |
+| GET `/courses` | public | The catalog: `?q=&categoryId=&status=&sortBy=&sortDir=&page=&pageSize=`. Learners only ever see published courses; `status` is for administrators. |
+| GET `/courses/:id` | public | A course and its lessons. Video addresses are included for enrolled learners and administrators only. |
+| POST `/courses` | admin | Create a course |
+| PATCH, DELETE `/courses/:id` | admin | Update, or delete (its lessons go with it) |
+| POST, DELETE `/courses/:id/enroll` | user | Enroll (safe to repeat) or leave (progress is kept) |
+| GET `/enrollments/me` | user | The courses you are enrolled in, with your progress |
+| **Lessons and progress** | | |
+| POST `/courses/:id/lessons` | admin | Add a lesson (numbered automatically) |
+| PUT `/courses/:id/lessons/reorder` | admin | `{ lessonIds: [...] }` sets the order |
+| GET `/lessons` | admin | Every lesson of every course: `?q=` (title, description or course), `?courseId=`, `?sortBy=createdAt|title|course|duration`, `?sortDir=`, `?page=`, `?pageSize=` |
+| GET `/lessons/:id` | enrolled | A lesson with the course's other lessons and the next and previous ones |
+| PATCH, DELETE `/lessons/:id` | admin | Update, or delete |
+| GET, PUT `/lessons/:id/progress` | enrolled | Read, or save `{ positionSeconds, completed? }` for resume and completion |
+| **Dashboards** | | |
+| GET `/dashboard/learner` | user | Your totals, the lesson to resume, progress per course, recent activity |
+| GET `/dashboard/admin` | admin | Totals, enrollments and completion per course, recent enrollments |
+| GET `/dashboard/admin/learners` | admin | Learners with their progress: `?q=&enrolled=yes\|no&sortBy=&sortDir=&page=&pageSize=` |
+| GET `/dashboard/admin/learners/:id` | admin | One learner: every enrolled course, lesson by lesson |
+| GET `/dashboard/admin/courses/:id` | admin | One course's activity: enrolled learners, completions per lesson |
 
 ## Security
 

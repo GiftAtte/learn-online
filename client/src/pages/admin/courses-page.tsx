@@ -1,5 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
-import { Eye, EyeOff, ListVideo, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Activity, Eye, EyeOff, ListVideo, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
   DataTable,
   MutedCell,
@@ -19,6 +19,7 @@ import {
   usePublishCourse,
 } from '@/core/hooks/queries/use-courses';
 import type { CourseFilters, CourseSummary } from '@/core/types/course.types';
+import { AdminCourseCard } from '@/components/courses/admin-course-card';
 import { CourseFormModal } from '@/components/courses/course-form-modal';
 import { CourseThumb } from '@/components/courses/course-thumb';
 import { PublishedBadge } from '@/components/courses/published-badge';
@@ -87,6 +88,42 @@ export default function AdminCoursesPage() {
     setParams({ q: '', categoryId: '', status: '', page: '1' });
   };
 
+  /** The "..." menu of a course, in the table and on the phone card. */
+  const courseActions = (course: CourseSummary) => (
+    <RowActions
+      label={`Actions for ${course.title}`}
+      actions={[
+        {
+          label: 'Manage lessons',
+          icon: ListVideo,
+          to: link(PATHS.admin.course, { courseId: course.id }),
+        },
+        {
+          label: 'View activity',
+          icon: Activity,
+          to: link(PATHS.admin.courseActivity, { courseId: course.id }),
+        },
+        { label: 'Edit details', icon: Pencil, onSelect: () => editor.openEdit(course) },
+        {
+          label: course.published ? 'Unpublish' : 'Publish',
+          icon: course.published ? EyeOff : Eye,
+          onSelect: () => setPublished.mutate({ id: course.id, published: !course.published }),
+        },
+        {
+          label: 'Delete course',
+          icon: Trash2,
+          tone: 'danger',
+          separated: true,
+          onSelect: async () => {
+            if (await confirm({ ...MESSAGES.confirm.deleteCourse })) {
+              deleteCourse.mutate(course.id);
+            }
+          },
+        },
+      ]}
+    />
+  );
+
   const columns: ColumnDef<CourseSummary>[] = [
     {
       id: 'title',
@@ -132,39 +169,7 @@ export default function AdminCoursesPage() {
     {
       id: 'actions',
       header: '',
-      cell: ({ row }) => {
-        const course = row.original;
-        return (
-          <RowActions
-            label={`Actions for ${course.title}`}
-            actions={[
-              {
-                label: 'Manage lessons',
-                icon: ListVideo,
-                to: link(PATHS.admin.course, { courseId: course.id }),
-              },
-              { label: 'Edit details', icon: Pencil, onSelect: () => editor.openEdit(course) },
-              {
-                label: course.published ? 'Unpublish' : 'Publish',
-                icon: course.published ? EyeOff : Eye,
-                onSelect: () =>
-                  setPublished.mutate({ id: course.id, published: !course.published }),
-              },
-              {
-                label: 'Delete course',
-                icon: Trash2,
-                tone: 'danger',
-                separated: true,
-                onSelect: async () => {
-                  if (await confirm({ ...MESSAGES.confirm.deleteCourse })) {
-                    deleteCourse.mutate(course.id);
-                  }
-                },
-              },
-            ]}
-          />
-        );
-      },
+      cell: ({ row }) => courseActions(row.original),
     },
   ];
 
@@ -190,6 +195,30 @@ export default function AdminCoursesPage() {
           data={data?.items ?? []}
           getRowId={(row) => row.id}
           numericColumns={['lessons', 'learners']}
+          // On a phone each course is a full card with its large cover, one per row.
+          mobileCard={(course) => (
+            <AdminCourseCard
+              title={course.title}
+              to={link(PATHS.admin.course, { courseId: course.id })}
+              category={course.category.name}
+              thumbnailUrl={course.thumbnailUrl}
+              description={course.description}
+              published={course.published}
+              facts={[
+                { label: 'Lessons', value: course.lessonCount },
+                { label: 'Learners', value: course.enrollmentCount ?? 0 },
+                ...(course.createdAt
+                  ? [{ label: 'Created', value: formatDate(course.createdAt) }]
+                  : []),
+              ]}
+              footer={
+                <>
+                  <PublishedBadge published={course.published} />
+                  {courseActions(course)}
+                </>
+              }
+            />
+          )}
           loading={courses.isPending}
           busy={courses.isFetching && !courses.isPending}
           sorting={toSortingState(params.sortBy, params.sortDir)}

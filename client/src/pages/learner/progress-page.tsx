@@ -7,6 +7,7 @@ import { Button, Card, ProgressRing, Skeleton } from '@/components/ui';
 import { useSession } from '@/core/hooks/queries/use-auth';
 import { useGetLearnerDashboard } from '@/core/hooks/queries/use-dashboard';
 import { ContinueCard } from '@/components/dashboard/continue-card';
+import { InProgressLessons } from '@/components/dashboard/in-progress-lessons';
 import { CourseProgressList } from '@/components/dashboard/course-progress-list';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { PATHS } from '@/router/paths';
@@ -39,7 +40,12 @@ export default function ProgressPage() {
       >
         {({ summary, continueLearning, courses, recentActivity }) => (
           <>
-            {continueLearning && <ContinueCard resume={continueLearning} />}
+            {continueLearning && (
+              <>
+                <ContinueCard resume={continueLearning} />
+                <InProgressLessons resume={continueLearning} />
+              </>
+            )}
 
             <StatGrid>
               <StatTile label="Enrolled courses" value={summary.enrolledCourses} icon={BookOpen} />

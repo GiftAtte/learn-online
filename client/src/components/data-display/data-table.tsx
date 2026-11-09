@@ -45,6 +45,12 @@ interface DataTableProps<T> {
    * keyboard and screen-reader users have something to focus; clicks on links and buttons are left alone.
    */
   onRowClick?: (row: T) => void;
+  /**
+   * Draw each row on phones as this card, instead of the automatic one (title, then a label and value per
+   * column). Use it where a row is really a card, such as a course with a cover picture. Tables from `md`
+   * up are unaffected.
+   */
+  mobileCard?: (row: T) => ReactNode;
 }
 
 /** True when the click landed on (or inside) something that handles clicks itself. */
@@ -75,6 +81,7 @@ export function DataTable<T>({
   sorting,
   onSortingChange,
   onRowClick,
+  mobileCard,
 }: DataTableProps<T>) {
   const serverSorted = sorting !== undefined;
   const [localSorting, setLocalSorting] = useState<SortingState>([]);
@@ -173,6 +180,7 @@ export function DataTable<T>({
           {/* Phone cards */}
           <ul className="flex flex-col gap-3 md:hidden" aria-label={caption}>
             {rows.map((row) => {
+              if (mobileCard) return <li key={row.id}>{mobileCard(row.original)}</li>;
               const cells = row.getVisibleCells();
               const title = cells.find((c) => c.column.id === titleId);
               const rest = cells.filter((c) => c.column.id !== titleId);

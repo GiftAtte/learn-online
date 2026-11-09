@@ -2,7 +2,9 @@ import { Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ProgressBar } from '@/components/ui/progress';
+import { LessonThumb } from '@/components/lessons/lesson-thumb';
 import { formatClock } from '@/core/lib/format';
+import { lessonPicture } from '@/core/lib/youtube';
 import type { ResumeTarget } from '@/core/types/dashboard.types';
 import { link, PATHS } from '@/router/paths';
 
@@ -17,7 +19,12 @@ export function ContinueCard({ resume }: { resume: ResumeTarget }) {
       aria-label="Continue learning"
       className="flex flex-col gap-5 rounded-stage bg-spruce-900 p-5 text-white shadow-lift sm:flex-row sm:items-center sm:justify-between sm:p-7"
     >
-      <div className="flex min-w-0 flex-col gap-3 sm:max-w-xl">
+      <LessonThumb
+        src={lessonPicture(resume.thumbnailUrl, resume.videoUrl)}
+        durationSeconds={resume.durationSeconds}
+        className="w-full sm:w-52 sm:shrink-0 lg:w-60"
+      />
+      <div className="flex min-w-0 flex-col gap-3 sm:max-w-xl sm:flex-1">
         <p className="text-sm text-spruce-200">Pick up where you left off</p>
         <div className="flex flex-col gap-1">
           <h2 className="text-2xl leading-snug font-semibold">{resume.lessonTitle}</h2>

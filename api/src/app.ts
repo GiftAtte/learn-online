@@ -37,7 +37,7 @@ export const createApp = () => {
 
   // All feature routers live under a versioned prefix so the contract can evolve (/api/v2) later.
   const api = express.Router();
-  api.use(createLimiter(600)); // generous global ceiling against scraping and floods
+  api.use(createLimiter(env.API_RATE_LIMIT)); // generous global ceiling against scraping and floods
   api.use('/auth', authRouter);
   api.use('/categories', categoriesRouter);
   api.use('/courses', coursesRouter);

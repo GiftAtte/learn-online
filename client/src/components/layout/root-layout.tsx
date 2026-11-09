@@ -73,6 +73,8 @@ export function RootLayout() {
         roleLabel: isAdmin ? 'Administrator' : 'Learner',
       }}
       onSignOut={signOut}
+      // Administrators have many destinations: a drawer. Learners have three: a bottom tab bar.
+      mobileNav={isAdmin ? 'drawer' : 'tabs'}
     />
   );
 }

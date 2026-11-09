@@ -43,29 +43,24 @@ export function StatTile({
 }: StatTileProps) {
   const hasDelta = delta !== undefined && delta !== null;
 
-  // Phones: one tile per row, icon on the left, figure and label beside it, change chip at the right.
-  // From "md" (768px) up the tile stacks: icon (and chip) on top, figure and label below.
+  // Always stacked: icon (and change chip) on top, figure and label below. Tiles sit two per row on
+  // phones, so the layout has to work in a narrow column.
   const body = (
     <>
       {Icon && (
         <span
           className={cn(
-            'col-start-1 row-start-1 flex size-9 shrink-0 items-center justify-center rounded-xl md:size-10',
+            'col-start-1 row-start-1 flex size-9 shrink-0 items-center justify-center rounded-xl sm:size-10',
             ICON_TONE[tone],
           )}
           aria-hidden
         >
-          <Icon className="size-[1.1rem] md:size-5" strokeWidth={1.8} />
+          <Icon className="size-[1.1rem] sm:size-5" strokeWidth={1.8} />
         </span>
       )}
       {/* The figure comes before the label so figures line up across tiles even when a label wraps. */}
-      <div
-        className={cn(
-          'row-start-1 min-w-0 md:col-span-2 md:col-start-1 md:row-start-2 md:mt-4',
-          Icon ? 'col-start-2' : 'col-span-2 col-start-1',
-        )}
-      >
-        <p className="font-display text-xl leading-7 font-bold tracking-tight break-words tnum md:text-[1.75rem] md:leading-9">
+      <div className={cn('col-span-2 col-start-1 row-start-2 min-w-0', Icon && 'mt-3 sm:mt-4')}>
+        <p className="font-display text-xl leading-7 font-bold tracking-tight break-words tnum sm:text-[1.75rem] sm:leading-9">
           {value}
         </p>
         <p className="mt-0.5 text-sm leading-snug font-medium text-ink-soft">{label}</p>
@@ -74,7 +69,7 @@ export function StatTile({
       {hasDelta && (
         <span
           className={cn(
-            'col-start-3 row-start-1 inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-1 text-[0.6875rem] font-semibold tnum md:col-start-2',
+            'col-start-2 row-start-1 inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-1 text-[0.6875rem] font-semibold tnum',
             delta >= 0 ? 'bg-success-soft text-success' : 'bg-danger-soft text-danger',
           )}
         >
@@ -90,8 +85,7 @@ export function StatTile({
   );
 
   const classes = cn(
-    'grid h-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 rounded-card border border-line/70 bg-surface p-4 shadow-card',
-    'md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:p-5',
+    'grid h-full min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_1fr] items-start gap-x-2 rounded-card border border-line/70 bg-surface p-3.5 shadow-card sm:p-5',
     href && 'transition-transform hover:-translate-y-0.5',
   );
 

@@ -4,6 +4,12 @@ React 19 + TypeScript, Vite, Tailwind CSS 4, Radix UI primitives with our own st
 
 ## Setup
 
+**Everything in Docker (database, server and website together):** from the repository root run
+`docker compose up --build`, then `docker compose exec api npm run db:seed` and open <http://localhost:8080>.
+See "Run it" in the [root README](../README.md#run-it).
+
+**Or run just the website on your computer** (Option B):
+
 ```bash
 cd client
 npm install

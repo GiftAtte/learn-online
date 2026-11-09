@@ -1,5 +1,11 @@
 import { lazy, Suspense, type ComponentType } from 'react';
-import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  type RouteObject,
+  ScrollRestoration,
+} from 'react-router-dom';
 import { PageLoader } from '@/components/feedback/page-loader';
 import { RootLayout } from '@/components/layout/root-layout';
 import { GuestOnly } from '@/router/guards/guest-only';
@@ -94,39 +100,56 @@ const toRoute = ({ path, page: Page }: PageRoute): RouteObject => ({
 /** The routes of every page that is open to the given kind of visitor. */
 const pagesFor = (who: Who) => PAGES.filter((p) => p.who === who).map(toRoute);
 
-export const router = createBrowserRouter([
-  // The landing page has its own header and footer, so it sits outside the app frame.
-  toRoute({ path: PATHS.home, page: LandingPage, who: 'everyone' }),
+/**
+ * Sits above every route: a new page opens at the top, and Back returns to where you were. The key is the
+ * path alone, so changing a filter or search on the same page does not jump to the top.
+ */
+function ScrollToTop() {
+  return (
+    <>
+      <Outlet />
+      <ScrollRestoration getKey={(location) => location.pathname} />
+    </>
+  );
+}
 
-  // Sign in and sign up: full screen, and closed to people who are already signed in.
-  { element: <GuestOnly />, errorElement: <RouteErrorPage />, children: pagesFor('guest') },
+export const router = createBrowserRouter([{ element: <ScrollToTop />, children: routes() }]);
 
-  // Everything else sits inside the app frame (menu, sidebar).
-  {
-    element: <RootLayout />,
-    errorElement: <RouteErrorPage />,
-    children: [
-      // Free pages: visitors only. Signed-in people are redirected to /learner/...
-      { element: <PublicOnly />, children: pagesFor('public') },
+function routes(): RouteObject[] {
+  return [
+    // The landing page has its own header and footer, so it sits outside the app frame.
+    toRoute({ path: PATHS.home, page: LandingPage, who: 'everyone' }),
 
-      // Signed-in people only. Admin pages need that too, plus the administrator role.
-      {
-        element: <RequireAuth />,
-        children: [
-          ...pagesFor('signedIn'),
-          // Bookmarks to the old address keep working.
-          {
-            path: PATHS.learner.legacyDashboard,
-            element: <Navigate to={PATHS.learner.progress} replace />,
-          },
-          { element: <RequireAdmin />, children: pagesFor('admin') },
-        ],
-      },
+    // Sign in and sign up: full screen, and closed to people who are already signed in.
+    { element: <GuestOnly />, errorElement: <RouteErrorPage />, children: pagesFor('guest') },
 
-      ...(import.meta.env.DEV
-        ? [toRoute({ path: 'styleguide', page: StyleguidePage, who: 'everyone' })]
-        : []),
-      toRoute({ path: '*', page: NotFoundPage, who: 'everyone' }),
-    ],
-  },
-]);
+    // Everything else sits inside the app frame (menu, sidebar).
+    {
+      element: <RootLayout />,
+      errorElement: <RouteErrorPage />,
+      children: [
+        // Free pages: visitors only. Signed-in people are redirected to /learner/...
+        { element: <PublicOnly />, children: pagesFor('public') },
+
+        // Signed-in people only. Admin pages need that too, plus the administrator role.
+        {
+          element: <RequireAuth />,
+          children: [
+            ...pagesFor('signedIn'),
+            // Bookmarks to the old address keep working.
+            {
+              path: PATHS.learner.legacyDashboard,
+              element: <Navigate to={PATHS.learner.progress} replace />,
+            },
+            { element: <RequireAdmin />, children: pagesFor('admin') },
+          ],
+        },
+
+        ...(import.meta.env.DEV
+          ? [toRoute({ path: 'styleguide', page: StyleguidePage, who: 'everyone' })]
+          : []),
+        toRoute({ path: '*', page: NotFoundPage, who: 'everyone' }),
+      ],
+    },
+  ];
+}

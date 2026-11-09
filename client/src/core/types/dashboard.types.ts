@@ -8,6 +8,8 @@ export interface ResumeTarget {
   lessonTitle: string;
   courseId: string;
   courseTitle: string;
+  thumbnailUrl: string | null;
+  videoUrl: string;
   lastPositionSeconds: number;
   durationSeconds: number;
 }
@@ -38,6 +40,9 @@ export interface LearnerDashboard {
     lessonTitle: string;
     courseId: string;
     courseTitle: string;
+    thumbnailUrl: string | null;
+    videoUrl: string;
+    durationSeconds: number;
     completed: boolean;
     lastPositionSeconds: number;
     updatedAt: string;

@@ -185,17 +185,30 @@ test.describe.serial("admin settings and profile", () => {
   });
 });
 
-test("on a phone the avatar is at the top right and opens the same menu", async ({
+test("on a phone the avatar is at the top right, and Settings is in the menu drawer", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await signIn(page, ADMIN.email, ADMIN.password);
   await expect(page.locator("aside")).toBeHidden();
+
+  // The avatar opens the account menu: who you are, your profile and sign out.
   await page
     .locator("header")
     .getByRole("button", { name: /Account menu/ })
     .click();
   await expect(page.getByRole("menu")).toContainText("admin@learnonline.dev");
-  await page.getByRole("menuitem", { name: "Settings" }).click();
+  await expect(
+    page.getByRole("menuitem", { name: "Your profile" }),
+  ).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "Sign out" })).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  // The menu button opens the drawer, where Settings (and every other page) lives.
+  await page.getByRole("button", { name: "Open menu" }).click();
+  await page
+    .getByRole("dialog", { name: "Menu" })
+    .getByRole("link", { name: "Settings" })
+    .click();
   await expect(page).toHaveURL("/admin/settings");
 });

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SearchInput } from './search-input';
 
@@ -49,11 +50,10 @@ export function TableToolbar({
           </Button>
         )}
         {summary && (
-          <p
-            className="rounded-full bg-sunken/70 px-3 py-1.5 text-sm font-medium text-ink-soft tnum"
-            aria-live="polite"
-          >
-            {summary}
+          <p aria-live="polite">
+            <Badge tone="brand" className="tnum">
+              {summary}
+            </Badge>
           </p>
         )}
         {action}

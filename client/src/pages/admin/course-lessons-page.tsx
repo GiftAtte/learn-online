@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
-import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Activity, ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import {
   DataTable,
   NumberCell,
@@ -166,6 +166,12 @@ function CourseLessons({ course }: { course: CourseDetail }) {
       actions={
         <>
           <PublishedBadge published={course.published} />
+          <Button variant="secondary" asChild>
+            <Link to={link(PATHS.admin.courseActivity, { courseId: course.id })}>
+              <Activity className="size-4" aria-hidden />
+              View activity
+            </Link>
+          </Button>
           <Button variant="secondary" onClick={() => setEditingCourse(true)}>
             <Pencil className="size-4" aria-hidden />
             Edit course

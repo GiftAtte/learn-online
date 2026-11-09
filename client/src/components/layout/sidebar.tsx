@@ -26,29 +26,36 @@ const toSections = (nav: NavItem[]) =>
     return sections;
   }, []);
 
-interface SidebarProps {
+interface SidebarMenuProps {
   nav: NavItem[];
   /** Links pinned above the account, e.g. Settings. */
   footerNav?: NavItem[];
   user: ShellUser;
   onSignOut?: () => void;
+  /** Called when a link is followed, so a drawer can close itself. */
+  onNavigate?: () => void;
 }
 
 /**
- * Desktop navigation for signed-in people (learners and administrators): a "chalkboard" panel with
- * the logo, the main destinations, and at the bottom Settings, the landing page and the account
- * (avatar, name and role) which opens a menu with the profile and Sign out.
- * The pencil-yellow bar marks the page you are on. Hidden below `lg`, where the top bar and the
- * bottom tab bar take over.
+ * Everything inside the dark menu panel: the logo, the grouped destinations, and at the bottom Settings,
+ * the landing page and the account (avatar, name and role) which opens a menu with the profile and Sign
+ * out. The desktop <Sidebar> and the phone drawer both show this, so the two never drift apart.
  */
-export function Sidebar({ nav, footerNav = [], user, onSignOut }: SidebarProps) {
+export function SidebarMenu({
+  nav,
+  footerNav = [],
+  user,
+  onSignOut,
+  onNavigate,
+}: SidebarMenuProps) {
   const { appName } = useAppSettings();
   const headingId = useId();
   return (
-    <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col bg-spruce-900 text-white lg:flex">
+    <div className="flex min-h-0 flex-1 flex-col">
       <Link
         to={nav[0]?.to ?? PATHS.learner.catalog}
         aria-label={`${appName} home`}
+        onClick={onNavigate}
         className="m-3 mt-4 w-fit rounded-control p-2"
       >
         <Logo inverted />
@@ -77,6 +84,7 @@ export function Sidebar({ nav, footerNav = [], user, onSignOut }: SidebarProps) 
                     <NavLink
                       to={item.to}
                       end={item.end}
+                      onClick={onNavigate}
                       className={({ isActive }) => linkStyles(isActive)}
                     >
                       <item.icon className="size-[1.2rem]" strokeWidth={1.8} aria-hidden />
@@ -96,13 +104,14 @@ export function Sidebar({ nav, footerNav = [], user, onSignOut }: SidebarProps) 
             key={item.to}
             to={item.to}
             end={item.end}
+            onClick={onNavigate}
             className={({ isActive }) => linkStyles(isActive)}
           >
             <item.icon className="size-[1.2rem]" strokeWidth={1.8} aria-hidden />
             {item.label}
           </NavLink>
         ))}
-        <Link to={PATHS.home} className={linkStyles(false)}>
+        <Link to={PATHS.home} onClick={onNavigate} className={linkStyles(false)}>
           <Globe className="size-[1.2rem]" strokeWidth={1.8} aria-hidden />
           Landing page
         </Link>
@@ -111,6 +120,27 @@ export function Sidebar({ nav, footerNav = [], user, onSignOut }: SidebarProps) 
           <AccountMenu user={user} placement="sidebar" onSignOut={onSignOut} />
         </div>
       </div>
+    </div>
+  );
+}
+
+interface SidebarProps {
+  nav: NavItem[];
+  /** Links pinned above the account, e.g. Settings. */
+  footerNav?: NavItem[];
+  user: ShellUser;
+  onSignOut?: () => void;
+}
+
+/**
+ * Desktop navigation for signed-in people (learners and administrators): the "chalkboard" panel.
+ * The pencil-yellow bar marks the page you are on. Hidden below `lg`, where the top bar takes over
+ * (with a bottom tab bar for learners, or a drawer for administrators, who have many destinations).
+ */
+export function Sidebar({ nav, footerNav = [], user, onSignOut }: SidebarProps) {
+  return (
+    <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col bg-spruce-900 text-white lg:flex">
+      <SidebarMenu nav={nav} footerNav={footerNav} user={user} onSignOut={onSignOut} />
     </aside>
   );
 }

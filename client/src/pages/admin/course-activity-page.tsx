@@ -113,7 +113,7 @@ function ActivityView({ activity }: { activity: CourseActivity }) {
   const { course, summary, lessons, learners } = activity;
   return (
     <Page
-      back={{ to: PATHS.admin.overview, label: 'Overview' }}
+      back={{ to: link(PATHS.admin.course, { courseId: course.id }), label: 'Course lessons' }}
       title={course.title}
       description={`${course.category.name} · ${pluralize(course.lessonCount, 'lesson')}, ${formatDuration(course.totalDurationSeconds)}`}
       actions={<PublishedBadge published={course.published} />}

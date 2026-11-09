@@ -24,6 +24,9 @@ const schema = z.object({
   // Sign-in and sign-up attempts allowed per address in 15 minutes (slows down password guessing).
   // Leave it at 20 in real use; only the browser tests, which sign in many times, raise it.
   AUTH_RATE_LIMIT: z.coerce.number().int().positive().default(20),
+  // Requests of any kind allowed per address in 15 minutes, a generous ceiling against floods and scraping.
+  // Leave it at 600 in real use; only the browser tests, which make thousands of requests, raise it.
+  API_RATE_LIMIT: z.coerce.number().int().positive().default(600),
   // Failed sign-in (or password-change) attempts allowed per address, and how long before the count starts
   // again. After this many wrong passwords the address is blocked until the time has passed.
   AUTH_MAX_FAILED_ATTEMPTS: z.coerce.number().int().positive().default(5),

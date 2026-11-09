@@ -74,7 +74,11 @@ export function PageHeader({
         )}
       </div>
       {actions && (
-        <div className="relative flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
+        // On phones the buttons sit under the title, so they span the row and push to the right, the same
+        // side they are on desktop (beside the title).
+        <div className="relative flex w-full shrink-0 flex-wrap items-center justify-end gap-2 sm:w-auto">
+          {actions}
+        </div>
       )}
     </header>
   );

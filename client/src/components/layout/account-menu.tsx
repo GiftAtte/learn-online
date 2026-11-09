@@ -1,4 +1,4 @@
-import { ChevronsUpDown, LogOut, UserRound } from 'lucide-react';
+import { ChevronsUpDown, Home, LogOut, UserRound } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Avatar } from '@/components/ui/avatar';
 import {
@@ -18,6 +18,8 @@ interface AccountMenuProps {
   /** Extra places to go, such as Settings for administrators. */
   links?: NavItem[];
   onSignOut?: () => void;
+  /** Add a "Home page" link (the landing page) on the phone header. Off when a tab bar already has Home. */
+  showHome?: boolean;
   /**
    * Where the menu lives. "bar" is the avatar at the top right of the phone and tablet header;
    * "sidebar" is the full-width account row at the bottom of the desktop sidebar (dark, opens upward).
@@ -29,7 +31,13 @@ interface AccountMenuProps {
  * The person's avatar as a dropdown. The menu shows who they are (avatar, name, email, role), then their
  * profile, any extra links, and Sign out.
  */
-export function AccountMenu({ user, links = [], onSignOut, placement = 'bar' }: AccountMenuProps) {
+export function AccountMenu({
+  user,
+  links = [],
+  onSignOut,
+  showHome = false,
+  placement = 'bar',
+}: AccountMenuProps) {
   const sidebar = placement === 'sidebar';
   return (
     <DropdownMenu>
@@ -89,6 +97,14 @@ export function AccountMenu({ user, links = [], onSignOut, placement = 'bar' }: 
               Your profile
             </Link>
           </DropdownMenuItem>
+          {showHome && !sidebar && (
+            <DropdownMenuItem asChild>
+              <Link to={PATHS.home}>
+                <Home className="size-[1.15rem] text-ink-soft" strokeWidth={1.8} aria-hidden />
+                Home page
+              </Link>
+            </DropdownMenuItem>
+          )}
           {links.map(({ to, label, icon: Icon }) => (
             <DropdownMenuItem asChild key={to}>
               <Link to={to}>

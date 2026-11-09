@@ -250,7 +250,10 @@ test.describe.serial("pages that depend on a learner’s progress", () => {
     page,
   }) => {
     await signIn(page, ADMIN, "/admin");
-    await page.goto(`/admin/courses/${courseId}/activity`);
+    // Reached the way an administrator would: from the course's own page.
+    await page.goto(`/admin/courses/${courseId}`);
+    await page.getByRole("link", { name: "View activity" }).click();
+    await expect(page).toHaveURL(`/admin/courses/${courseId}/activity`);
     await expect(
       page.getByRole("heading", {
         level: 1,
@@ -260,11 +263,36 @@ test.describe.serial("pages that depend on a learner’s progress", () => {
     await expect(page.getByText("Completion rate")).toBeVisible();
     // The seeded demo learner may have finished lessons in this course too, so only require
     // that some lesson has at least one finisher.
-    await expect(page.getByText(/[1-9]\d* of \d+ finished/).first()).toBeVisible();
+    await expect(
+      page.getByText(/[1-9]\d* of \d+ finished/).first(),
+    ).toBeVisible();
     await expect(
       page.getByRole("table", { name: /Learners enrolled/ }),
     ).toContainText(student.name);
   });
+});
+
+test("course activity can be opened from the courses list, and leads back to the course", async ({
+  page,
+}) => {
+  await signIn(page, ADMIN, "/admin");
+  await page.goto("/admin/courses");
+  await page
+    .getByRole("searchbox")
+    .first()
+    .fill("TypeScript for Professionals");
+  const row = page
+    .getByRole("row")
+    .filter({ hasText: "TypeScript for Professionals" });
+  await row
+    .getByRole("button", { name: /Actions for TypeScript for Professionals/ })
+    .click();
+  await page.getByRole("menuitem", { name: "View activity" }).click();
+  await expect(page).toHaveURL(/\/admin\/courses\/[0-9a-f-]{36}\/activity$/);
+  await expect(page.getByText("Completion rate")).toBeVisible();
+
+  await page.getByRole("link", { name: /Course lessons/ }).click();
+  await expect(page).toHaveURL(/\/admin\/courses\/[0-9a-f-]{36}$/);
 });
 
 test("overview: only the latest 10 courses, with a View more button to the full list", async ({

@@ -1,9 +1,11 @@
+import { Home } from 'lucide-react';
 import { useAppSettings } from '@/core/hooks/queries/use-settings';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { cn } from '@/core/lib/cn';
 import { AccountMenu } from './account-menu';
 import { Container } from './container';
 import { Logo } from './logo';
+import { MobileMenu } from './mobile-menu';
 import type { NavItem, ShellUser } from '@/core/types/ui.types';
 import { Sidebar } from './sidebar';
 import { PATHS } from '@/router/paths';
@@ -14,19 +16,37 @@ interface AppShellProps {
   footerNav?: NavItem[];
   user: ShellUser;
   onSignOut?: () => void;
+  /**
+   * How phones and tablets reach the menu. "tabs" is a bottom tab bar, right for a few destinations
+   * (learners). "drawer" is a menu button that opens a side drawer, for many (administrators).
+   */
+  mobileNav?: 'tabs' | 'drawer';
 }
 
 /**
  * The frame around every page for signed-in people (signed-out visitors get PublicLayout).
  *  - Desktop (lg+): a sidebar with navigation and the account.
- *  - Tablet and phone: a top bar with the logo and the avatar (which opens the account menu), plus a
- *    bottom tab bar. Items that do not fit in the tab bar (`inTabBar: false`) are in the account menu.
+ *  - Tablet and phone: a top bar with the logo and the avatar (which opens the account menu), plus either
+ *    a bottom tab bar (`mobileNav="tabs"`; items marked `inTabBar: false` go in the account menu) or a
+ *    menu button that opens a drawer with the whole menu (`mobileNav="drawer"`).
  */
-export function AppShell({ nav, footerNav = [], user, onSignOut }: AppShellProps) {
+export function AppShell({
+  nav,
+  footerNav = [],
+  user,
+  onSignOut,
+  mobileNav = 'tabs',
+}: AppShellProps) {
+  const drawer = mobileNav === 'drawer';
   // On phones the tab bar keeps the main destinations; everything else goes into the avatar menu.
   const everything = [...nav, ...footerNav];
-  const tabs = everything.filter((item) => item.inTabBar !== false);
-  const overflow = everything.filter((item) => item.inTabBar === false);
+  // The tab bar starts with Home (the landing page), which the sidebar and the logo do not cover on phones.
+  const tabs: NavItem[] = [
+    { to: PATHS.home, label: 'Home', icon: Home, end: true },
+    ...everything.filter((item) => item.inTabBar !== false),
+  ];
+  // With a drawer, everything is in the drawer, so the account menu needs no extra links.
+  const overflow = drawer ? [] : everything.filter((item) => item.inTabBar === false);
   return (
     <div className="flex min-h-dvh">
       <a
@@ -43,17 +63,19 @@ export function AppShell({ nav, footerNav = [], user, onSignOut }: AppShellProps
           user={user}
           home={nav[0]?.to ?? PATHS.learner.catalog}
           menuLinks={overflow}
+          homeInMenu={drawer}
           onSignOut={onSignOut}
+          drawer={drawer ? { nav, footerNav } : undefined}
         />
 
-        <main id="main" className="flex-1 py-6 pb-28 sm:py-10 lg:pb-14">
+        <main id="main" className={cn('flex-1 py-6 sm:py-10 lg:pb-14', drawer ? 'pb-10' : 'pb-28')}>
           {/* Pages fill the width next to the sidebar, with small margins on both sides. */}
           <Container fluid>
             <Outlet />
           </Container>
         </main>
 
-        <BottomTabs nav={tabs} />
+        {!drawer && <BottomTabs nav={tabs} />}
       </div>
     </div>
   );
@@ -67,22 +89,38 @@ function TopBar({
   user,
   home,
   menuLinks,
+  homeInMenu,
   onSignOut,
+  drawer,
 }: {
+  /** Put "Home page" in the account menu (when the tab bar, which carries Home, is not shown). */
+  homeInMenu: boolean;
   user: ShellUser;
   /** Where the logo leads: the person's own home. */
   home: string;
   menuLinks: NavItem[];
   onSignOut?: () => void;
+  /** Give the menu button and drawer these items (administrators). Omit for the bottom tab bar. */
+  drawer?: { nav: NavItem[]; footerNav: NavItem[] };
 }) {
   const { appName } = useAppSettings();
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur-md lg:hidden">
       <Container fluid className="flex h-14 items-center justify-between gap-3 sm:h-16 sm:gap-6">
-        <Link to={home} aria-label={`${appName} home`} className="rounded-control">
-          <Logo />
-        </Link>
-        <AccountMenu user={user} links={menuLinks} onSignOut={onSignOut} />
+        <div className="flex min-w-0 items-center gap-1.5">
+          {drawer && (
+            <MobileMenu
+              nav={drawer.nav}
+              footerNav={drawer.footerNav}
+              user={user}
+              onSignOut={onSignOut}
+            />
+          )}
+          <Link to={home} aria-label={`${appName} home`} className="rounded-control">
+            <Logo />
+          </Link>
+        </div>
+        <AccountMenu user={user} links={menuLinks} showHome={homeInMenu} onSignOut={onSignOut} />
       </Container>
     </header>
   );

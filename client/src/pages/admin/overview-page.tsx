@@ -17,6 +17,7 @@ import { Page, Section, SectionCard } from '@/components/layout';
 import { Button, Skeleton } from '@/components/ui';
 import { EnrollmentsByCourse } from '@/components/admin/enrollments-by-course';
 import { RecentEnrollments } from '@/components/admin/recent-enrollments';
+import { AdminCourseCard } from '@/components/courses/admin-course-card';
 import { CourseThumb } from '@/components/courses/course-thumb';
 import { PublishedBadge } from '@/components/courses/published-badge';
 import { useGetAdminDashboard } from '@/core/hooks/queries/use-dashboard';
@@ -173,6 +174,25 @@ export default function AdminOverviewPage() {
                   data={rows}
                   getRowId={(row) => row.id}
                   numericColumns={['learners', 'completion']}
+                  // On a phone each course is a full card with its large cover, one per row.
+                  mobileCard={(course) => (
+                    <AdminCourseCard
+                      title={course.title}
+                      to={link(PATHS.admin.course, { courseId: course.id })}
+                      category={course.category.name}
+                      thumbnailUrl={course.thumbnailUrl}
+                      published={course.published}
+                      facts={[
+                        { label: 'Learners', value: course.enrollmentCount },
+                        {
+                          label: 'Completed',
+                          value: `${course.completedLearners} (${course.completionRate}%)`,
+                        },
+                      ]}
+                      progress={{ value: course.averageProgressPercent, label: 'Average progress' }}
+                      footer={<PublishedBadge published={course.published} />}
+                    />
+                  )}
                   toolbar={
                     <TableToolbar
                       search={{ value: search, onChange: setSearch, label: 'Search courses' }}

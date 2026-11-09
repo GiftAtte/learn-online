@@ -38,6 +38,9 @@ const lessonRef = (p: ProgressEntry) => ({
   lessonTitle: p.lesson.title,
   courseId: p.lesson.course.id,
   courseTitle: p.lesson.course.title,
+  thumbnailUrl: p.lesson.thumbnailUrl,
+  videoUrl: p.lesson.videoUrl,
+  durationSeconds: p.lesson.durationSeconds,
   lastPositionSeconds: p.lastPositionSeconds,
 });
 
