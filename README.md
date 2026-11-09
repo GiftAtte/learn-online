@@ -15,19 +15,43 @@ docs/     How it is built, and what each requirement maps to
 
 ## Run it
 
-You need [Node.js](https://nodejs.org) 22 or newer and [Docker](https://www.docker.com) (for the database).
+Pick one of the two ways. Option A needs only Docker. Option B is for working on the code.
+
+### Option A: everything in Docker
+
+You need [Docker](https://www.docker.com). Nothing else has to be installed.
+
+```bash
+docker compose up --build                    # builds and starts the database, server and website
+docker compose exec api npm run db:seed      # adds demo data (do this once)
+```
+
+Open <http://localhost:8080>. The tables are created automatically when it starts.
+
+- If port 8080 is taken, set `WEB_BIND` to another port, for example `WEB_BIND=8090`.
+- If port 5432 is taken (you already run PostgreSQL), set `DB_PORT`, for example `DB_PORT=5433`.
+- To stop it, press `Ctrl+C`. To remove the containers too, run `docker compose down`.
+
+### Option B: on your computer, for development
+
+You need [Node.js](https://nodejs.org) 22 or newer, and either Docker (for the database) or your own
+PostgreSQL 14 or newer.
 
 ```bash
 npm run setup                    # install everything
 cp api/.env.example api/.env     # then open api/.env and set JWT_SECRET to any 32+ characters
-npm run db:up                    # start the database
+npm run db:up                    # start the database (skip this if you use your own PostgreSQL)
 npm run db:migrate               # create the tables
 npm run db:seed                  # add demo courses and two demo accounts
 npm run dev:api                  # the server: http://localhost:4000   (keep this terminal open)
 npm run dev:client               # the website: http://localhost:5173  (use a second terminal)
 ```
 
-Open <http://localhost:5173> and sign in with a demo account:
+Open <http://localhost:5173>. With your own PostgreSQL, put its address in `DATABASE_URL` in `api/.env`.
+
+### Demo accounts
+
+Either way, sign in with one of these:
 
 | Role          | Email                     | Password      |
 | ------------- | ------------------------- | ------------- |
@@ -35,9 +59,6 @@ Open <http://localhost:5173> and sign in with a demo account:
 | Learner       | `learner@learnonline.dev` | `Learner123!` |
 
 These accounts are for your own computer only. Never use them on a public site.
-
-**Prefer Docker for everything?** Run `docker compose up --build`, then
-`docker compose exec api npm run db:seed`, and open <http://localhost:8080>.
 
 ## What you can do
 
