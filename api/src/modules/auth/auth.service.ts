@@ -132,7 +132,9 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
   const user = await prisma.user.findUnique({ where: { email: input.email } });
   if (!user) return;
   const token = await issueResetToken(user.id);
-  await sendMail(resetPasswordMail(user.email, user.name, token));
+  // Not awaited: sending takes a second, and waiting would make known addresses answer slower than unknown
+  // ones. sendMail never throws (it logs failures), so there is nothing to catch.
+  void sendMail(resetPasswordMail(user.email, user.name, token));
 };
 
 /**
