@@ -16,7 +16,7 @@ const signIn = async (page: Page, email: string, password: string, home = '/lear
 };
 
 test.describe.serial('learner journey', () => {
-  test('signs up, enrolls, finishes a lesson and sees it on the dashboard', async ({ page }) => {
+  test('signs up, enrolls, finishes a lesson and sees it on the Progress page', async ({ page }) => {
     await page.goto('/sign-up');
     await page.getByLabel('Full name').fill(learner.name);
     await page.getByLabel('Email').fill(learner.email);
@@ -36,8 +36,8 @@ test.describe.serial('learner journey', () => {
     await page.locator('video').evaluate((video) => video.dispatchEvent(new Event('ended')));
     await expect(page.getByText('Completed').first()).toBeVisible();
 
-    // Progress persisted and is reflected on the dashboard.
-    await page.goto('/learner/dashboard');
+    // Progress persisted and is reflected on the Progress page.
+    await page.goto('/learner/progress');
     await expect(page.getByText('Design Thinking Essentials').first()).toBeVisible();
     await expect(page.getByText(/[1-9]\d*%/).first()).toBeVisible();
   });
@@ -51,7 +51,7 @@ test.describe.serial('learner journey', () => {
   test('an administrator finds the new learner and sees their lesson progress', async ({
     page,
   }) => {
-    // Administrators land on their dashboard, not on the learner catalog.
+    // Administrators land on the admin overview, not on the learner catalog.
     await signIn(page, 'admin@learnonline.dev', 'Admin123!', '/admin');
     await page.goto('/admin/learners');
     await page
@@ -67,7 +67,7 @@ test.describe.serial('learner journey', () => {
 });
 
 test('guests are sent to sign in from protected pages', async ({ page }) => {
-  await page.goto('/learner/dashboard');
+  await page.goto('/learner/progress');
   await expect(page).toHaveURL(/sign-in/);
 });
 

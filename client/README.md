@@ -102,7 +102,7 @@ URLs are grouped by audience. `router/paths.ts` lists every address once (`PATHS
 | `/`                                                                            | everyone       | landing page (about LearnOnline)                                                  |
 | `/catalog`, `/courses/:id`                                                     | visitors       | free catalog and course detail; signed-in people are redirected to `/learner/...` |
 | `/learner/catalog`, `/learner/courses/:id`                                     | signed-in      | the same two screens inside the app (sidebar)                                     |
-| `/learner/lessons/:id`, `/learner/my-learning`, `/learner/dashboard`           | signed-in      | lesson player, my learning, progress                                              |
+| `/learner/lessons/:id`, `/learner/my-learning`, `/learner/progress`            | signed-in      | lesson player, my learning, progress                                              |
 | `/sign-in`, `/sign-up`                                                         | guests         | authentication                                                                    |
 | `/admin`, `/admin/courses[/:id]`, `/admin/categories`, `/admin/learners[/:id]` | administrators | management                                                                        |
 

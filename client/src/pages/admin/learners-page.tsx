@@ -64,7 +64,7 @@ const columns: ColumnDef<AdminLearner>[] = [
         <span className="text-ink-faint">Not enrolled yet</span>
       ) : (
         // One small progress line per course the learner is enrolled in.
-        <ul className="flex w-full min-w-56 flex-col gap-2.5 md:min-w-72">
+        <ul className="flex w-full min-w-0 flex-col gap-2.5 sm:min-w-56 md:min-w-72">
           {row.original.courses.map((course) => (
             <li key={course.courseId} className="flex flex-col gap-1 text-left">
               <div className="flex items-baseline justify-between gap-3 text-sm">

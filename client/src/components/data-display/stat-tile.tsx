@@ -43,48 +43,55 @@ export function StatTile({
 }: StatTileProps) {
   const hasDelta = delta !== undefined && delta !== null;
 
+  // Phones: one tile per row, icon on the left, figure and label beside it, change chip at the right.
+  // From "md" (768px) up the tile stacks: icon (and chip) on top, figure and label below.
   const body = (
     <>
-      <div className="flex items-start justify-between gap-3">
-        {Icon ? (
-          <span
-            className={cn(
-              'flex size-10 shrink-0 items-center justify-center rounded-xl',
-              ICON_TONE[tone],
-            )}
-            aria-hidden
-          >
-            <Icon className="size-5" strokeWidth={1.8} />
-          </span>
-        ) : (
-          <span />
+      {Icon && (
+        <span
+          className={cn(
+            'col-start-1 row-start-1 flex size-10 shrink-0 items-center justify-center rounded-xl',
+            ICON_TONE[tone],
+          )}
+          aria-hidden
+        >
+          <Icon className="size-5" strokeWidth={1.8} />
+        </span>
+      )}
+      {/* The figure comes before the label so figures line up across tiles even when a label wraps. */}
+      <div
+        className={cn(
+          'row-start-1 min-w-0 md:col-span-2 md:col-start-1 md:row-start-2 md:mt-4',
+          Icon ? 'col-start-2' : 'col-span-2 col-start-1',
         )}
-        {hasDelta && (
-          <span
-            className={cn(
-              'inline-flex items-center gap-0.5 rounded-full px-2 py-1 text-[0.6875rem] font-semibold tnum',
-              delta >= 0 ? 'bg-success-soft text-success' : 'bg-danger-soft text-danger',
-            )}
-          >
-            {delta >= 0 ? (
-              <ArrowUpRight className="size-3.5" aria-hidden />
-            ) : (
-              <ArrowDownRight className="size-3.5" aria-hidden />
-            )}
-            {Math.abs(delta)}%
-          </span>
-        )}
+      >
+        <p className="font-display text-2xl leading-8 font-bold tracking-tight break-words tnum md:text-[1.75rem] md:leading-9">
+          {value}
+        </p>
+        <p className="mt-0.5 text-sm leading-snug font-medium text-ink-soft">{label}</p>
+        {hint && <p className="mt-1 line-clamp-2 text-xs text-ink-faint">{hint}</p>}
       </div>
-      <p className="mt-4 text-sm font-medium text-ink-soft">{label}</p>
-      <p className="mt-0.5 font-display text-[1.75rem] leading-9 font-bold tracking-tight tnum">
-        {value}
-      </p>
-      {hint && <p className="mt-1 truncate text-xs text-ink-faint">{hint}</p>}
+      {hasDelta && (
+        <span
+          className={cn(
+            'col-start-3 row-start-1 inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-1 text-[0.6875rem] font-semibold tnum md:col-start-2',
+            delta >= 0 ? 'bg-success-soft text-success' : 'bg-danger-soft text-danger',
+          )}
+        >
+          {delta >= 0 ? (
+            <ArrowUpRight className="size-3.5" aria-hidden />
+          ) : (
+            <ArrowDownRight className="size-3.5" aria-hidden />
+          )}
+          {Math.abs(delta)}%
+        </span>
+      )}
     </>
   );
 
   const classes = cn(
-    'block min-w-0 rounded-card border border-line/70 bg-surface p-5 shadow-card',
+    'grid h-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 rounded-card border border-line/70 bg-surface p-4 shadow-card',
+    'md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:p-5',
     href && 'transition-transform hover:-translate-y-0.5',
   );
 

@@ -200,12 +200,12 @@ export function DataTable<T>({
                         return (
                           <div
                             key={cell.id}
-                            className="flex items-center justify-between gap-4 text-[0.95rem]"
+                            className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 text-[0.95rem]"
                           >
                             {typeof label === 'string' && label !== '' && (
                               <dt className="text-ink-faint">{label}</dt>
                             )}
-                            <dd className="ml-auto text-right">
+                            <dd className="ml-auto max-w-full min-w-0 text-right">
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </dd>
                           </div>

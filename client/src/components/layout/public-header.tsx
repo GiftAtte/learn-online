@@ -58,7 +58,7 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-spruce-950">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-3 min-[400px]:px-4 sm:gap-3 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6 lg:gap-10">
           <Link to={PATHS.home} aria-label={`${appName} home`}>
             <Logo inverted />
@@ -84,10 +84,10 @@ export function PublicHeader() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           {user ? (
             <Button asChild variant="accent" size="sm">
-              <Link to={homeFor(isAdmin)}>{isAdmin ? 'Open the dashboard' : 'Open the app'}</Link>
+              <Link to={homeFor(isAdmin)}>{isAdmin ? 'Open the overview' : 'Open the app'}</Link>
             </Button>
           ) : (
             <>
@@ -95,12 +95,14 @@ export function PublicHeader() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="text-white/80 hover:bg-white/10 hover:text-white"
+                className="px-2.5 text-white/80 hover:bg-white/10 hover:text-white sm:px-3"
               >
                 <Link to={PATHS.signIn}>Sign in</Link>
               </Button>
-              <Button asChild variant="accent" size="sm">
-                <Link to={PATHS.signUp}>Sign up free</Link>
+              <Button asChild variant="accent" size="sm" className="px-2.5 sm:px-3">
+                <Link to={PATHS.signUp} aria-label="Sign up free">
+                  Sign up<span className="hidden sm:inline"> free</span>
+                </Link>
               </Button>
             </>
           )}

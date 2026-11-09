@@ -59,7 +59,7 @@ export default function LandingPage() {
                   <>
                     <Button asChild size="lg" variant="accent">
                       <Link to={homeFor(isAdmin)}>
-                        {isAdmin ? 'Open the dashboard' : 'Go to the catalog'}
+                        {isAdmin ? 'Open the overview' : 'Go to the catalog'}
                       </Link>
                     </Button>
                     <Button
@@ -159,7 +159,7 @@ export default function LandingPage() {
               {user ? (
                 <Button asChild size="lg" variant="accent">
                   <Link to={homeFor(isAdmin)}>
-                    {isAdmin ? 'Open the dashboard' : 'Go to the catalog'}
+                    {isAdmin ? 'Open the overview' : 'Go to the catalog'}
                   </Link>
                 </Button>
               ) : (

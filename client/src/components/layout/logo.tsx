@@ -37,9 +37,17 @@ export function LogoMark({ className, inverted }: { className?: string; inverted
 export function Logo({ className, inverted }: { className?: string; inverted?: boolean }) {
   const { appName } = useAppSettings();
   return (
-    <span className={cn('inline-flex items-center gap-2.5', inverted && 'text-white', className)}>
+    <span
+      className={cn(
+        'inline-flex items-center gap-2 sm:gap-2.5',
+        inverted && 'text-white',
+        className,
+      )}
+    >
       <LogoMark inverted={inverted} />
-      <span className="font-display text-xl font-semibold tracking-tight">{appName}</span>
+      <span className="font-display text-lg font-semibold tracking-tight sm:text-xl">
+        {appName}
+      </span>
     </span>
   );
 }

@@ -5,6 +5,42 @@ const VIDEO_ID = 'dQw4w9WgXcQ';
 const PREFIX = 'YouTube e2e';
 const TITLE = `${PREFIX} ${Date.now()}`;
 
+/**
+ * Stands in for YouTube so the test does not depend on the internet. The app loads YouTube's player script
+ * and asks it for a player; this serves a tiny player that behaves the same way for what the app uses
+ * (builds the embed iframe, reports it is ready, knows the video is 212 seconds long). The real embed
+ * address is still checked, so a wrong video ID or host would fail.
+ */
+const fakeYouTube = async (page: Page) => {
+  await page.route('https://www.youtube.com/iframe_api', (route) =>
+    route.fulfill({
+      contentType: 'application/javascript',
+      body: `
+        window.YT = {
+          Player: class {
+            constructor(element, options) {
+              const frame = document.createElement('iframe');
+              frame.src = options.host + '/embed/' + options.videoId + '?enablejsapi=1';
+              frame.style.cssText = 'width:100%;height:100%;border:0;';
+              frame.title = 'YouTube video player';
+              element.replaceWith(frame);
+              this.frame = frame;
+              setTimeout(() => options.events && options.events.onReady && options.events.onReady(), 50);
+            }
+            getCurrentTime() { return 0; }
+            getDuration() { return 212; }
+            destroy() { this.frame.remove(); }
+          },
+        };
+        setTimeout(() => window.onYouTubeIframeAPIReady && window.onYouTubeIframeAPIReady(), 0);
+      `,
+    }),
+  );
+  await page.route('https://www.youtube-nocookie.com/**', (route) =>
+    route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>player</title>' }),
+  );
+};
+
 const signIn = async (page: Page) => {
   await page.goto('/sign-in');
   await page.getByLabel('Email').fill(ADMIN.email);
@@ -35,6 +71,7 @@ const removeTestLessons = async (page: Page) => {
 test('an administrator adds a lesson by YouTube ID and it plays in YouTube’s player', async ({
   page,
 }) => {
+  await fakeYouTube(page);
   await signIn(page);
   await openDraftCourse(page);
   await removeTestLessons(page);
@@ -49,7 +86,7 @@ test('an administrator adds a lesson by YouTube ID and it plays in YouTube’s p
 
     // The preview confirms which video it is, even before YouTube has told us the length.
     await expect(dialog.getByText(`YouTube video ${VIDEO_ID}`)).toBeVisible();
-    // If YouTube could not be reached to read the length, type it in so the lesson can still be saved.
+    // The length is read from the player; if it ever cannot be, type it in so the lesson can still be saved.
     const length = dialog.getByLabel(/Video length/);
     await expect(async () => {
       if (!(await length.inputValue())) await length.fill('212');

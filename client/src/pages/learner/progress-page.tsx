@@ -12,10 +12,10 @@ import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { PATHS } from '@/router/paths';
 
 /**
- * Progress: route "/learner/dashboard" (signed-in learners; administrators are sent to the admin overview).
+ * Progress: route "/learner/progress" (signed-in learners; administrators are sent to the admin overview).
  * Headline numbers, the lesson to resume, progress in every course, and recent activity.
  */
-export default function DashboardPage() {
+export default function ProgressPage() {
   const { isAdmin } = useSession();
   const dashboard = useGetLearnerDashboard(!isAdmin);
 
@@ -30,7 +30,7 @@ export default function DashboardPage() {
             <Skeleton className="h-36 rounded-stage" />
             <StatGrid>
               {Array.from({ length: 4 }, (_, i) => (
-                <Skeleton key={i} className="h-28 rounded-card" />
+                <Skeleton key={i} className="h-[5.5rem] rounded-card md:h-36" />
               ))}
             </StatGrid>
             <Skeleton className="h-64 rounded-card" />

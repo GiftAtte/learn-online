@@ -29,7 +29,7 @@ describe('sidebar footer', () => {
     );
     expect(screen.getByRole('link', { name: 'Landing page' })).toHaveAttribute('href', '/');
     // The account row is the avatar dropdown: name and role on the row, profile and sign out inside.
-    const account = screen.getByRole('button', { name: /Account menu, Ada Admin/ });
+    const account = screen.getByRole('button', { name: /Account menu,\s*Ada Admin/ });
     expect(account).toHaveTextContent('Ada Admin');
     expect(account).toHaveTextContent('Administrator');
     expect(screen.queryByRole('menuitem', { name: 'Sign out' })).not.toBeInTheDocument();

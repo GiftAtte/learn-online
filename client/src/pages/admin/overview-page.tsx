@@ -114,7 +114,7 @@ export default function AdminOverviewPage() {
           <>
             <StatGrid>
               {Array.from({ length: 4 }, (_, i) => (
-                <Skeleton key={i} className="h-28 rounded-card" />
+                <Skeleton key={i} className="h-[5.5rem] rounded-card md:h-36" />
               ))}
             </StatGrid>
             <Skeleton className="h-72 rounded-card" />

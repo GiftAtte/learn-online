@@ -10,13 +10,15 @@ interface LessonPathProps {
   locked?: boolean;
   /** Smaller pictures, for a narrow side column (the list beside the video). */
   compact?: boolean;
+  /** The lesson after the current one, labelled "Up next". */
+  nextId?: string | null;
 }
 
 /**
  * A course's lessons as the numbered path (nodes joined by a line).
  * Used on the course page and beside the video, so both show lessons identically.
  */
-export function LessonPath({ lessons, currentId, locked, compact }: LessonPathProps) {
+export function LessonPath({ lessons, currentId, locked, compact, nextId }: LessonPathProps) {
   return (
     <ol>
       {lessons.map((lesson, index) => (
@@ -27,6 +29,7 @@ export function LessonPath({ lessons, currentId, locked, compact }: LessonPathPr
           current={lesson.id === currentId}
           locked={locked}
           compact={compact}
+          next={lesson.id === nextId}
           last={index === lessons.length - 1}
         />
       ))}

@@ -30,7 +30,7 @@ export default function SignInPage() {
     setFormError(null);
     try {
       const user = await signIn.mutateAsync(values);
-      // Back to the page they were sent from, otherwise to their own home (admins: the dashboard).
+      // Back to the page they were sent from, otherwise to their own home (admins: the overview).
       navigate(from ? `${from.pathname}${from.search}` : homeFor(user.role === 'ADMIN'), {
         replace: true,
       });

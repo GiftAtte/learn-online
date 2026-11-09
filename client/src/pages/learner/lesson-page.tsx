@@ -68,7 +68,12 @@ function LessonView({ detail }: { detail: LessonDetail }) {
             <ProgressBar value={detail.courseProgressPercent} label="Course progress" size="sm" />
             <span className="text-sm text-ink-soft tnum">{detail.courseProgressPercent}%</span>
           </div>
-          <LessonPath lessons={lessons} currentId={lesson.id} compact />
+          <LessonPath
+            lessons={lessons}
+            currentId={lesson.id}
+            nextId={detail.nextLessonId}
+            compact
+          />
         </Section>
       </div>
     </Page>

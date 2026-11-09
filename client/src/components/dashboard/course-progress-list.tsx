@@ -11,8 +11,8 @@ export function CourseProgressList({ courses }: { courses: LearnerDashboard['cou
       {courses.map((course) => (
         <li key={course.id}>
           <Card interactive padding="sm" className="relative flex flex-col gap-3 sm:p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
+            <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between sm:gap-3">
+              <div className="min-w-0 sm:flex-1">
                 <h3 className="text-lg font-semibold">
                   <Link
                     to={link(PATHS.learner.course, { courseId: course.id })}
@@ -23,7 +23,9 @@ export function CourseProgressList({ courses }: { courses: LearnerDashboard['cou
                 </h3>
                 <p className="text-sm text-ink-faint">{course.category.name}</p>
               </div>
-              <ProgressStatusBadge status={course.status} />
+              <div className="order-first shrink-0 sm:order-last">
+                <ProgressStatusBadge status={course.status} />
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <ProgressBar value={course.progressPercent} label={`${course.title} progress`} />

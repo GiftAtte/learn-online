@@ -26,7 +26,9 @@ export const PATHS = {
     course: '/learner/courses/:courseId',
     lesson: '/learner/lessons/:lessonId',
     myLearning: '/learner/my-learning',
-    dashboard: '/learner/dashboard',
+    progress: '/learner/progress',
+    /** The old address of the Progress page; it redirects to `progress`. */
+    legacyDashboard: '/learner/dashboard',
   },
 
   admin: {
@@ -50,6 +52,6 @@ export const PATHS = {
  */
 export const link = generatePath;
 
-/** Where a signed-in person starts: administrators on their dashboard, learners on the catalog. */
+/** Where a signed-in person starts: administrators on the overview, learners on the catalog. */
 export const homeFor = (isAdmin: boolean) =>
   isAdmin ? PATHS.admin.overview : PATHS.learner.catalog;

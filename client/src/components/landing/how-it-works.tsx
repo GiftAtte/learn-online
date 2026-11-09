@@ -17,7 +17,7 @@ const STEPS = [
   },
   {
     title: 'See your progress',
-    text: 'Finished lessons are ticked for you, and the dashboard shows how far you are in each course.',
+    text: 'Finished lessons are ticked for you, and your Progress page shows how far you are in each course.',
   },
 ];
 

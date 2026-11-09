@@ -72,8 +72,8 @@ Last full run on the `dev` branch (typecheck and format check were clean too):
 | Suite | Result | Covers |
 | ----- | ------ | ------ |
 | Server (Vitest) | 12 files, **83 tests passed** | sign-up and sign-in, token security and sign-out, password-guess lockout, roles and access, input validation, courses, lessons and categories, enrollment, progress and completion rules, dashboards, settings, uploads |
-| Website (Vitest) | 29 files, **136 tests passed** | API client and services, session and route guards, video players (resume, progress, completion, seek), upload and YouTube fields, forms, pages, UI parts |
-| Browser (Playwright) | **22 tests passed** | sign up, enroll, finish a lesson and see it on the dashboard; learner blocked from admin; admin sees learner progress; settings and profile; YouTube lessons; My learning; course activity |
+| Website (Vitest) | 31 files, **143 tests passed** | API client and services, session and route guards, video players (resume, progress, completion, seek), upload and YouTube fields, forms, pages, UI parts |
+| Browser (Playwright) | **28 tests passed** | sign up, enroll, finish a lesson and see it on the Progress page; learner blocked from admin; admin sees learner progress; settings and profile; YouTube lessons; My learning; course activity; an automated accessibility scan (axe, WCAG 2.1 A and AA) of every main screen on a desktop and a phone |
 
 ## Settings you may need
 

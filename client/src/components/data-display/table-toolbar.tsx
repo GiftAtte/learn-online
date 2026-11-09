@@ -37,7 +37,7 @@ export function TableToolbar({
         className="w-full md:w-72"
       />
       {(filters || sort) && (
-        <div className="grid grid-cols-2 gap-2 md:flex md:items-center">
+        <div className="grid grid-cols-1 gap-2 min-[480px]:grid-cols-2 md:flex md:items-center">
           {filters}
           {sort && <div className="contents md:hidden">{sort}</div>}
         </div>

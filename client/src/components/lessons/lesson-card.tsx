@@ -17,6 +17,8 @@ interface LessonCardProps {
   last?: boolean;
   /** Smaller picture and tighter padding, for the list beside the video. */
   compact?: boolean;
+  /** The lesson to watch after the current one; labelled "Up next" until it is started. */
+  next?: boolean;
 }
 
 /**
@@ -24,7 +26,7 @@ interface LessonCardProps {
  * joined by a line: filled spruce = done, pencil = in progress / current, outline = not started.
  * The same component is used on the course page and in the "up next" list beside the video.
  */
-export function LessonCard({ lesson, to, current, locked, last, compact }: LessonCardProps) {
+export function LessonCard({ lesson, to, current, locked, last, compact, next }: LessonCardProps) {
   const started = !lesson.completed && lesson.lastPositionSeconds > 0;
 
   const body = (
@@ -53,7 +55,14 @@ export function LessonCard({ lesson, to, current, locked, last, compact }: Lesso
             <span className="font-medium text-pencil-700">{lesson.progressPercent}% watched</span>
           )}
           {locked && <span>Enroll to unlock</span>}
-          {!lesson.completed && !started && !locked && <span>Not started</span>}
+          {!lesson.completed &&
+            !started &&
+            !locked &&
+            (next ? (
+              <span className="font-medium text-pencil-700">Up next</span>
+            ) : (
+              <span>Not started</span>
+            ))}
         </p>
         {started && (
           <ProgressBar

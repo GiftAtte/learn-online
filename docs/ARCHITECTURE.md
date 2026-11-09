@@ -10,14 +10,14 @@ the design and to see where each requirement lives in the code.
 | Sign-up, sign-in, protected routes, learner and admin roles | `api/src/modules/auth`, `middleware/authenticate.ts`, `authorize.ts`; `client/src/router/guards`, `core/hooks/queries/use-auth.ts` |
 | Secure sessions | bcrypt, HS256 JWT with pinned algorithm, role loaded from the database on every request, real sign-out (token version), rate limiting, helmet, CORS allow-list |
 | Profile: change name and password | `api/src/modules/auth` (`PATCH /auth/me`, `POST /auth/change-password`); `client/src/pages/profile-page.tsx` |
-| Course catalog with card layout (thumbnail, category, duration, progress) | `client/src/pages/browse/catalog-page.tsx`, `components/courses/course-card.tsx` |
+| Course catalog with card layout (thumbnail, category, duration, progress; the bar is empty and the card says "Not enrolled" until the learner enrolls) | `client/src/pages/browse/catalog-page.tsx`, `components/courses/course-card.tsx` |
 | Course detail with lesson cards; focused video card with next-up lessons | `pages/browse/course-page.tsx`, `pages/learner/lesson-page.tsx`, `components/lessons` |
 | Video: play, pause, seek, replay, speed, resume, completion at the end | `client/src/components/media/video-player.tsx`; rules in `api/src/modules/progress` |
 | YouTube lessons (by video ID) | `client/src/components/media/youtube-player.tsx`, `components/lessons/youtube-field.tsx`, `core/lib/youtube.ts` |
-| Enrollment and progress tracking, learner dashboard, My learning | `modules/enrollments`, `modules/progress`, `modules/dashboard`; `pages/learner/dashboard-page.tsx`, `my-learning-page.tsx` |
+| Enrollment and progress tracking, learner Progress page, My learning | `modules/enrollments`, `modules/progress`, `modules/dashboard`; `pages/learner/progress-page.tsx`, `my-learning-page.tsx` |
 | Admin: courses, lessons (order, metadata), categories, learners, drill-down per learner, promote to admin | `client/src/pages/admin/*`; `modules/courses`, `lessons`, `categories`, `users` |
 | Admin settings: app name and logo, upload size and file types, open or closed sign-ups | `api/src/modules/settings`; `client/src/pages/admin/settings-page.tsx` |
-| Loading, empty and error states; responsive and accessible UI | `QueryBoundary`, skeletons, `EmptyState`, `ErrorState`; mobile tab bar, tables become cards, Radix primitives, labelled controls |
+| Loading, empty and error states; responsive (mobile first) and accessible UI | `QueryBoundary`, skeletons, `EmptyState`, `ErrorState`; one card per row on phones, mobile tab bar, tables become cards, Radix primitives, labelled controls; automated axe scan in `e2e/tests/accessibility.spec.ts` |
 
 ## Shape
 
@@ -59,12 +59,21 @@ Input is validated with Zod at the edge; services never see unvalidated data.
 - **Design system.** Tokens in `client/src/styles/globals.css`; every page is a composition of shared
   blocks (`Page`, `Section`, `SettingsSection`, `QueryBoundary`, `DataTable`) so screens behave the same.
 
+- **Course duration is derived.** Each lesson stores its own length; a course shows the sum of its lessons, so
+  the two can never disagree. An administrator changes a course's duration by changing its lessons.
+- **Mobile first.** Styles are written for a phone and widened with breakpoints: statistics cards are one per
+  row until 768px, tables turn into cards, and the side lesson list moves below the video.
+
 ## Tests
 
 - `npm test` runs the server and website suites (Vitest and Testing Library).
 - `npm run test:e2e` drives the real app in Chrome with Playwright. It needs the database migrated and
   seeded, starts its own server (port 4100) and website (port 5273), and uses the installed Chrome
   (`E2E_BROWSER=msedge` to change it).
+- The same browser run includes an accessibility scan (axe-core, WCAG 2.1 A and AA) of every main screen as a
+  visitor, learner and administrator, on a desktop and on a phone. It checks colour contrast, names for
+  controls and page structure, and fails on any violation. It does not replace trying the app with a keyboard
+  and a screen reader.
 - Server tests use a separate `learnonline_test` database on the same Postgres; migrations are applied
   automatically and tables are cleared before each test.
 - CI (`.github/workflows/ci.yml`) runs the type check, format check, tests and the website build on every push.

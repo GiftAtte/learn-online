@@ -25,7 +25,7 @@ export default function ProfilePage() {
   if (!user) return null; // the route guard has already sent guests to sign in
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 sm:gap-10">
+    <div className="flex w-full flex-col gap-8 sm:gap-10">
       <IdentityBanner user={user} />
       <div className="flex flex-col">
         <DetailsSection user={user} />
@@ -210,7 +210,7 @@ function PaymentSection() {
           <p className="font-display text-lg tracking-[0.2em] text-spruce-100">
             •••• •••• •••• ••••
           </p>
-          <div className="flex justify-between text-xs text-spruce-300">
+          <div className="flex justify-between text-xs text-white/75">
             <span>Name on card</span>
             <span>MM / YY</span>
           </div>

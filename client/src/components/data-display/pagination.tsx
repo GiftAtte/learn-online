@@ -39,7 +39,7 @@ export function Pagination({
         </span>{' '}
         of <span className="font-medium text-ink">{total}</span>
       </p>
-      <div className="flex items-center gap-4">
+      <div className="flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-3 sm:w-auto sm:justify-end">
         {onPageSizeChange && (
           <ToolbarSelect
             label="Rows per page"
@@ -60,7 +60,7 @@ export function Pagination({
           >
             <ChevronLeft className="size-4" aria-hidden />
           </Button>
-          <span className="min-w-24 text-center text-sm text-ink-soft tnum">
+          <span className="min-w-20 text-center text-sm text-ink-soft tnum">
             Page {page} of {totalPages}
           </span>
           <Button

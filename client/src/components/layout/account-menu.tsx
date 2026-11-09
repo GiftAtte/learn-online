@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/core/lib/cn';
+import { initialsOf } from '@/core/lib/format';
 import type { NavItem, ShellUser } from '@/core/types/ui.types';
 import { PATHS } from '@/router/paths';
 
@@ -33,7 +34,9 @@ export function AccountMenu({ user, links = [], onSignOut, placement = 'bar' }: 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={`Account menu, ${user.name}`}
+        // A name must contain the text people see. In the sidebar it is built from that text; on the phone only the
+        // initials are visible, so they are part of the name (voice control can say what it sees).
+        aria-label={sidebar ? undefined : `Account menu, ${user.name}, ${initialsOf(user.name)}`}
         className={cn(
           'group flex cursor-pointer items-center gap-3 outline-none',
           sidebar
@@ -48,6 +51,7 @@ export function AccountMenu({ user, links = [], onSignOut, placement = 'bar' }: 
         />
         {sidebar && (
           <>
+            <span className="sr-only">Account menu, </span>
             <span className="flex min-w-0 flex-1 flex-col leading-tight">
               <span className="truncate text-sm font-semibold">{user.name}</span>
               {user.roleLabel && (

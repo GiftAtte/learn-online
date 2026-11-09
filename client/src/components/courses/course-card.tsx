@@ -47,15 +47,14 @@ export function CourseCard({ course, to }: CourseCardProps) {
           <Badge tone="overlay">{course.category.name}</Badge>
           {!course.published && <Badge tone="warning">Draft</Badge>}
         </div>
-        {enrolled && (
-          <ProgressBar
-            value={course.progressPercent}
-            label={`${course.title} progress`}
-            size="sm"
-            onDark
-            className="absolute inset-x-0 bottom-0 h-1.5 rounded-none"
-          />
-        )}
+        {/* Every card carries the progress stroke; it stays empty until the learner enrolls. */}
+        <ProgressBar
+          value={enrolled ? course.progressPercent : 0}
+          label={enrolled ? `${course.title} progress` : `${course.title}: not enrolled`}
+          size="sm"
+          onDark
+          className="absolute inset-x-0 bottom-0 h-1.5 rounded-none"
+        />
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
@@ -79,14 +78,21 @@ export function CourseCard({ course, to }: CourseCardProps) {
           </div>
         </dl>
 
-        {enrolled && (
-          <div className="flex items-center justify-between gap-3 border-t border-line pt-3">
-            <ProgressStatusBadge status={course.status} />
-            <span className="text-sm text-ink-soft tnum">
-              {course.completedLessons} of {course.lessonCount} done
-            </span>
-          </div>
-        )}
+        <div className="flex items-center justify-between gap-3 border-t border-line pt-3">
+          {enrolled ? (
+            <>
+              <ProgressStatusBadge status={course.status} />
+              <span className="text-sm text-ink-soft tnum">
+                {course.completedLessons} of {course.lessonCount} done
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="text-sm font-medium text-ink-soft">Not enrolled</span>
+              <span className="text-sm text-ink-faint tnum">0 of {course.lessonCount} done</span>
+            </>
+          )}
+        </div>
       </div>
     </Card>
   );

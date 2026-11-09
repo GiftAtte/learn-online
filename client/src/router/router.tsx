@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ComponentType } from 'react';
-import { createBrowserRouter, type RouteObject } from 'react-router-dom';
+import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
 import { PageLoader } from '@/components/feedback/page-loader';
 import { RootLayout } from '@/components/layout/root-layout';
 import { GuestOnly } from '@/router/guards/guest-only';
@@ -15,7 +15,7 @@ const CatalogPage = lazy(() => import('@/pages/browse/catalog-page'));
 const CoursePage = lazy(() => import('@/pages/browse/course-page'));
 const LessonPage = lazy(() => import('@/pages/learner/lesson-page'));
 const MyLearningPage = lazy(() => import('@/pages/learner/my-learning-page'));
-const DashboardPage = lazy(() => import('@/pages/learner/dashboard-page'));
+const ProgressPage = lazy(() => import('@/pages/learner/progress-page'));
 const SignInPage = lazy(() => import('@/pages/auth/sign-in-page'));
 const SignUpPage = lazy(() => import('@/pages/auth/sign-up-page'));
 const AdminOverviewPage = lazy(() => import('@/pages/admin/overview-page'));
@@ -60,7 +60,7 @@ const PAGES: PageRoute[] = [
   { path: PATHS.learner.course, page: CoursePage, who: 'signedIn' },
   { path: PATHS.learner.lesson, page: LessonPage, who: 'signedIn' },
   { path: PATHS.learner.myLearning, page: MyLearningPage, who: 'signedIn' },
-  { path: PATHS.learner.dashboard, page: DashboardPage, who: 'signedIn' },
+  { path: PATHS.learner.progress, page: ProgressPage, who: 'signedIn' },
   { path: PATHS.profile, page: ProfilePage, who: 'signedIn' },
 
   // Sign in and sign up
@@ -112,6 +112,11 @@ export const router = createBrowserRouter([
         element: <RequireAuth />,
         children: [
           ...pagesFor('signedIn'),
+          // Bookmarks to the old address keep working.
+          {
+            path: PATHS.learner.legacyDashboard,
+            element: <Navigate to={PATHS.learner.progress} replace />,
+          },
           { element: <RequireAdmin />, children: pagesFor('admin') },
         ],
       },

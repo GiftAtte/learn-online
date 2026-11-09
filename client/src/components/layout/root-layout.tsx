@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Library,
   Settings,
+  TrendingUp,
   Users,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/app-shell';
@@ -30,7 +31,7 @@ const NAV: Record<'learner' | 'admin', NavItem[]> = {
   learner: [
     catalog,
     { to: PATHS.learner.myLearning, label: 'My learning', icon: GraduationCap },
-    { to: PATHS.learner.dashboard, label: 'Progress', icon: LayoutDashboard },
+    { to: PATHS.learner.progress, label: 'Progress', icon: TrendingUp },
   ],
   admin: [
     { to: PATHS.admin.overview, label: 'Overview', icon: LayoutDashboard, end: true },
