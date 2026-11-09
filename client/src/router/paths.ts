@@ -36,6 +36,7 @@ export const PATHS = {
     courses: '/admin/courses',
     course: '/admin/courses/:courseId',
     courseActivity: '/admin/courses/:courseId/activity',
+    lessons: '/admin/lessons',
     categories: '/admin/categories',
     learners: '/admin/learners',
     settings: '/admin/settings',

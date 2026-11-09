@@ -5,7 +5,13 @@ import { validate } from '../../middleware/validate';
 import { progressRouter } from '../progress/progress.routes';
 import * as controller from './lessons.controller';
 import { courseIdParam } from '../courses/courses.schemas';
-import { createLessonSchema, lessonIdParam, reorderSchema, updateLessonSchema } from './lessons.schemas';
+import {
+  createLessonSchema,
+  lessonIdParam,
+  listLessonsQuery,
+  reorderSchema,
+  updateLessonSchema,
+} from './lessons.schemas';
 
 /** Mounted at /courses/:courseId/lessons */
 export const courseLessonsRouter = Router({ mergeParams: true });
@@ -16,6 +22,7 @@ courseLessonsRouter.put('/reorder', validate({ body: reorderSchema }), controlle
 /** Mounted at /lessons */
 export const lessonsRouter = Router();
 lessonsRouter.use(authenticate);
+lessonsRouter.get('/', requireAdmin, validate({ query: listLessonsQuery }), controller.list);
 lessonsRouter.get('/:lessonId', validate({ params: lessonIdParam }), controller.get);
 lessonsRouter.patch(
   '/:lessonId',

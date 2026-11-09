@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { pageQuerySchema } from '../../utils/pagination';
+import { sortDirSchema } from '../../utils/sorting';
 
 export const lessonIdParam = z.object({ lessonId: z.uuid() });
 
@@ -31,5 +33,15 @@ export const reorderSchema = z.object({
   lessonIds: z.array(z.uuid()).min(1).max(500),
 });
 
+/** Administrators: every lesson across all courses, searched, filtered, sorted and paged. */
+export const listLessonsQuery = pageQuerySchema(10).extend({
+  /** Matches the lesson's title or description, or its course's title. */
+  q: z.string().trim().max(100).optional(),
+  courseId: z.uuid().optional(),
+  sortBy: z.enum(['createdAt', 'title', 'course', 'duration']).default('createdAt'),
+  sortDir: sortDirSchema,
+});
+
 export type CreateLessonInput = z.infer<typeof createLessonSchema>;
 export type UpdateLessonInput = z.infer<typeof updateLessonSchema>;
+export type ListLessonsQuery = z.infer<typeof listLessonsQuery>;

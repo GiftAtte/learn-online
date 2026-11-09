@@ -87,6 +87,7 @@ Auth: the token travels in an httpOnly cookie named `session`, set by login/regi
 | POST/PATCH/DELETE `/courses[/:id]`     | admin    | Manage courses                                |
 | POST `/courses/:id/lessons`            | admin    | Add lesson (auto-ordered)                     |
 | PUT `/courses/:id/lessons/reorder`     | admin    | `{ lessonIds: [...] }`                        |
+| GET `/lessons`                         | admin    | Every lesson of every course: `?q=` (title, description or course), `?courseId=`, `?sortBy=createdAt|title|course|duration`, `?sortDir=`, `?page=`, `?pageSize=` |
 | GET `/lessons/:id`                     | enrolled/admin | Lesson + sibling lessons + next/prev    |
 | PATCH/DELETE `/lessons/:id`            | admin    | Update / delete lesson                        |
 | POST/DELETE `/courses/:id/enroll`      | user     | Enroll (idempotent) / unenroll                |

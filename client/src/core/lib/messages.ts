@@ -58,6 +58,10 @@ export const MESSAGES = {
       title: 'No lessons yet',
       description: 'Add the first lesson to get this course going.',
     },
+    allLessons: {
+      title: 'No lessons yet',
+      description: 'Lessons you add to a course will be listed here.',
+    },
     learners: { title: 'No learners yet', description: 'Learners appear here after they sign up.' },
   },
   confirm: {

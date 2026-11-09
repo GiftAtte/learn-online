@@ -35,8 +35,16 @@ export interface NavItem {
   icon: LucideIcon;
   /** Match only the exact path (for "/" style links). */
   end?: boolean;
-  /** Sidebar only: draws a divider above this item to set it apart from the main group. */
-  separated?: boolean;
+  /**
+   * Sidebar only: the heading of the group this item belongs to. Consecutive items with the same
+   * heading form one group; items without one stand on their own.
+   */
+  group?: string;
+  /**
+   * Phones only. The tab bar has room for about four destinations, so items marked `false` are
+   * moved into the menu under the avatar instead. Defaults to true.
+   */
+  inTabBar?: boolean;
 }
 
 /** The signed-in person shown in the shell. */

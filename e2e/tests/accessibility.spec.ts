@@ -95,6 +95,7 @@ for (const { name, width, height } of viewports) {
       await scanAll(page, [
         "/admin",
         "/admin/courses",
+        "/admin/lessons",
         `/admin/courses/${courseId}`,
         `/admin/courses/${courseId}/activity`,
         "/admin/categories",

@@ -20,6 +20,31 @@ export interface Lesson extends LessonSummary {
   videoUrl?: string;
 }
 
+/** A lesson as the administrator's Lessons page lists it: any course, drafts included, with the video address. */
+export interface AdminLesson {
+  id: string;
+  courseId: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  thumbnailUrl: string | null;
+  durationSeconds: number;
+  order: number;
+  createdAt: string;
+  course: { id: string; title: string; published: boolean };
+}
+
+/** What the Lessons page can search, filter, sort and page by. */
+export interface LessonFilters {
+  /** Matches the lesson title or description, or the course title. */
+  q?: string;
+  courseId?: string;
+  sortBy?: 'createdAt' | 'title' | 'course' | 'duration';
+  sortDir?: 'asc' | 'desc';
+  page?: number;
+  pageSize?: number;
+}
+
 /** One lesson opened for watching, with its neighbours in the course. */
 export interface LessonDetail {
   lesson: Lesson & { videoUrl: string };

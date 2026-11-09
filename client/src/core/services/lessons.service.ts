@@ -3,13 +3,32 @@
  * Plain async functions, no React. The hooks in `hooks/queries/use-lessons.ts` wrap them.
  */
 import { api } from '@/core/api/client';
-import type { Lesson, LessonDetail, LessonInput } from '@/core/types/lesson.types';
+import type {
+  AdminLesson,
+  Lesson,
+  LessonDetail,
+  LessonFilters,
+  LessonInput,
+} from '@/core/types/lesson.types';
 
 /** An empty thumbnail box means "no picture", which the API expects as null. */
 const withThumbnail = (input: LessonInput) => ({
   ...input,
   thumbnailUrl: input.thumbnailUrl || null,
 });
+
+/**
+ * Gets one page of lessons from every course, matching the filters.
+ * GET /lessons. Administrators only.
+ * @returns the lessons plus paging details (page, total, totalPages)
+ */
+export const getAllLessons = async (filters: LessonFilters, signal?: AbortSignal) => {
+  const { data, meta } = await api.get<AdminLesson[]>('/lessons', {
+    query: { ...filters },
+    signal,
+  });
+  return { items: data, meta: meta! };
+};
 
 /**
  * Gets one lesson with the learner's saved position, the other lessons in the course and the next and previous lesson.

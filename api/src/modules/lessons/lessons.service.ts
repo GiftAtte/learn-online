@@ -5,7 +5,8 @@ import { AppError } from '../../utils/AppError';
 import { categorySelect } from '../categories/categories.service';
 import { isEnrolled } from '../enrollments/enrollments.service';
 import { percent, withLessonProgress } from '../progress/progress.helpers';
-import type { CreateLessonInput, UpdateLessonInput } from './lessons.schemas';
+import { pageArgs, paginated } from '../../utils/pagination';
+import type { CreateLessonInput, ListLessonsQuery, UpdateLessonInput } from './lessons.schemas';
 
 /**
  * The single access rule for watching a lesson:
@@ -56,6 +57,50 @@ export const getLessonDetail = async (lessonId: string, viewer: Viewer) => {
     nextLessonId: lessons[index + 1]?.id ?? null,
     courseProgressPercent: percent(lessons.filter((l) => l.completed).length, lessons.length),
   };
+};
+
+/** Where-clause for the admin list: optional course, and text matched against lesson and course. */
+const listFilter = ({ q, courseId }: ListLessonsQuery): Prisma.LessonWhereInput => ({
+  ...(courseId && { courseId }),
+  ...(q && {
+    OR: [
+      { title: { contains: q, mode: 'insensitive' } },
+      { description: { contains: q, mode: 'insensitive' } },
+      { course: { title: { contains: q, mode: 'insensitive' } } },
+    ],
+  }),
+});
+
+/** Lessons are listed in course order by default so a course's lessons stay together and in sequence. */
+const listOrderBy = ({ sortBy, sortDir }: ListLessonsQuery): Prisma.LessonOrderByWithRelationInput[] => {
+  switch (sortBy) {
+    case 'title':
+      return [{ title: sortDir }, { id: 'asc' }];
+    case 'course':
+      return [{ course: { title: sortDir } }, { order: 'asc' }, { id: 'asc' }];
+    case 'duration':
+      return [{ durationSeconds: sortDir }, { id: 'asc' }];
+    default:
+      return [{ createdAt: sortDir }, { id: 'asc' }];
+  }
+};
+
+/**
+ * Every lesson in every course, for the administrator's Lessons page. Unlike the lesson page this does not
+ * depend on enrollment, so it includes lessons of drafts, and it returns the video address for editing.
+ */
+export const listLessons = async (query: ListLessonsQuery) => {
+  const where = listFilter(query);
+  const [total, lessons] = await prisma.$transaction([
+    prisma.lesson.count({ where }),
+    prisma.lesson.findMany({
+      where,
+      orderBy: listOrderBy(query),
+      ...pageArgs(query),
+      include: { course: { select: { id: true, title: true, published: true } } },
+    }),
+  ]);
+  return paginated(lessons, query, total);
 };
 
 const assertCourseExists = async (courseId: string) => {

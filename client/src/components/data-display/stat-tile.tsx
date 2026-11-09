@@ -50,12 +50,12 @@ export function StatTile({
       {Icon && (
         <span
           className={cn(
-            'col-start-1 row-start-1 flex size-10 shrink-0 items-center justify-center rounded-xl',
+            'col-start-1 row-start-1 flex size-9 shrink-0 items-center justify-center rounded-xl md:size-10',
             ICON_TONE[tone],
           )}
           aria-hidden
         >
-          <Icon className="size-5" strokeWidth={1.8} />
+          <Icon className="size-[1.1rem] md:size-5" strokeWidth={1.8} />
         </span>
       )}
       {/* The figure comes before the label so figures line up across tiles even when a label wraps. */}
@@ -65,7 +65,7 @@ export function StatTile({
           Icon ? 'col-start-2' : 'col-span-2 col-start-1',
         )}
       >
-        <p className="font-display text-2xl leading-8 font-bold tracking-tight break-words tnum md:text-[1.75rem] md:leading-9">
+        <p className="font-display text-xl leading-7 font-bold tracking-tight break-words tnum md:text-[1.75rem] md:leading-9">
           {value}
         </p>
         <p className="mt-0.5 text-sm leading-snug font-medium text-ink-soft">{label}</p>

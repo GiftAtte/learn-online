@@ -51,7 +51,10 @@ export function ToolbarSelect({
       prefix={prefix === null ? undefined : (prefix ?? `${prefixFrom(label)}:`)}
       displayValue={selected === ALL ? 'All' : items.find((item) => item.value === selected)?.label}
       active={filtering}
-      className={cn('h-10 w-full text-[0.9375rem] sm:w-auto sm:min-w-40', className)}
+      className={cn(
+        'h-9 w-full text-sm sm:h-10 sm:w-auto sm:min-w-40 sm:text-[0.9375rem]',
+        className,
+      )}
     />
   );
 }

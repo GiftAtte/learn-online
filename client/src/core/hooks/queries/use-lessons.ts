@@ -1,10 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { MESSAGES } from '@/core/lib/messages';
 import { notify } from '@/core/lib/notify';
 import * as lessonsService from '@/core/services/lessons.service';
-import type { LessonInput } from '@/core/types/lesson.types';
+import type { LessonFilters, LessonInput } from '@/core/types/lesson.types';
 import { invalidateLearningData } from './invalidate';
 import { queryKeys } from './query-keys';
+
+/** Loads one page of lessons from every course, for the administrator's Lessons page. */
+export const useGetAllLessons = (filters: LessonFilters) =>
+  useQuery({
+    queryKey: queryKeys.lessons(filters),
+    placeholderData: keepPreviousData, // keep the old page visible while the next one loads
+    queryFn: ({ signal }) => lessonsService.getAllLessons(filters, signal),
+  });
 
 /** Loads one lesson with the learner’s saved position and the next and previous lessons. */
 export const useGetLessonById = (lessonId: string) =>

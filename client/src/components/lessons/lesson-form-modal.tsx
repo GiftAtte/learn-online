@@ -15,8 +15,11 @@ import type { LessonFormValues } from '@/core/types/form.types';
 
 interface Props {
   courseId: string;
-  /** Omit to add a new lesson. */
-  existing?: Lesson;
+  /** Omit to add a new lesson. Only the fields the form edits are needed. */
+  existing?: Pick<
+    Lesson,
+    'id' | 'title' | 'description' | 'videoUrl' | 'thumbnailUrl' | 'durationSeconds'
+  >;
   onClose: () => void;
 }
 

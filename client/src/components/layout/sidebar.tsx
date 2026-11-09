@@ -1,5 +1,6 @@
 import { useAppSettings } from '@/core/hooks/queries/use-settings';
 import { Globe } from 'lucide-react';
+import { useId } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { cn } from '@/core/lib/cn';
 import { AccountMenu } from './account-menu';
@@ -15,6 +16,15 @@ const linkStyles = (isActive: boolean) =>
     isActive &&
       'before:absolute before:top-2 before:bottom-2 before:-left-3 before:w-[3px] before:rounded-r-full before:bg-pencil-500',
   );
+
+/** Consecutive items with the same `group` heading, in the order they were given. */
+const toSections = (nav: NavItem[]) =>
+  nav.reduce<{ heading?: string; items: NavItem[] }[]>((sections, item) => {
+    const last = sections[sections.length - 1];
+    if (last && last.heading === item.group) last.items.push(item);
+    else sections.push({ heading: item.group, items: [item] });
+    return sections;
+  }, []);
 
 interface SidebarProps {
   nav: NavItem[];
@@ -33,6 +43,7 @@ interface SidebarProps {
  */
 export function Sidebar({ nav, footerNav = [], user, onSignOut }: SidebarProps) {
   const { appName } = useAppSettings();
+  const headingId = useId();
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col bg-spruce-900 text-white lg:flex">
       <Link
@@ -43,15 +54,40 @@ export function Sidebar({ nav, footerNav = [], user, onSignOut }: SidebarProps) 
         <Logo inverted />
       </Link>
 
-      <nav aria-label="Main" className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
-        {nav.map((item) => (
-          <div key={item.to} className={cn(item.separated && 'mt-3 border-t border-white/10 pt-4')}>
-            <NavLink to={item.to} end={item.end} className={({ isActive }) => linkStyles(isActive)}>
-              <item.icon className="size-[1.2rem]" strokeWidth={1.8} aria-hidden />
-              {item.label}
-            </NavLink>
-          </div>
-        ))}
+      <nav aria-label="Main" className="flex flex-1 flex-col gap-5 overflow-y-auto px-3 py-4">
+        {toSections(nav).map(({ heading, items }, index) => {
+          const id = `${headingId}-${index}`;
+          return (
+            <div
+              key={heading ?? items[0]!.to}
+              role={heading ? 'group' : undefined}
+              aria-labelledby={heading ? id : undefined}
+            >
+              {heading && (
+                <p
+                  id={id}
+                  className="px-3 pb-2 text-[0.6875rem] font-semibold tracking-[0.1em] text-spruce-300 uppercase"
+                >
+                  {heading}
+                </p>
+              )}
+              <ul className="flex flex-col gap-1">
+                {items.map((item) => (
+                  <li key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      end={item.end}
+                      className={({ isActive }) => linkStyles(isActive)}
+                    >
+                      <item.icon className="size-[1.2rem]" strokeWidth={1.8} aria-hidden />
+                      {item.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
       </nav>
 
       <div className="flex flex-col gap-1 border-t border-white/10 p-3">

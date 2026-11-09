@@ -21,11 +21,13 @@ export const buttonStyles = cva(
         danger: 'bg-danger text-white hover:bg-danger-hover',
       },
       size: {
-        sm: 'h-9 px-4 text-sm',
-        md: 'h-11 px-5 text-[0.95rem]',
-        lg: 'h-12 px-7 text-base',
-        icon: 'size-11',
-        'icon-sm': 'size-9',
+        // Mobile first: compact on a phone, and growing to the roomier sizes from 640px (sm) up. (On top of
+        // this, the root font size is fluid, so every size here also grows smoothly with the screen.)
+        sm: 'h-8 gap-1.5 px-3 text-[0.8125rem] sm:h-9 sm:gap-2 sm:px-4 sm:text-sm',
+        md: 'h-10 px-4 text-sm sm:h-11 sm:px-5 sm:text-[0.95rem]',
+        lg: 'h-11 px-5 text-[0.95rem] sm:h-12 sm:px-7 sm:text-base',
+        icon: 'size-10 sm:size-11',
+        'icon-sm': 'size-8 sm:size-9',
       },
     },
     defaultVariants: { variant: 'primary', size: 'md' },

@@ -105,8 +105,14 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
-    /* Source Sans 3 has a smaller x-height than most UI fonts; 17px keeps text and labels easy to read. */
-    font-size: 106.25%;
+    /*
+     * Fluid type, in the spirit of Bootstrap's responsive font sizes: the root size grows smoothly with the
+     * screen, from 15px on a small phone (360px wide) to 17px on a desktop (1200px and up). Text, spacing and
+     * controls are all in rem, so the whole interface scales together instead of jumping at breakpoints.
+     * Source Sans 3 has a smaller x-height than most UI fonts, so 17px is the comfortable size on a desktop.
+     * The percentages keep the reader's own browser font-size setting in charge (WCAG 1.4.4).
+     */
+    font-size: clamp(93.75%, calc(88.4% + 0.24vw), 106.25%);
     scroll-padding-top: 5rem;
   }
 

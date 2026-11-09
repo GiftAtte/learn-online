@@ -15,7 +15,7 @@ the design and to see where each requirement lives in the code.
 | Video: play, pause, seek, replay, speed, resume, completion at the end | `client/src/components/media/video-player.tsx`; rules in `api/src/modules/progress` |
 | YouTube lessons (by video ID) | `client/src/components/media/youtube-player.tsx`, `components/lessons/youtube-field.tsx`, `core/lib/youtube.ts` |
 | Enrollment and progress tracking, learner Progress page, My learning | `modules/enrollments`, `modules/progress`, `modules/dashboard`; `pages/learner/progress-page.tsx`, `my-learning-page.tsx` |
-| Admin: courses, lessons (order, metadata), categories, learners, drill-down per learner, promote to admin | `client/src/pages/admin/*`; `modules/courses`, `lessons`, `categories`, `users` |
+| Admin: courses, lessons (order, metadata), categories, learners, drill-down per learner, promote to admin | `client/src/pages/admin/*`; `modules/courses`, `lessons`, `categories`, `users`. The **Lessons** page (`pages/admin/lessons-page.tsx`, `GET /lessons`) lists every lesson across all courses. |
 | Admin settings: app name and logo, upload size and file types, open or closed sign-ups | `api/src/modules/settings`; `client/src/pages/admin/settings-page.tsx` |
 | Loading, empty and error states; responsive (mobile first) and accessible UI | `QueryBoundary`, skeletons, `EmptyState`, `ErrorState`; one card per row on phones, mobile tab bar, tables become cards, Radix primitives, labelled controls; automated axe scan in `e2e/tests/accessibility.spec.ts` |
 
@@ -61,8 +61,15 @@ Input is validated with Zod at the edge; services never see unvalidated data.
 
 - **Course duration is derived.** Each lesson stores its own length; a course shows the sum of its lessons, so
   the two can never disagree. An administrator changes a course's duration by changing its lessons.
-- **Mobile first.** Styles are written for a phone and widened with breakpoints: statistics cards are one per
-  row until 768px, tables turn into cards, and the side lesson list moves below the video.
+- **Mobile first, with fluid type.** Styles are written for a phone and widened with breakpoints: statistics
+  cards are one per row until 768px, tables turn into cards, and the side lesson list moves below the video.
+  The root font size is fluid (15px on a small phone growing to 17px on a desktop, `clamp()` in
+  `styles/globals.css`), and all text, spacing and controls are in `rem`, so the whole interface scales
+  together, as with Bootstrap's responsive font sizes. Buttons are also one step smaller on phones
+  (`components/ui/button.tsx`). Inputs stay at 16px text so iOS does not zoom when they are focused.
+- **Grouped navigation.** The admin sidebar groups its links under headings (Content, People, Learner view);
+  navigation items are plain data in `components/layout/root-layout.tsx`. The phone tab bar only has room for
+  four destinations, so items marked `inTabBar: false` move into the menu under the avatar.
 
 ## Tests
 

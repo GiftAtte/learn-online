@@ -9,6 +9,7 @@ export const queryKeys = {
   courses: (params?: object) => ['courses', 'list', params ?? {}] as const,
   coursesAll: ['courses'] as const,
   course: (id: string) => ['courses', 'detail', id] as const,
+  lessons: (params?: object) => ['lessons', 'list', params ?? {}] as const,
   lesson: (id: string) => ['lessons', id] as const,
   lessonsAll: ['lessons'] as const,
   myCourses: ['enrollments', 'me'] as const,

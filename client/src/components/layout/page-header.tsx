@@ -54,8 +54,8 @@ export function PageHeader({
         <h1
           className={cn(
             hero
-              ? 'font-display text-4xl leading-[1.05] font-bold tracking-tight sm:text-5xl'
-              : 'text-[1.75rem] leading-tight font-semibold tracking-[-0.025em] sm:text-[2rem]',
+              ? 'font-display text-3xl leading-[1.05] font-bold tracking-tight sm:text-5xl'
+              : 'text-2xl leading-tight font-semibold tracking-[-0.025em] sm:text-[2rem]',
           )}
         >
           {title}
@@ -64,7 +64,9 @@ export function PageHeader({
           <p
             className={cn(
               'max-w-prose',
-              hero ? 'text-lg text-spruce-100' : 'text-[0.95rem] text-ink-soft',
+              hero
+                ? 'text-base text-spruce-100 sm:text-lg'
+                : 'text-sm text-ink-soft sm:text-[0.95rem]',
             )}
           >
             {description}

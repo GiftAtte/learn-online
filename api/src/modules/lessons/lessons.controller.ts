@@ -1,7 +1,13 @@
 import type { Request, Response } from 'express';
 import { created, noContent, ok } from '../../utils/response';
-import { param, requireUser } from '../../utils/request';
+import { param, queryOf, requireUser } from '../../utils/request';
+import type { ListLessonsQuery } from './lessons.schemas';
 import * as service from './lessons.service';
+
+export const list = async (req: Request, res: Response) => {
+  const { items, meta } = await service.listLessons(queryOf<ListLessonsQuery>(req));
+  ok(res, items, meta);
+};
 
 export const get = async (req: Request, res: Response) => {
   ok(res, await service.getLessonDetail(param(req, 'lessonId'), requireUser(req)));

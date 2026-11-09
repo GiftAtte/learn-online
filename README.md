@@ -92,6 +92,7 @@ Every module of the brief, with what was built and where to see it. File paths a
 | Requirement | Done | How it works |
 | --- | --- | --- |
 | Create, read, update and delete courses | ✅ | Admin → **Courses** (search, filter, sort, paging, publish or keep as draft) |
+| See and manage every lesson in one place | ✅ | Admin → **Lessons**: all lessons from all courses, searchable, filterable by course, sortable, with edit, preview and delete |
 | Manage lessons under each course | ✅ | Open a course to add, edit, delete and reorder its lessons (move up and move down) |
 | Metadata: title, description, duration, category, lesson order | ✅ | Courses have title, description, category, cover image. Lessons have title, description, video, length and order. A course's duration is the total of its lessons. |
 | Validation and graceful handling of invalid input | ✅ | The same rules run in the form and on the server; errors appear next to the field, and a category that still has courses cannot be deleted |
@@ -129,7 +130,7 @@ Every module of the brief, with what was built and where to see it. File paths a
 
 | Requirement | Done | How it works |
 | --- | --- | --- |
-| Responsive for desktop and mobile | ✅ | Built mobile first and checked from 320px up; summary cards are one per row on phones |
+| Responsive for desktop and mobile | ✅ | Built mobile first and checked from 320px up. Text and controls scale with the screen (fluid type, smaller buttons on phones), summary cards are one per row on phones, and the admin sidebar is grouped, with the extra links in the avatar menu on phones |
 | Loading, empty and error states | ✅ | Skeletons while loading, friendly empty states, and error screens with a retry |
 | Reusable components and thoughtful state handling | ✅ | Shared page, card, table and form pieces; server data cached with TanStack Query |
 | Clear validation and feedback | ✅ | Inline field errors, confirmations before deleting, and toast messages |

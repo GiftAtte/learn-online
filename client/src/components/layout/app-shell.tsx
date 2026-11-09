@@ -20,9 +20,13 @@ interface AppShellProps {
  * The frame around every page for signed-in people (signed-out visitors get PublicLayout).
  *  - Desktop (lg+): a sidebar with navigation and the account.
  *  - Tablet and phone: a top bar with the logo and the avatar (which opens the account menu), plus a
- *    bottom tab bar.
+ *    bottom tab bar. Items that do not fit in the tab bar (`inTabBar: false`) are in the account menu.
  */
 export function AppShell({ nav, footerNav = [], user, onSignOut }: AppShellProps) {
+  // On phones the tab bar keeps the main destinations; everything else goes into the avatar menu.
+  const everything = [...nav, ...footerNav];
+  const tabs = everything.filter((item) => item.inTabBar !== false);
+  const overflow = everything.filter((item) => item.inTabBar === false);
   return (
     <div className="flex min-h-dvh">
       <a
@@ -38,7 +42,7 @@ export function AppShell({ nav, footerNav = [], user, onSignOut }: AppShellProps
         <TopBar
           user={user}
           home={nav[0]?.to ?? PATHS.learner.catalog}
-          menuLinks={footerNav}
+          menuLinks={overflow}
           onSignOut={onSignOut}
         />
 
@@ -49,7 +53,7 @@ export function AppShell({ nav, footerNav = [], user, onSignOut }: AppShellProps
           </Container>
         </main>
 
-        <BottomTabs nav={[...nav, ...footerNav]} />
+        <BottomTabs nav={tabs} />
       </div>
     </div>
   );
@@ -74,7 +78,7 @@ function TopBar({
   const { appName } = useAppSettings();
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur-md lg:hidden">
-      <Container fluid className="flex h-16 items-center justify-between gap-3 sm:gap-6">
+      <Container fluid className="flex h-14 items-center justify-between gap-3 sm:h-16 sm:gap-6">
         <Link to={home} aria-label={`${appName} home`} className="rounded-control">
           <Logo />
         </Link>
@@ -99,14 +103,14 @@ function BottomTabs({ nav }: { nav: NavItem[] }) {
               end={end}
               className={({ isActive }) =>
                 cn(
-                  'relative flex min-h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors',
+                  'relative flex min-h-14 flex-col items-center justify-center gap-0.5 text-[0.6875rem] font-medium transition-colors sm:min-h-16 sm:gap-1 sm:text-xs',
                   isActive ? 'text-ink' : 'text-ink-faint',
                   isActive &&
                     'before:absolute before:top-0 before:h-[3px] before:w-8 before:rounded-b-full before:bg-pencil-500',
                 )
               }
             >
-              <Icon className="size-[1.4rem]" strokeWidth={1.8} aria-hidden />
+              <Icon className="size-5 sm:size-[1.4rem]" strokeWidth={1.8} aria-hidden />
               {label}
             </NavLink>
           </li>
